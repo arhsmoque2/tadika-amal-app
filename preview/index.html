@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tadika Amal App — Architecture & UI Showcase</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Header Bar -->
+  <header class="app-header">
+    <div class="header-brand">
+      <div class="brand-logo">
+        <span>🌱</span>
+      </div>
+      <div>
+        <h1 class="brand-title">Tadika Amal Apps</h1>
+        <p class="brand-subtitle">Islamic Kindergarten & Preschool Management System</p>
+      </div>
+    </div>
+    <div class="stack-selector-container">
+      <span class="selector-label">Active Stack Preview:</span>
+      <div class="toggle-group" id="stackToggle">
+        <button class="toggle-btn active" data-view="filament">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          Option A: Filament v4 Panel
+        </button>
+        <button class="toggle-btn" data-view="vue">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/><line x1="12" y1="22" x2="12" y2="15.5"/><polyline points="22 8.5 12 15.5 2 8.5"/></svg>
+          Option B: Vue 3 / Inertia Mobile Portal
+        </button>
+        <button class="toggle-btn" data-view="matrix">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Comparison & Roadmap
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Showcase Container -->
+  <main class="showcase-content">
+    
+    <!-- VIEW 1: FILAMENT V4 (ADMIN & TEACHER PANEL) -->
+    <section id="view-filament" class="view-panel active">
+      <div class="panel-layout">
+        <!-- Sidebar -->
+        <aside class="filament-sidebar">
+          <div class="panel-badge">
+            <span class="badge-dot"></span> Admin / Teacher Panel
+          </div>
+          <nav class="filament-nav">
+            <div class="nav-section">Dashboard</div>
+            <a href="#" class="nav-item active">📊 Ringkasan Eksekutif</a>
+            <div class="nav-section">Akademik & Huffaz</div>
+            <a href="#" class="nav-item">📖 Rekod Iqra' & Hafazan</a>
+            <a href="#" class="nav-item">🕌 Modul Solat & Sahsiah</a>
+            <a href="#" class="nav-item">📚 Rancangan Pengajaran</a>
+            <div class="nav-section">Pengurusan Pelajar</div>
+            <a href="#" class="nav-item">👶 Senarai Murid (4, 5, 6 Thn)</a>
+            <a href="#" class="nav-item">⏱️ Kehadiran & Suhu Harian</a>
+            <a href="#" class="nav-item">👨‍👩‍👧 Data Ibu Bapa / Penjaga</a>
+            <div class="nav-section">Kewangan & Operasi</div>
+            <a href="#" class="nav-item">💳 Yuran & Invois Bulanan</a>
+            <a href="#" class="nav-item">📢 Hebahan & WhatsApp</a>
+          </nav>
+        </aside>
+
+        <!-- Main Panel Body -->
+        <div class="filament-body">
+          <div class="filament-header-bar">
+            <div>
+              <h2 class="page-title">Ringkasan Tadika Amal Cawangan Saujana</h2>
+              <p class="page-subtitle">Sesi Persekolahan 2026 • 128 Murid Berdaftar • 6 Kelas Aktif</p>
+            </div>
+            <div class="header-actions">
+              <button class="btn btn-secondary">📥 Eksport Laporan</button>
+              <button class="btn btn-primary">+ Daftar Pelajar Baharu</button>
+            </div>
+          </div>
+
+          <!-- KPI Cards -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon bg-emerald">📈</div>
+              <div>
+                <span class="stat-label">Kehadiran Hari Ini</span>
+                <div class="stat-value">96.8% <span class="stat-badge pos">124 / 128</span></div>
+                <span class="stat-sub">4 murid cuti sakit / bersebab</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon bg-amber">📖</div>
+              <div>
+                <span class="stat-label">Pencapaian Iqra' 4+</span>
+                <div class="stat-value">64.2% <span class="stat-badge pos">+12% YoY</span></div>
+                <span class="stat-sub">82 murid melepasi Iqra' 3</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon bg-blue">💳</div>
+              <div>
+                <span class="stat-label">Kutipan Yuran Ogos</span>
+                <div class="stat-value">RM 34,560 <span class="stat-badge info">91%</span></div>
+                <span class="stat-sub">Baki 12 akaun tertunggak</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Data Tables & Iqra Tracker -->
+          <div class="grid-2-col">
+            <div class="content-card">
+              <div class="card-header">
+                <h3>📖 Rekod Terkini Hafazan & Iqra' (Kelas 6 Tahun - Bilal)</h3>
+                <span class="table-tag">Livewire Real-Time</span>
+              </div>
+              <div class="table-container">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Nama Murid</th>
+                      <th>Tahap Iqra'</th>
+                      <th>Surah Hafazan</th>
+                      <th>Status Solat</th>
+                      <th>Tindakan Guru</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>Muhammad Adam Harith</strong></td>
+                      <td><span class="badge badge-success">Iqra' 5 (Hal 18)</span></td>
+                      <td>Surah An-Naba' (1-15)</td>
+                      <td><span class="badge badge-info">Tertib Penuh</span></td>
+                      <td><button class="btn-sm">Kemaskini</button></td>
+                    </tr>
+                    <tr>
+                      <td><strong>Nur Aisyah Humaira</strong></td>
+                      <td><span class="badge badge-purple">Al-Quran (Juz 1)</span></td>
+                      <td>Surah Al-Mulk (Lengkap)</td>
+                      <td><span class="badge badge-info">Tertib Penuh</span></td>
+                      <td><button class="btn-sm">Kemaskini</button></td>
+                    </tr>
+                    <tr>
+                      <td><strong>Ahmad Zafri Danial</strong></td>
+                      <td><span class="badge badge-warning">Iqra' 3 (Hal 12)</span></td>
+                      <td>Surah At-Tin</td>
+                      <td><span class="badge badge-warning">Bimbingan</span></td>
+                      <td><button class="btn-sm">Kemaskini</button></td>
+                    </tr>
+                    <tr>
+                      <td><strong>Maryam Safiyyah</strong></td>
+                      <td><span class="badge badge-success">Iqra' 4 (Hal 24)</span></td>
+                      <td>Surah Al-Qadr</td>
+                      <td><span class="badge badge-info">Tertib Penuh</span></td>
+                      <td><button class="btn-sm">Kemaskini</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="content-card">
+              <div class="card-header">
+                <h3>⏱️ Log Kehadiran & Pemeriksaan Kesihatan Pagi</h3>
+                <span class="table-tag">Check-in Kiosk</span>
+              </div>
+              <div class="activity-feed">
+                <div class="feed-item">
+                  <span class="feed-time">07:48 AM</span>
+                  <div class="feed-body">
+                    <strong>Muhammad Adam Harith</strong> masuk kelas.
+                    <div class="feed-meta">Suhu: 36.5°C • Diserahkan oleh: En. Harith (Bapa) • Sihat</div>
+                  </div>
+                </div>
+                <div class="feed-item">
+                  <span class="feed-time">07:52 AM</span>
+                  <div class="feed-body">
+                    <strong>Nur Aisyah Humaira</strong> masuk kelas.
+                    <div class="feed-meta">Suhu: 36.4°C • Bas Van No 2 • Sihat</div>
+                  </div>
+                </div>
+                <div class="feed-item warning-feed">
+                  <span class="feed-time">08:05 AM</span>
+                  <div class="feed-body">
+                    <strong>Umar Al-Faruq</strong> dicatatkan Cuti Sakit (MC).
+                    <div class="feed-meta">Catatan Ibu: Batuk & Demam ringan • WhatsApp Nudge dihantar</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: VUE 3 / INERTIA (PARENT MOBILE PORTAL) -->
+    <section id="view-vue" class="view-panel">
+      <div class="mobile-showcase-wrapper">
+        <!-- Phone Mockup Frame -->
+        <div class="phone-frame">
+          <div class="phone-notch">
+            <span class="phone-time">09:41</span>
+            <span class="phone-icons">📶 🔋</span>
+          </div>
+          
+          <div class="phone-screen">
+            <!-- Mobile Header -->
+            <div class="parent-app-header">
+              <div class="parent-profile">
+                <div class="avatar-circle">AH</div>
+                <div>
+                  <div class="greeting">Salam, En. Abdul Rahman</div>
+                  <div class="child-switcher">👶 Muhammad Adam Harith ▾</div>
+                </div>
+              </div>
+              <div class="notif-bell">🔔<span class="notif-dot"></span></div>
+            </div>
+
+            <!-- Child Status Card -->
+            <div class="mobile-card highlight-card">
+              <div class="card-pill">Status Hari Ini (16 Ogos)</div>
+              <div class="child-status-row">
+                <div class="status-badge-live">
+                  <span class="pulse-circle"></span> Berada di Sekolah
+                </div>
+                <span class="checkin-time">Check-in: 07:48 AM (36.5°C)</span>
+              </div>
+              <div class="status-summary">
+                <div class="summary-box">
+                  <span class="box-title">Iqra'</span>
+                  <span class="box-val">Jilid 5</span>
+                </div>
+                <div class="summary-box">
+                  <span class="box-title">Solat Dhuha</span>
+                  <span class="box-val">✓ Selesai</span>
+                </div>
+                <div class="summary-box">
+                  <span class="box-title">Makan Pagi</span>
+                  <span class="box-val">Habiskan</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Daily Activity & Learning Feed -->
+            <div class="section-title-row">
+              <h4>Aktiviti & Perkembangan Hari Ini</h4>
+              <a href="#" class="link-sm">Lihat Semua</a>
+            </div>
+
+            <div class="story-carousel">
+              <div class="story-card">
+                <div class="story-img bg-art">🎨</div>
+                <span>Seni Khat Cilik</span>
+              </div>
+              <div class="story-card">
+                <div class="story-img bg-quran">📖</div>
+                <span>Hafazan Al-Quran</span>
+              </div>
+              <div class="story-card">
+                <div class="story-img bg-sport">🏃</div>
+                <span>Jasmani & Motorik</span>
+              </div>
+            </div>
+
+            <!-- Daily Diary Post -->
+            <div class="diary-card">
+              <div class="diary-header">
+                <div class="teacher-avatar">UST</div>
+                <div>
+                  <div class="teacher-name">Ustazah Fatimah (Guru Kelas)</div>
+                  <div class="post-time">10:15 AM • Kelas 6 Tahun Bilal</div>
+                </div>
+              </div>
+              <p class="diary-text">
+                Alhamdulillah, hari ini Adam berjaya membaca <strong>Iqra' 5 muka surat 18</strong> dengan makhraj yang baik dan lancar! Teruskan bimbingan bacaan di rumah ya ibu bapa.
+              </p>
+              <div class="diary-tags">
+                <span class="tag">#HafazanCemerlang</span>
+                <span class="tag">#Iqra5</span>
+              </div>
+            </div>
+
+            <!-- Quick Action Grid -->
+            <div class="action-grid">
+              <button class="mobile-action-btn">
+                <span class="icon">💳</span>
+                <span>Bayar Yuran</span>
+              </button>
+              <button class="mobile-action-btn">
+                <span class="icon">📝</span>
+                <span>Mohon Cuti</span>
+              </button>
+              <button class="mobile-action-btn">
+                <span class="icon">💬</span>
+                <span>Mesej Guru</span>
+              </button>
+              <button class="mobile-action-btn">
+                <span class="icon">📸</span>
+                <span>Galeri Foto</span>
+              </button>
+            </div>
+
+            <!-- Bottom Nav Bar -->
+            <nav class="parent-bottom-nav">
+              <a href="#" class="nav-tab active">🏠 Utama</a>
+              <a href="#" class="nav-tab">📖 Perkembangan</a>
+              <a href="#" class="nav-tab">💳 Yuran</a>
+              <a href="#" class="nav-tab">⚙️ Profil</a>
+            </nav>
+          </div>
+        </div>
+
+        <!-- Mobile Stack Architecture Info -->
+        <div class="mobile-desc-box">
+          <div class="desc-header">
+            <h3>📱 Kelebihan Stack Vue 3 + Inertia.js (Mobile-First)</h3>
+            <span class="tech-badge">Inertia v2 + Vue 3 SPA</span>
+          </div>
+          <p class="desc-text">
+            Ibu bapa dan penjaga mengakses aplikasi 95% melalui telefon pintar. Antaramuka Vue 3 + Inertia.js memberikan pengalaman <strong>Progressive Web App (PWA)</strong> yang sangat pantas seperti aplikasi native tanpa perlu muat turun dari App Store / Google Play.
+          </p>
+          <ul class="feature-bullets">
+            <li>✨ <strong>Zero Page Refresh</strong>: Pertukaran skrin antara status anak, semakan buku rekod, dan galeri foto berlaku sekelip mata.</li>
+            <li>📲 <strong>Touch-Optimized Gestures</strong>: Carousel gambar aktiviti, pull-to-refresh log hafazan, dan slide-up drawer bayaran.</li>
+            <li>💬 <strong>WhatsApp & FPX Integration</strong>: Pembayaran yuran terus buka ToyyibPay / Billplz / DuitNow QR dengan resit PDF automatik.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 3: ARCHITECTURE DECISION MATRIX -->
+    <section id="view-matrix" class="view-panel">
+      <div class="matrix-card">
+        <h2>Perbandingan 3 Pilihan Stack untuk Tadika Amal Apps</h2>
+        <p class="subtitle">Cadangan penyelesaian berdasarkan penemuan repo ARH-Baca & keperluan sekolah tadika / prasekolah.</p>
+
+        <div class="comparison-grid">
+          <!-- Option A -->
+          <div class="option-card">
+            <div class="option-header">
+              <span class="option-tag">Pilihan A</span>
+              <h3>Laravel 12 + Filament v4</h3>
+              <p class="option-desc">Multi-Panel Native PHP (Admin, Guru, Penjaga)</p>
+            </div>
+            <ul class="pro-con-list">
+              <li class="pro">⚡ Paling pantas dibina & siap (100% PHP, tiada Node runtime complex).</li>
+              <li class="pro">🛡️ Filament Shield Role-Based Access sedia ada (Superadmin, Guru Besar, Guru Kelas, Ibu Bapa).</li>
+              <li class="pro">📊 Sangat kuat untuk modul jadual data, invois yuran pukal, & eksport PDF/Excel.</li>
+              <li class="con">⚠️ Pengalaman mobile ibu bapa berasaskan web view (perlu plugin <code>filament-mobile-preset</code>).</li>
+            </ul>
+            <div class="fit-score">
+              <span>Kesesuaian: <strong>88%</strong></span>
+              <span class="badge badge-success">Paling Pantas</span>
+            </div>
+          </div>
+
+          <!-- Option B -->
+          <div class="option-card">
+            <div class="option-header">
+              <span class="option-tag">Pilihan B</span>
+              <h3>Laravel 12 + Inertia.js + Vue 3</h3>
+              <p class="option-desc">Single Page Application (SPA) + Tailwind v4</p>
+            </div>
+            <ul class="pro-con-list">
+              <li class="pro">📱 Pengalaman mobile ibu bapa bertaraf 5 bintang (PWA, gesture, fluid animation).</li>
+              <li class="pro">🎨 Fleksibiliti 100% mereka bentuk antaramuka khas mengikut identiti Tadika Amal.</li>
+              <li class="pro">⚡ Prestasi UI sangat responsif tanpa reload halaman.</li>
+              <li class="con">⏳ Memerlukan masa membina komponen form & table dari sifar berbanding Filament.</li>
+            </ul>
+            <div class="fit-score">
+              <span>Kesesuaian: <strong>92%</strong></span>
+              <span class="badge badge-purple">UI Terbaik</span>
+            </div>
+          </div>
+
+          <!-- Option C (Recommended) -->
+          <div class="option-card recommended-card">
+            <div class="rec-ribbon">⭐ Disyorkan (Best of Both)</div>
+            <div class="option-header">
+              <span class="option-tag">Pilihan C (Hibrid)</span>
+              <h3>Filament v4 (Admin & Guru) + Vue 3 Inertia (Ibu Bapa PWA)</h3>
+              <p class="option-desc">Dwi-Antaramuka Dioptimumkan Mengikut Peranan</p>
+            </div>
+            <ul class="pro-con-list">
+              <li class="pro">🏆 <strong>Guru Besar & Pentadbir</strong> mendapat kuasa penuh Filament v4 untuk data berat, yuran, dan laporan audit.</li>
+              <li class="pro">📱 <strong>Ibu Bapa</strong> mendapat Web App Vue 3 yang anggun, mesra telefon pintar untuk memantau anak dan membayar yuran.</li>
+              <li class="pro">🔄 Kongsi pangkalan data & logic Eloquent yang sama 100%.</li>
+            </ul>
+            <div class="fit-score">
+              <span>Kesesuaian: <strong>98%</strong></span>
+              <span class="badge badge-success">Pilihan Unggul</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recommended Schema & Modules -->
+        <div class="schema-breakdown">
+          <h3>📦 Modul Utama Tadika Amal (Database Schema Blueprint)</h3>
+          <div class="modules-grid">
+            <div class="mod-item">
+              <span class="mod-icon">👶</span>
+              <h4>1. Pengurusan Murid & Kelas</h4>
+              <p>Pendaftaran, kelas mengikut umur (4/5/6 Tahun), maklumat kesihatan & alahan, kebenaran penjaga mengambil anak.</p>
+            </div>
+            <div class="mod-item">
+              <span class="mod-icon">📖</span>
+              <h4>2. Rekod Huffaz & Iqra'</h4>
+              <p>Penjejak jilid Iqra' (1-6) dan surah hafazan harian (Juz Amma), rekod solat harian, catatan makhraj oleh guru.</p>
+            </div>
+            <div class="mod-item">
+              <span class="mod-icon">⏱️</span>
+              <h4>3. Kehadiran & Kiosk Pagi</h4>
+              <p>Imbas QR / Kod Murid semasa tiba, rekod suhu badan, catatan kesihatan, notifikasi segera ke WhatsApp ibu bapa.</p>
+            </div>
+            <div class="mod-item">
+              <span class="mod-icon">💳</span>
+              <h4>4. Yuran & Pembayaran</h4>
+              <p>Penjanaan invois automatik awal bulan, integrasi FPX (ToyyibPay/Billplz), resit rasmi PDF, pengesanan tunggakan.</p>
+            </div>
+            <div class="mod-item">
+              <span class="mod-icon">📸</span>
+              <h4>5. Diari Harian & Galeri</h4>
+              <p>Guru memuat naik gambar aktiviti harian, menu makan tengah hari, waktu tidur siang, dan pencapaian mingguan.</p>
+            </div>
+            <div class="mod-item">
+              <span class="mod-icon">📢</span>
+              <h4>6. Hebahan & Komunikasi</h4>
+              <p>Papan kenyataan digital, takwim cuti sekolah & aktiviti, hebahan kecemasan melalui WhatsApp Cloud API.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
