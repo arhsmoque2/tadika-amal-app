@@ -1,73 +1,61 @@
-<h1 align="center">🌱 Tadika Amal Apps</h1>
+# Tadika Amal Apps
 
-<p align="center">
-  <strong>Comprehensive Islamic Kindergarten & Preschool Management System</strong>
-</p>
+A school operations platform for Malaysian Islamic kindergartens. Replaces paper registers, physical student folders, and scattered Excel sheets with a structured, queryable digital workspace — without prescribing how the school runs its curriculum.
 
-<p align="center">
-  <img src="https://img.shields.io/badge/status-proposal_%26_architecture_stage-orange.svg" alt="Architecture Stage" />
-  <img src="https://img.shields.io/badge/stack-laravel_12_%2B_filament_v4_%2F_vue_3-blue.svg" alt="Laravel Stack" />
-  <img src="https://img.shields.io/badge/license-proprietary-lightgrey.svg" alt="License" />
-</p>
+## [README-ROUTE] Repository Route
 
----
+> Use the documents below to find what you need without reading a monolithic manual.
 
-## 📖 About Tadika Amal Apps
+| Question | Document |
+| :--- | :--- |
+| Why this exists and what it is not | [`INTENT.md`](INTENT.md) |
+| What actors do inside the platform | [`SCENARIOS.md`](SCENARIOS.md) |
+| What the platform must be able to do | [`CAPABILITIES.md`](CAPABILITIES.md) |
+| Technology stack and system design | [`ARCHITECTURE.md`](ARCHITECTURE.md) *(not yet written — pending stack decision)* |
+| Execution plan and phase sequence | [`IMPLEMENTATION.md`](IMPLEMENTATION.md) *(not yet written)* |
+| Dev commands and runbooks | [`RECIPES.md`](RECIPES.md) *(not yet written)* |
+| What must pass before a phase is done | [`QUALITY-GATES.md`](QUALITY-GATES.md) *(not yet written)* |
+| Open questions and parked scope | [`GAPS.md`](GAPS.md) |
+| Known failure modes and wrong turns | [`GOTCHAS.md`](GOTCHAS.md) |
+| Current state and next action | [`HANDOFF.md`](HANDOFF.md) |
+| Prior stack comparison (reference) | [`PROPOSAL.md`](PROPOSAL.md) |
 
-**Tadika Amal Apps** is an integrated management and communication platform tailored specifically for Islamic kindergartens, preschools, and daycare centers in Malaysia (e.g. Tadika Amal, Tadika PASTI, Little Caliphs-style models).
+## [README-MENTAL-MODEL] One Sentence
 
-The platform bridges **School Administration, Teachers, and Parents** across 6 key pillars:
-1. **👶 Student & Cohort Enrollment**: Class management by age group (4, 5, 6 Tahun), health profiles, authorized guardian pickup lists.
-2. **📖 Huffaz & Iqra' Tracker**: Daily progress tracking for Iqra' (Jilid 1–6), Quran recitation, Surah Hafazan (Juz Amma), and practical Solat.
-3. **⏱️ Morning Check-In & Health Kiosk**: Rapid arrival QR scan, body temperature logs, health status, and automated parent alerts.
-4. **💳 Automated Fee Billing & FPX**: Monthly tuition fee invoicing, automated WhatsApp reminders, online FPX payment, and PDF receipts.
-5. **📸 Daily Activity Feed & Child Diary**: Photo/video sharing of classroom activities, meal nutrition logs, nap times, and teacher remarks.
-6. **📢 Digital Notice Board & Alerts**: Calendar of events, school holidays, and official WhatsApp broadcast announcements.
+> The platform provides the containers. The school provides the content.
 
----
+Like Microsoft Word, not a pre-typed PDF. Like Instagram, not a content brief. The platform does not know what subjects a school teaches or how it assesses students. It provides the tools — profile builder, timetable builder, attendance register, assessment recorder — that the school fills with its own names, fields, and logic.
 
-## 🎨 Interactive Architecture Showcase & UI Preview
+## [README-STATUS] Current Status
 
-We have built a **live interactive visual switcher** allowing you to preview and compare:
-- **Option A**: Filament v4 Multi-Panel (Admin & Teacher backoffice)
-- **Option B**: Vue 3 / Inertia.js Mobile PWA (Fluid Parent Portal)
-- **Option C**: Hybrid Architecture (Recommended)
-
-To launch the preview on your computer:
-```powershell
-Start-Process "preview\index.html"
-```
-
----
-
-## 🚀 Architectural Options to Decide
-
-See [`PROPOSAL.md`](PROPOSAL.md) for the complete comparative breakdown:
-
-| Option | Stack | Ideal For |
+| Concern | State | Evidence |
 | :--- | :--- | :--- |
-| **Option A** | **Laravel 12 + Filament v4 (Multi-Panel)** | Rapid delivery, 100% PHP, heavy administrative data management. |
-| **Option B** | **Laravel 12 + Inertia.js v2 + Vue 3 SPA** | Ultimate custom UI design, fluid animations, pure mobile app feel. |
-| **Option C (Recommended)** | **Hybrid: Filament v4 (Backoffice) + Vue 3 (Parent Portal)** | High-efficiency admin tools + 5-star mobile experience for parents. |
+| Product intent and boundary | DOCUMENTED | `INTENT.md` |
+| Actor scenarios (v1 teacher scope) | DOCUMENTED | `SCENARIOS.md` — 7 scenarios |
+| Platform capabilities (v1) | DOCUMENTED | `CAPABILITIES.md` — 8 capabilities |
+| Open questions | DOCUMENTED | `GAPS.md` — 8 items |
+| Known failure modes | DOCUMENTED | `GOTCHAS.md` — 5 capsules |
+| Stack decision | NOT YET MADE | G-001 in `GAPS.md` |
+| Application code | NOT STARTED | Pending stack decision |
+| Database schema | NOT STARTED | Pending stack decision |
+| UI / Filament panel | NOT STARTED | Pending stack decision |
 
----
+## [README-SCOPE] v1 Scope — Teacher Module
 
-## 📁 Repository Structure
+The first shippable version is scoped to the **teacher actor** only. No parent portal. No billing. No WhatsApp.
 
-```text
-tadika-amal-app/
-├── preview/                     # Interactive HTML/CSS/JS prototype showcase
-│   ├── index.html               # Multi-stack visual previewer
-│   ├── styles.css               # Tailored styling for Filament & Vue mockups
-│   └── app.js                   # Interactive switcher logic
-├── PROPOSAL.md                  # Comprehensive architectural proposal & comparison
-├── AGENTS.md                    # Agent cold-start guide and runtime boundaries
-├── HANDOFF.md                   # Handoff summary and decision receipt
-└── README.md                    # Canonical project README
+A teacher in v1 can:
+- Define a student profile structure for their class
+- Register students with the school's chosen fields
+- Take daily attendance with a checkbox per student
+- Define their own assessment areas and fields
+- Record student assessment sessions that accumulate over time
+- Query any student's attendance or progress across any date range
+- Build and view their class timetable, auto-synced to today
+
+## [README-START] Start Here (After Stack Decision)
+
+```powershell
+# After ARCHITECTURE.md is written and stack is confirmed:
+# See RECIPES.md for install and dev server commands.
 ```
-
----
-
-<p align="center">
-  Built for modern, transparent, and joyful Islamic early childhood education.
-</p>
