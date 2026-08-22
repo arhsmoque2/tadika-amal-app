@@ -12,6 +12,18 @@ PASS: node D:/_ARH-AGENT-OS/_AGENT-CAPABILITIES/arh-js-devkit/bin/arh-js-doctor.
 
 ---
 
+## [QG-THEME-INTEGRITY] Design Token & Theme Consistency Gate
+
+> Inspired by `@lapidist/design-lint` and `uimatch` patterns in `ui-ux-integrity-devkits`:
+
+1. **Design Token Conformance**:
+   - Zero raw arbitrary hex colors in templates or components (e.g. no hardcoded `#123456`). All colors must map to the defined `Emerald` / `Slate` token palette.
+   - Spacing must strictly adhere to the 4px/8px modular rhythm (`p-2`, `p-4`, `p-6`, `gap-3`, `gap-4`).
+2. **Visual Consistency (vlmkit / uimatch reference)**:
+   - Status indicators across Attendance and Assessment must use standardized semantic tokens (`emerald` for Success/Hadir, `rose` for Danger/Tidak Hadir, `amber` for Warning/Pending).
+
+---
+
 ## [QG-LAYOUT] Layout Integrity & Viewport Matrix
 
 > The user interface must maintain visual integrity across the standard multi-device matrix:
