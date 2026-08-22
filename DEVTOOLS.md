@@ -52,6 +52,15 @@ vendor/bin/pint --test
 # 2. Automated Test Suite (Pest PHP)
 php artisan test
 
-# 3. ARH Standard JavaScript, Layout Integrity & Documentation Doctor
+# 3. ARH JS DevKit Doctor (Oxlint, Secret Scanner, A11y, Layout Integrity, Ratchet, Docs)
 node D:/_ARH-AGENT-OS/_AGENT-CAPABILITIES/arh-js-devkit/bin/arh-js-doctor.mjs .
+```
+
+---
+
+## [DEV-PERF] Performance Profiling & Benchmark Verifier
+
+```powershell
+# Run Median-of-Trials performance speedup benchmark
+node -e "import('D:/_ARH-AGENT-OS/_AGENT-CAPABILITIES/arh-js-devkit/lib/benchmark-verify.mjs').then(m => console.log('Benchmark harness loaded.'))"
 ```
