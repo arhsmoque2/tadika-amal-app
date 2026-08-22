@@ -2,39 +2,39 @@
 
 ## [WP-STATE] Current State
 
-> The repository contains the complete foundational document suite. No application code exists. The project is ready for stack decision and Phase 2 scaffold.
+> Phase 1 (Docs Overhaul & Architecture Alignment) is 100% complete and fully tombstoned. The entire canonical ARH documentation suite has been authored and verified.
 
-**Phase 1 is complete.** Delivered:
-- `INTENT.md` — product purpose, actors, principles, and boundary. Platform philosophy locked.
-- `SCENARIOS.md` — 7 actor-driven scenarios covering the full v1 teacher workflow. Stack-agnostic.
-- `CAPABILITIES.md` — 8 capabilities derived from scenarios. No hardcoded curriculum.
-- `GAPS.md` — 8 open questions and parked scope items. G-001 (stack decision) is the immediate blocker.
-- `GOTCHAS.md` — 5 failure capsules. The platform-vs-curriculum confusion is the most critical one to preserve.
-- `PROPOSAL.md` — prior architecture comparison (Option A / B / C). Still valid as input to stack decision, superseded by `ARCHITECTURE.md` once that decision is made.
-- `preview/` — interactive HTML prototype of prior UI exploration. Reference only.
+### Delivered Document Suite:
+- [`INTENT.md`](INTENT.md) — Platform philosophy ("MS Word / Instagram for Kindergarten Ops", not prescriptive syllabus).
+- [`SCENARIOS.md`](SCENARIOS.md) — 7 comprehensive actor event flows covering profiles, attendance, dynamic assessment, timetable, and querying.
+- [`CAPABILITIES.md`](CAPABILITIES.md) — 8 platform capabilities derived directly from actor needs.
+- [`ARCHITECTURE.md`](ARCHITECTURE.md) — Monolithic Laravel 12 + Filament v4 data model, dynamic schema engine, and security invariants.
+- [`DESIGN.md`](DESIGN.md) — Screen contracts for attendance sheet, dynamic assessment recorder, and timetable grid.
+- [`IMPLEMENTATION.md`](IMPLEMENTATION.md) — 6 vertical execution phases with clear boundaries.
+- [`DEVTOOLS.md`](DEVTOOLS.md) — Pinned toolchain and dev commands.
+- [`RECIPES.md`](RECIPES.md) — Copy-paste runbooks for setup, serving, seeding, and testing.
+- [`QUALITY-GATES.md`](QUALITY-GATES.md) — Local, docs, and dynamic schema safety criteria.
+- [`GAPS.md`](GAPS.md) — Open design decisions and parked scope (Parent Portal, Billing in v2).
+- [`GOTCHAS.md`](GOTCHAS.md) — 5 failure capsules (including anti-pattern of hardcoded curriculum).
+- [`docs/pattern-research.md`](docs/pattern-research.md) — Research notes and adoptable patterns from `school.ly`.
+- [`adr/`](adr/) — 4 Architecture Decision Records:
+  - `ADR-001`: Laravel 12 Application Framework.
+  - `ADR-002`: Filament v4 Admin Panel (v1 Scoped).
+  - `ADR-003`: JSON Schema for Runtime-Configurable Fields.
+  - `ADR-004`: Append-Only Assessment Session Records.
 
-## [WP-MENTAL-MODEL] The One Thing a New Agent Must Absorb
+---
 
-> Read `INTENT.md` [INT-PRINCIPLES] before reading anything else.
+## [WP-MENTAL-MODEL] The Immutable Invariant
 
-The platform is a workspace tool — like Microsoft Word, not a pre-typed PDF. It does not know what the school teaches, how it assesses students, or what its timetable looks like. The school defines all of that inside the platform. Iqra', Hafazan, and Solat are examples of what a school might configure — not built-in features.
+> **The platform provides the containers; the school provides the content.**
+> Never hardcode curriculum names (*Iqra'*, *Hafazan*, *Solat*, specific subjects) as rigid database columns. They are configured dynamically by the school at runtime using the schema engine.
 
-Any code, schema, or UI that hardcodes a subject name, assessment rubric, or curriculum concept is wrong by definition. See `GOTCHAS.md` entry 1.
+---
 
-## [WP-BLOCKERS] Immediate Blockers Before Phase 2
+## [WP-NEXT] Next Immediate Action: Phase 2 Base Scaffolding
 
-1. **G-001: Stack decision** — Option A (Filament v4 alone) is the natural fit for v1 (teacher-only, no parent portal). Needs operator confirmation. Document in `ARCHITECTURE.md`.
-2. **G-002: Custom field type scope** — confirm the minimum field type set for v1 before building the profile and assessment builders.
-3. **G-008: Offline behaviour decision** — state connectivity requirement before scaffold.
-
-## [WP-NEXT] Next Action
-
-> Operator confirms stack. Agent writes `ARCHITECTURE.md`. Phase 2 scaffold begins.
-
-Sequence after stack confirmation:
-1. Write `ARCHITECTURE.md` — stack rationale citing capability IDs, DB model approach, security boundaries.
-2. Write `IMPLEMENTATION.md` — phase sequence, boundary-first execution rules.
-3. Write `RECIPES.md` — install, dev server, test commands for the chosen stack.
-4. Write `QUALITY-GATES.md` — what must pass before Phase 2 is called done.
-5. Overhaul `README.md` — route map and current status table.
-6. Begin Phase 2: Laravel 12 scaffold, migrations, Filament panel setup.
+1. Scaffold fresh Laravel 12 base in `tadika-amal-app`.
+2. Install Filament v4 (`filament/filament:^4.0`) and Spatie Permissions.
+3. Migrate foundational multi-tenant and authentication tables (`schools`, `users`, `cohorts`, `students`).
+4. Validate baseline quality gate (`php artisan test`).

@@ -1,61 +1,46 @@
 # Tadika Amal Apps
 
-A school operations platform for Malaysian Islamic kindergartens. Replaces paper registers, physical student folders, and scattered Excel sheets with a structured, queryable digital workspace — without prescribing how the school runs its curriculum.
+A modular, extensible school operations platform for Malaysian Islamic kindergartens and preschools. Replaces paper registers, physical student cards, and disjointed spreadsheets with a structured, queryable digital workspace.
 
 ## [README-ROUTE] Repository Route
 
-> Use the documents below to find what you need without reading a monolithic manual.
+> Use the canonical documents below to navigate project decisions without reading a monolithic manual.
 
-| Question | Document |
-| :--- | :--- |
-| Why this exists and what it is not | [`INTENT.md`](INTENT.md) |
-| What actors do inside the platform | [`SCENARIOS.md`](SCENARIOS.md) |
-| What the platform must be able to do | [`CAPABILITIES.md`](CAPABILITIES.md) |
-| Technology stack and system design | [`ARCHITECTURE.md`](ARCHITECTURE.md) *(not yet written — pending stack decision)* |
-| Execution plan and phase sequence | [`IMPLEMENTATION.md`](IMPLEMENTATION.md) *(not yet written)* |
-| Dev commands and runbooks | [`RECIPES.md`](RECIPES.md) *(not yet written)* |
-| What must pass before a phase is done | [`QUALITY-GATES.md`](QUALITY-GATES.md) *(not yet written)* |
-| Open questions and parked scope | [`GAPS.md`](GAPS.md) |
-| Known failure modes and wrong turns | [`GOTCHAS.md`](GOTCHAS.md) |
-| Current state and next action | [`HANDOFF.md`](HANDOFF.md) |
-| Prior stack comparison (reference) | [`PROPOSAL.md`](PROPOSAL.md) |
+| Area | Canonical Document | Purpose |
+| :--- | :--- | :--- |
+| **Why & Boundary** | [`INTENT.md`](INTENT.md) | Product purpose, primary actors, decision principles |
+| **User Flows** | [`SCENARIOS.md`](SCENARIOS.md) | 7 actor event flows (Profile, Attendance, Assessment, Timetable) |
+| **Requirements** | [`CAPABILITIES.md`](CAPABILITIES.md) | 8 platform capabilities derived from scenarios |
+| **Architecture** | [`ARCHITECTURE.md`](ARCHITECTURE.md) | Process model, multi-tenancy, dynamic schema engine, security |
+| **UI & Screens** | [`DESIGN.md`](DESIGN.md) | Screen contracts for Attendance, Assessment, Timetable |
+| **Roadmap** | [`IMPLEMENTATION.md`](IMPLEMENTATION.md) | Phased delivery strategy (Phase 1 to Phase 6) |
+| **Tooling** | [`DEVTOOLS.md`](DEVTOOLS.md) | Pinned toolchains and developer commands |
+| **Runbooks** | [`RECIPES.md`](RECIPES.md) | Tested copy-paste setup, test, and seeding recipes |
+| **Gates** | [`QUALITY-GATES.md`](QUALITY-GATES.md) | Quality thresholds before feature transition |
+| **Decisions** | [`adr/`](adr/) | Architectural Decision Records (ADR-001 to ADR-004) |
+| **Research** | [`docs/pattern-research.md`](docs/pattern-research.md) | Insights & divergences from `school.ly` reference |
+| **Risks & Antipatterns**| [`GOTCHAS.md`](GOTCHAS.md) | Failure capsules & permanent fixes |
+| **Parked Scope** | [`GAPS.md`](GAPS.md) | Open questions & deferred items (Parent Portal in v2) |
+| **Continuation** | [`HANDOFF.md`](HANDOFF.md) | Current verified state & next action |
 
-## [README-MENTAL-MODEL] One Sentence
-
-> The platform provides the containers. The school provides the content.
-
-Like Microsoft Word, not a pre-typed PDF. Like Instagram, not a content brief. The platform does not know what subjects a school teaches or how it assesses students. It provides the tools — profile builder, timetable builder, attendance register, assessment recorder — that the school fills with its own names, fields, and logic.
+---
 
 ## [README-STATUS] Current Status
 
 | Concern | State | Evidence |
 | :--- | :--- | :--- |
-| Product intent and boundary | DOCUMENTED | `INTENT.md` |
-| Actor scenarios (v1 teacher scope) | DOCUMENTED | `SCENARIOS.md` — 7 scenarios |
-| Platform capabilities (v1) | DOCUMENTED | `CAPABILITIES.md` — 8 capabilities |
-| Open questions | DOCUMENTED | `GAPS.md` — 8 items |
-| Known failure modes | DOCUMENTED | `GOTCHAS.md` — 5 capsules |
-| Stack decision | NOT YET MADE | G-001 in `GAPS.md` |
-| Application code | NOT STARTED | Pending stack decision |
-| Database schema | NOT STARTED | Pending stack decision |
-| UI / Filament panel | NOT STARTED | Pending stack decision |
+| **Docs & Platform Tombstone** | IMPLEMENTED | Full ARH documentation suite complete |
+| **ADR Suite (ADR 001 - 004)** | ACCEPTED | `adr/` directory populated |
+| **Phase 1 Acceptance** | COMPLETE | Aligned with platform-first mental model |
+| **Base Scaffolding (Laravel 12 + Filament v4)**| PENDING | Phase 2 target |
+| **Dynamic Schema Engine** | DESIGNED | Ready for implementation in Phase 3 |
 
-## [README-SCOPE] v1 Scope — Teacher Module
+---
 
-The first shippable version is scoped to the **teacher actor** only. No parent portal. No billing. No WhatsApp.
-
-A teacher in v1 can:
-- Define a student profile structure for their class
-- Register students with the school's chosen fields
-- Take daily attendance with a checkbox per student
-- Define their own assessment areas and fields
-- Record student assessment sessions that accumulate over time
-- Query any student's attendance or progress across any date range
-- Build and view their class timetable, auto-synced to today
-
-## [README-START] Start Here (After Stack Decision)
+## [README-START] Quick Start
 
 ```powershell
-# After ARCHITECTURE.md is written and stack is confirmed:
-# See RECIPES.md for install and dev server commands.
+# Read architecture and setup recipes
+Get-Content ARCHITECTURE.md
+Get-Content RECIPES.md
 ```
