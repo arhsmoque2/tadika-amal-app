@@ -53,6 +53,7 @@
   - `[ Hadir (Emerald) ]` / `[ Tidak Hadir (Rose) ]`
   - Inline expandable text input for absence remarks (e.g., *Cuti sakit*).
 - **Touch Target Standard**: Status chips must maintain a minimum bounding box of $44\text{px} \times 44\text{px}$ on mobile/tablet screens.
+- **Keyboard Navigation**: Full Tab/Shift+Tab navigation across students with `Space`/`Enter` status toggling (no pointer-only traps).
 - **Actions**: `Simpan Kehadiran` (Save & Lock).
 
 ---
@@ -68,6 +69,7 @@
 ### 2. Session Recorder (Teacher View)
 - Teacher picks student(s) and assessment category.
 - Form dynamically renders the fields based on the active JSON schema.
+- **Text Collision Invariant**: Dynamic field labels and student names are bounded with automatic wrapping (`break-words`) to prevent layer collisions.
 - Action: `Simpan Rekod Sesi`. Appends a new timestamped row to history with zero mutation of past records.
 
 ---
@@ -77,6 +79,7 @@
 > Empowers the teacher to configure daily slots without rigid curriculum presets.
 
 - **Layout**: 5-day columns (Isnin – Jumaat).
+- **Zero Collapsed Invariant**: Empty time slots render a designated placeholder container ($h \ge 48\text{px}$) to avoid $0\text{px}$ height collapse.
 - **Slot Builder**: Addable time blocks with:
   - `Masa Mula` & `Masa Tamat` (Time pickers)
   - `Nama Slot` (Free text: e.g., *Iqra'*, *Rehat*, *Sains*)

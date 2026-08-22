@@ -13,11 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `SCENARIOS.md`: 7 actor event flows (Profile, Attendance, Dynamic Assessment, Timetable, Query).
   - `CAPABILITIES.md`: 8 core platform capabilities derived from actor scenarios.
   - `ARCHITECTURE.md`: Technical specification (Laravel 12, Filament v4, multi-tenancy, dynamic schema engine).
-  - `DESIGN.md`: Screen contracts for Attendance Sheet, Dynamic Assessment Recorder, and Timetable Grid.
+  - `DESIGN.md`: Screen contracts, design tokens (Emerald/Slate), and visual integrity invariants.
   - `IMPLEMENTATION.md`: 6-phase execution strategy.
   - `DEVTOOLS.md`: Toolchain pinning, PHP/Pint/Pest commands, and ARH devkit harness integration.
   - `RECIPES.md`: Copy-paste operational runbooks.
-  - `QUALITY-GATES.md`: Local, documentation, and dynamic schema safety criteria.
+  - `QUALITY-GATES.md`: 3-tier quality gates (Static Tokens, Headless DOM Geometry Math, Behavioral & Performance Ratchet).
   - `GAPS.md`: Parked scope registry (Parent Portal, Billing, WhatsApp alerts in v2).
   - `GOTCHAS.md`: 5 failure capsules (including anti-pattern of hardcoded curriculum).
   - `docs/pattern-research.md`: Pattern analysis of `school.ly`.

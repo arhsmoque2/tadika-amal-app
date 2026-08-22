@@ -2,7 +2,7 @@
 
 ## [QG-LOCAL] Local Transition Gate
 
-> A feature slice or pull request may only be handed off when database migrations, Pint code style, Pest automated tests, and the ARH DevKit Quality Doctor pass.
+> A feature slice or pull request may only be handed off when all three verification tiers pass.
 
 ```text
 PASS: vendor/bin/pint --test
@@ -12,55 +12,54 @@ PASS: node D:/_ARH-AGENT-OS/_AGENT-CAPABILITIES/arh-js-devkit/bin/arh-js-doctor.
 
 ---
 
-## [QG-THEME-INTEGRITY] Design Token & Theme Consistency Gate
+## [QG-TIER-1] Tier 1: Static Code, Security & Design Token Gate (<1s)
 
-> Inspired by `@lapidist/design-lint` and `uimatch` patterns in `ui-ux-integrity-devkits`:
+> Fast static analysis running prior to commit or push:
 
-1. **Design Token Conformance**:
-   - Zero raw arbitrary hex colors in templates or components (e.g. no hardcoded `#123456`). All colors must map to the defined `Emerald` / `Slate` token palette.
-   - Spacing must strictly adhere to the 4px/8px modular rhythm (`p-2`, `p-4`, `p-6`, `gap-3`, `gap-4`).
-2. **Visual Consistency (vlmkit / uimatch reference)**:
-   - Status indicators across Attendance and Assessment must use standardized semantic tokens (`emerald` for Success/Hadir, `rose` for Danger/Tidak Hadir, `amber` for Warning/Pending).
+1. **PHP Styling & Static Types**: Laravel Pint (`vendor/bin/pint --test`) enforcing strict PSR-12 conventions.
+2. **Design Token Conformance (`@lapidist/design-lint`)**:
+   - Zero raw arbitrary hex colors in Blade/Filament templates (e.g. no `#123456`). All colors must map to the defined `Emerald` / `Slate` palette.
+   - Spacing rhythm restricted to the 4px/8px modular grid (`p-2`, `p-4`, `p-6`, `gap-3`, `gap-4`).
+3. **Secret Scanner**: Real-time scanning ensuring 0 exposed tokens, credentials, or private keys (`secret-scanner.mjs`).
 
 ---
 
-## [QG-LAYOUT] Layout Integrity & Viewport Matrix
+## [QG-TIER-2] Tier 2: Headless DOM, Layout & Geometry Math Gate (<5s)
 
-> The user interface must maintain visual integrity across the standard multi-device matrix:
+> Deterministic DOM & geometry calculations derived from `vlmkit` and `layout-lint-mcp`:
 
-1. **Viewport Matrix**:
+1. **Viewport Matrix Coverage**:
    - **Mobile Portrait**: `390px x 844px` (touch target minimum $\ge 44\text{px}$)
-   - **Mobile Landscape**: `844px x 390px` (zero vertical lockouts / swallowed controls)
+   - **Mobile Landscape**: `844px x 390px` (zero vertical lockouts or swallowed controls)
    - **Tablet Portrait**: `768px x 1024px` (dense table readability & collapsible navigation)
    - **Tablet Landscape**: `1024px x 768px`
    - **Desktop**: `1440px x 900px` (dense wide data grid)
 
-2. **Integrity Invariants (`layout-integrity-gate.mjs`)**:
-   - **Zero Swallowed Elements**: No child content clipped invisibly by parent `overflow: hidden`.
+2. **DOM Geometry Invariants (`layout-integrity-gate.mjs`)**:
+   - **Zero Swallowed Elements**: No child content clipped invisibly by parent `overflow: hidden` (`scrollWidth > clientWidth`).
    - **Zero Page Spills**: `document.documentElement.scrollWidth <= window.innerWidth` across all viewports.
-   - **Touch Target Standard**: Minimum $44\text{px} \times 44\text{px}$ bounding box for all mobile tap targets.
+   - **Text-Collision & Protrusion Trap**: Same-layer text elements must never overlap (guards dynamic assessment labels and student names).
+   - **Sticky & Scroll Bounds**: Sticky headers (e.g., student roster column) must remain pinned without occluding scrollable rows beneath.
+   - **Zero Collapsed Containers**: No timetable slots or card containers may collapse to $0\text{px}$ height.
+   - **Touch Target Area**: Interactive buttons and status chips must maintain $\ge 44\text{px} \times 44\text{px}$ touch target bounds on mobile/tablet.
 
 ---
 
-## [QG-PERFORMANCE] Performance Profiling & Asset Ratchet
+## [QG-TIER-3] Tier 3: Behavioral, Interaction & Performance Ratchet (CI / Pre-Release)
 
-> Performance regressions are prevented using the ARH DevKit statistical profiler and quality ratchet:
+> Interactive operability, internationalization robustness, and regression guards:
 
-1. **Benchmark Speedup Verifier (`benchmark-verify.mjs`)**:
-   - Critical queries and dynamic schema compilation must pass median-of-trials benchmark testing ($N \ge 100$ iterations) with P95 outlier guards.
-2. **Quality Ratchet (`ratchet-gate.mjs`)**:
-   - Asset bundle sizes are tracked against committed baselines (`.arh-quality-gate.json`).
-   - Zero tolerance for uncompressed bundle bloat or runaway bundle size increases.
-
----
-
-## [QG-DESIGN-LINT] Design & Accessibility Linting
-
-> Frontends and Blade/Filament templates must pass:
-
-1. **Accessibility**: Mandatory `<meta name="viewport">`, valid HTML5 semantic tags, and explicit `alt` attributes on image uploads (`a11y-verifier.mjs`).
-2. **Static Layout Linting**: Prohibition of dangerous CSS combinations (e.g. `100vw` with horizontal padding, unbounded negative margins).
-3. **Secret Scanner**: Real-time scanning for exposed API tokens or sensitive credentials (`secret-scanner.mjs`).
+1. **Keyboard Operability & Focus Order (`vlmkit check interactions`)**:
+   - **Zero Pointer-Only Controls**: Clickable elements must be native `<button>`, `<a>`, or have `role="button"` + `tabindex="0"` with `Enter`/`Space` handlers.
+   - **Focus Rings**: Visual focus indicators must never be suppressed (`outline: none` without visible replacement).
+   - **Element Occlusion Trap**: Floating overlays/modals must not intercept clicks intended for background table controls (`elementFromPoint` audit).
+2. **String Expansion Stress Test (`stress i18n`)**:
+   - Layouts must survive $+30\%$ string length expansion without truncation or card breakage, ensuring Malay language labels (*e.g., "Rancangan Pengajaran Harian"*) wrap gracefully.
+3. **WCAG Contrast & Theme Parity (`check theme`)**:
+   - Text on status chips (Emerald/Rose/Amber) must meet minimum $4.5:1$ contrast ratio across both light and dark backgrounds.
+4. **Performance Benchmark & Quality Ratchet (`benchmark-verify.mjs` & `ratchet-gate.mjs`)**:
+   - Dynamic schema compilation must pass median-of-trials benchmark testing ($N \ge 100$ iterations) with P95 outlier guards.
+   - Total gzip asset weights are tracked against `.arh-quality-gate.json` baseline with zero allowance for uncompressed bloat.
 
 ---
 
