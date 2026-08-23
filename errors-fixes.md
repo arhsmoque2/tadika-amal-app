@@ -19,6 +19,12 @@
 | **ERR-009** | **Configuration & JSON Schema Keys** | ARH JS Doctor: Gate 3 Schema Validator (`schema-validator.mjs`) | **Checker-Automated** | Validated `package.json`, `composer.json`, and dynamic JSON schemas against required structural keys. |
 | **ERR-010** | **ARH Documentation Convention Integrity** | ARH Docs Validator (`docs-validator.mjs`) | **Checker-Automated** | Verified that all 7 required ARH documentation suite files (`README.md`, `ARCHITECTURE.md`, `CHANGELOG.md`, `DESIGN.md`, `DEVTOOLS.md`, `QUALITY-GATES.md`, `HANDOFF.md`) are present and compliant. |
 | **ERR-011** | **Missing Standard QA & Linter Configurations** | Benchmark Audit (`ARH-URUS`, `DPIK-TUGAS`, `Beelal Coffee`) | **Agent-Manual** | Ported missing static analysis and QA configs: `pint.json` (PSR-12), `phpstan.neon` (Larastan level 5), `knip.json` (dead code), `lighthouserc.json` (PWA/A11y), and `_qa/tadika-ui-ux-quality-gate.mjs`. |
+| **ERR-012** | **Blade Template Tag & Directive Mismatch Risk** | Tadika UI/UX Gate: Gate 1 (`_qa/tadika-ui-ux-quality-gate.mjs`) | **Checker-Automated** | Scanned all 12 Blade view templates using regex balancing to ensure zero unclosed `@if/@endif`, `@forelse/@endforelse`, or broken `<x-filament>` component tags. |
+| **ERR-013** | **PDF Page-Split Orphan Signature Block** | PDF Engine Layout Audit (`AssessmentReportPdfService`) | **Agent-Manual** | Long qualitative teacher remarks causing the official signature block to split onto an empty 2nd page. Added `page-break-inside: avoid;` and compact modular table sizing in Blade. |
+| **ERR-014** | **Classroom & Playground Low-Connectivity Failure** | PWA Reliability Audit (G-008 Resolution) | **Agent-Manual** | Wi-Fi drops at kindergarten gates or playgrounds causing lost roll-call data. Wired `filament-pwa` service worker caching and Livewire local state buffering. |
+| **ERR-015** | **PHP Code Formatting & Import Sorting Drift** | Laravel Pint Harness (`pint.json` / `composer pint`) | **Checker-Automated** | Enforced automatic PSR-12 formatting, alphabetical import sorting, and unused import scrubbing across all Eloquent models. |
+| **ERR-016** | **Dead Code & Orphan Asset Creep** | Knip Static Analyzer (`knip.json`) | **Checker-Automated** | Configured `knip.json` scanning Vite bundles against `resources/` to prevent unused JS libraries or orphan CSS from bloating client assets. |
+| **ERR-017** | **Semantic Badge WCAG Contrast Failure** | Tadika UI/UX Gate: Gate 3 (`_qa/tadika-ui-ux-quality-gate.mjs`) | **Checker-Automated** | Prevented arbitrary un-themed hex colors; verified all status chips (*Hadir, Tidak Hadir, Sakit, Cuti*) meet $\ge 4.5:1$ contrast ratio in Light & Dark modes. |
 
 ---
 
@@ -59,11 +65,48 @@
 
 ---
 
-### 5. Regulatory Compliance & Invariant Guard
-- **Script / Command**: Manual architectural and statutory review by agent.
-- **Symptom**: Standard generic SIS invoices do not meet Malaysian Lembaga Hasil Dalam Negeri (LHDN) Section 46(1)(r) statutory requirements.
-- **Why It's Dangerous**: Parents claiming the RM3,000 preschool tax relief would have their claims rejected during tax audits.
-- **Fix**: Created [`FeeReceiptPdfService.php`](file:///D:/ARH-GITHUB/arhsmoque2/tadika-amal-app/app/Services/FeeReceiptPdfService.php) with embedded statutory tax deduction declarations and sequential receipt serials (`REC-YYYYMM-XXXX`).
+### 6. Tadika UI/UX Gate: Gate 1 Blade Directives & Syntax Integrity
+- **Script / Command**: `node _qa/tadika-ui-ux-quality-gate.mjs`
+- **Symptom**: Unclosed `@if`, `@forelse`, or `@can` directives in complex nested tables (e.g. dynamic assessment matrix).
+- **Why It's Dangerous**: Blade compilation throws fatal parse errors when evaluating uncached views on production servers, crashing teacher dashboards.
+- **Fix**: The automated QA script validates opening and closing tag balance across all `resources/views/**/*.blade.php` files before commits.
+- **Verification**: Gate 1 passed with `Blade syntax clean across 12 template files`.
+
+---
+
+### 7. PDF Page-Split Orphan Signature Block
+- **Script / Command**: Manual PDF render verification (`AssessmentReportPdfService.php`).
+- **Symptom**: In annual preschool report cards, long teacher remarks (*Ulasan Perkembangan Murid*) pushed only the Headmaster/Teacher signature block onto an awkward 2nd page.
+- **Why It's Dangerous**: Unprofessional physical printouts handed to parents during end-of-year parent-teacher conferences.
+- **Fix**: Added CSS `page-break-inside: avoid;` to `.signatures-block`, paired with compact table typography and whitespace tuning in [`annual-assessment-pdf.blade.php`](file:///D:/ARH-GITHUB/arhsmoque2/tadika-amal-app/resources/views/reports/annual-assessment-pdf.blade.php).
+- **Verification**: Verified 1-page compact fit for standard reports and clean 2-page flow for extensive comments.
+
+---
+
+### 8. PWA Caching & Low-Connectivity Resilience (Playground / Gate Mode)
+- **Script / Command**: PWA & Offline reliability check (`lighthouserc.json` & Service Worker audit).
+- **Symptom**: Wi-Fi dead-zones at school perimeter gates or playground areas causing lost roll-call records.
+- **Why It's Dangerous**: Morning arrival and evening pick-up logs fail silently or require re-entry when connection drops.
+- **Fix**: Configured PWA offline shell caching via `filament-pwa` with local Livewire form state preservation.
+- **Verification**: PWA assertion thresholds configured in `lighthouserc.json`.
+
+---
+
+### 9. Knip Dead Code & Unused Asset Eliminator
+- **Script / Command**: `npx knip` (via `knip.json`).
+- **Symptom**: Accumulated prototype assets, unused npm packages, and orphan styles bloating deployment size.
+- **Why It's Dangerous**: Slow cold-start downloads on low-bandwidth mobile devices.
+- **Fix**: Configured entrypoints (`app.js`, `app.css`) and project file patterns in `knip.json` to flag unused assets automatically.
+- **Verification**: Asset weights tracked via Gate 5 Quality Ratchet.
+
+---
+
+### 10. Laravel Pint & PHPStan Static Type Safety
+- **Script / Command**: `composer pint -- --test` and `composer phpstan` (via `pint.json` and `phpstan.neon`).
+- **Symptom**: Inconsistent code formatting, unsorted imports, and untyped model access.
+- **Why It's Dangerous**: Increases review friction, merge conflicts, and subtle runtime `TypeError` exceptions.
+- **Fix**: Pinned PHPStan Level 5 baseline with Larastan extensions and strict Laravel Pint PSR-12 rules.
+- **Verification**: Zero syntax errors and clean format compliance across all Eloquent models.
 
 ---
 
@@ -77,8 +120,13 @@ cd D:\ARH-GITHUB\arhsmoque2\tadika-amal-app
 # 1. Run PHP Syntax Check
 Get-ChildItem -Path app,database -Filter *.php -Recurse | ForEach-Object { php -l $_.FullName }
 
-# 2. Run Integrated JS & UI/UX Doctor
+# 2. Run Domain UI/UX Quality Gate
+pnpm run qa:ui
+
+# 3. Run Master JS & Web Doctor
 pnpm doctor
-# or
-composer doctor
+
+# 4. Run Combined Suite
+pnpm run qa:all
 ```
+
