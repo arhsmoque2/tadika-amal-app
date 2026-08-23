@@ -1,10 +1,8 @@
 # ADR-008: Universal Multi-Module Import, Tri-Format Export, Presentation Generator, and AI-Ready Diagnostic Pipeline
 
-## Status
-**Accepted**
+**Status**: Accepted  
+**Date**: 2026-08-23
 
-## Date
-2026-08-23
 
 ---
 

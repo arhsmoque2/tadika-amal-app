@@ -1,0 +1,81 @@
+{
+  "$schema": "https://raw.githubusercontent.com/arhsmoque2/arh-specs/main/schemas/capabilities.v1.json",
+  "project": "tadika-amal-app",
+  "version": "1.0.0",
+  "type": "laravel-filament",
+  "capabilities": {
+    "modules": [
+      {
+        "id": "cohort_attendance",
+        "name": "Cohort Attendance Matrix",
+        "entry": "App\\Filament\\Pages\\CohortAttendance",
+        "status": "verified"
+      },
+      {
+        "id": "health_screening",
+        "name": "Morning Health & HFMD Screening",
+        "entry": "App\\Filament\\Pages\\MorningHealthScreening",
+        "status": "verified"
+      },
+      {
+        "id": "fee_management",
+        "name": "Fee Management & LHDN Receipts",
+        "entry": "App\\Filament\\Pages\\FeeManagement",
+        "status": "verified"
+      },
+      {
+        "id": "incident_log",
+        "name": "JKM Incident & Accident Log",
+        "entry": "App\\Filament\\Pages\\IncidentLogPage",
+        "status": "verified"
+      },
+      {
+        "id": "lesson_planner",
+        "name": "Digital RPH Lesson Planner",
+        "entry": "App\\Filament\\Pages\\LessonPlanner",
+        "status": "verified"
+      },
+      {
+        "id": "class_timetable",
+        "name": "Class Timetable & Schedule Grid",
+        "entry": "App\\Filament\\Pages\\ClassTimetable",
+        "status": "verified"
+      },
+      {
+        "id": "skill_evaluation",
+        "name": "KSPK & Islamic Skill Evaluation",
+        "entry": "App\\Filament\\Pages\\SkillEvaluation",
+        "status": "verified"
+      },
+      {
+        "id": "announcement_broadcaster",
+        "name": "Parent WhatsApp Announcement Broadcaster",
+        "entry": "App\\Filament\\Pages\\AnnouncementBroadcaster",
+        "status": "verified"
+      },
+      {
+        "id": "teacher_dashboard",
+        "name": "Teacher Command Center Dashboard",
+        "entry": "App\\Filament\\Pages\\TeacherDashboard",
+        "status": "verified"
+      }
+    ],
+    "legal_invariants": [
+      {
+        "id": "LHDN_S46_1_R",
+        "target_file": "resources/views/reports/official-fee-receipt-pdf.blade.php",
+        "description": "Malaysian Income Tax Act Section 46(1)(r) child preschool fee relief declaration"
+      },
+      {
+        "id": "JKM_INCIDENT_REG",
+        "target_file": "app/Models/IncidentLog.php",
+        "description": "Jabatan Kebajikan Masyarakat (JKM) incident logging and parent signature tracking"
+      },
+      {
+        "id": "KSPK_ASSESSMENT_CONTRACT",
+        "target_file": "resources/views/reports/annual-assessment-pdf.blade.php",
+        "description": "Kurikulum Standard Prasekolah Kebangsaan statutory performance report contract"
+      }
+    ]
+  }
+}
