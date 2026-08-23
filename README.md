@@ -2,6 +2,9 @@
 
 A modular, extensible school operations platform for Malaysian Islamic kindergartens and preschools. Replaces paper registers, physical student cards, and disjointed spreadsheets with a structured, queryable digital workspace.
 
+> 🚀 **Live Production Deployment**: [https://tadika-amal-app-gmnvf7efyq-as.a.run.app](https://tadika-amal-app-gmnvf7efyq-as.a.run.app)  
+> 🟢 **Live Health Check**: [https://tadika-amal-app-gmnvf7efyq-as.a.run.app/up](https://tadika-amal-app-gmnvf7efyq-as.a.run.app/up) (`200 OK`) | 🛡️ **Admin Portal**: [https://tadika-amal-app-gmnvf7efyq-as.a.run.app/admin/login](https://tadika-amal-app-gmnvf7efyq-as.a.run.app/admin/login) | 👩‍🏫 **Staff Workspace**: [https://tadika-amal-app-gmnvf7efyq-as.a.run.app/app/login](https://tadika-amal-app-gmnvf7efyq-as.a.run.app/app/login)
+
 ## [README-ROUTE] Repository Route
 
 > Use the canonical documents below to navigate project decisions without reading a monolithic manual.

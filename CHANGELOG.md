@@ -19,6 +19,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `resources/views/reports/poster-health-bulletin.blade.php`: Daily morning health bulletin noticeboard poster template.
   - `resources/views/reports/certificate-award.blade.php`: Student Certificate of Achievement / *Sijil Penghargaan* template.
   - `resources/views/reports/orientation-deck-summary.blade.php`: Printable parent orientation briefing summary template.
+- **Production Cloud Run, Neon PostgreSQL & Cloudflare R2 Infrastructure (ADR-009 to ADR-012)**:
+  - `adr/ADR-009`: Production architecture for containerized FrankenPHP on Google Cloud Run with Neon Serverless PostgreSQL and Cloudflare R2 object storage.
+  - `adr/ADR-010`: Layer-by-layer infrastructure technology choices and trade-off scorecard.
+  - `adr/ADR-011`: Zero-ask cloud sandbox independent quality gates (`_qa/tadika-infra-quality-gate.mjs`) and hermetic feature test harnesses.
+  - `adr/ADR-012`: Cloud Run reverse proxy trust configuration (`trustProxies(at: '*')`), root routing redirection (`/` -> `/app/login`), and automated production database seeding.
 - **Canonical ARH Documentation Suite**:
-  - `INTENT.md`, `SCENARIOS.md`, `CAPABILITIES.md`, `ARCHITECTURE.md`, `DESIGN.md`, `IMPLEMENTATION.md`, `DEVTOOLS.md`, `RECIPES.md`, `QUALITY-GATES.md`, `GAPS.md`, `GOTCHAS.md`, `HANDOFF.md`.
-  - `adr/`: ADR-001 through ADR-008.
+  - `INTENT.md`, `SCENARIOS.md`, `CAPABILITIES.md`, `ARCHITECTURE.md`, `DESIGN.md`, `IMPLEMENTATION.md`, `DEVTOOLS.md`, `RECIPES.md`, `QUALITY-GATES.md`, `GAPS.md`, `GOTCHAS.md`, `HANDOFF.md`, `errors-fixes.md`.
+  - `adr/`: Complete ADR-001 through ADR-012 suite.

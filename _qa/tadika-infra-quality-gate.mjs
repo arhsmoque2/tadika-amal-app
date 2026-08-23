@@ -153,7 +153,7 @@ export function validateInfrastructure(customRepoRoot = defaultRepoRoot) {
             logSuccess('Zero sensitive credentials passed via plaintext --set-env-vars in deploy.yml.');
         }
 
-        // Verify Cloud Run Job for Migrations
+        // Verify Cloud Run Job for Migrations and Seeding
         if (deployContent.includes('gcloud run jobs deploy tadika-migrate') && deployContent.includes('php artisan migrate --force')) {
             logSuccess('Standalone tadika-migrate Cloud Run Job configured for safe schema migrations.');
         } else {
@@ -165,6 +165,28 @@ export function validateInfrastructure(customRepoRoot = defaultRepoRoot) {
             logSuccess('1-minute Cloud Scheduler trigger for tadika-scheduler verified.');
         } else {
             logWarning('Cloud Scheduler trigger not found or does not use standard 1-minute cron.');
+        }
+
+        // Verify Reverse Proxy Trust Configuration in bootstrap/app.php
+        const bootstrapAppPath = path.join(repoRoot, 'bootstrap', 'app.php');
+        if (fs.existsSync(bootstrapAppPath)) {
+            const bootstrapContent = fs.readFileSync(bootstrapAppPath, 'utf8');
+            if (bootstrapContent.includes('trustProxies')) {
+                logSuccess('bootstrap/app.php configures trustProxies for Cloud Run SSL load balancer.');
+            } else {
+                logError('bootstrap/app.php missing trustProxies middleware configuration.');
+            }
+        }
+
+        // Verify Root Route Redirection in routes/web.php
+        const webRoutesPath = path.join(repoRoot, 'routes', 'web.php');
+        if (fs.existsSync(webRoutesPath)) {
+            const webContent = fs.readFileSync(webRoutesPath, 'utf8');
+            if (webContent.includes("redirect('/app/login')") || webContent.includes('redirect("/app/login")')) {
+                logSuccess('routes/web.php root route configured to redirect to /app/login.');
+            } else {
+                logWarning('routes/web.php does not redirect root to /app/login.');
+            }
         }
     }
 

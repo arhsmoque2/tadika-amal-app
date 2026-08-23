@@ -33,4 +33,10 @@ class InfrastructureConfigTest extends TestCase
         $this->assertArrayHasKey('database', $cacheStores, 'Database cache store must be configured');
         $this->assertArrayHasKey('array', $cacheStores, 'Array cache store must be configured for unit testing');
     }
+
+    public function test_root_url_redirects_to_staff_login(): void
+    {
+        $response = $this->get('/');
+        $response->assertRedirect('/app/login');
+    }
 }
