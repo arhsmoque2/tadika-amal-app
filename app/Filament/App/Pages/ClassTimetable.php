@@ -11,16 +11,25 @@ use Filament\Pages\Page;
 class ClassTimetable extends Page
 {
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-calendar-days';
+
     protected static ?string $navigationLabel = 'Jadual Waktu Kelas & Guru';
+
     protected static ?string $title = 'Jadual Waktu Prasekolah';
+
     protected static ?int $navigationSort = 3;
+
     protected string $view = 'filament.pages.class-timetable';
 
     public string $viewMode = 'cohort'; // 'cohort' or 'teacher'
+
     public ?int $selectedCohortId = null;
+
     public ?int $selectedTeacherId = null;
+
     public array $cohortOptions = [];
+
     public array $teacherOptions = [];
+
     public array $timetableGrid = []; // [day_of_week => [slots]]
 
     public array $days = [

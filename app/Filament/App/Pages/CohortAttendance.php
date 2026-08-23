@@ -16,15 +16,23 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 class CohortAttendance extends Page
 {
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-check';
+
     protected static ?string $navigationLabel = 'Rekod Kehadiran Harian';
+
     protected static ?string $title = 'Rekod Kehadiran Murid (Matriks)';
+
     protected static ?int $navigationSort = 2;
+
     protected string $view = 'filament.pages.cohort-attendance';
 
     public ?int $selectedCohortId = null;
+
     public string $selectedDate = '';
+
     public array $attendanceData = []; // [student_id => ['status' => 'hadir', 'reason' => '']]
+
     public array $students = [];
+
     public array $cohortOptions = [];
 
     public function mount(): void
@@ -54,6 +62,7 @@ class CohortAttendance extends Page
         if (! $this->selectedCohortId) {
             $this->students = [];
             $this->attendanceData = [];
+
             return;
         }
 
@@ -135,7 +144,7 @@ class CohortAttendance extends Page
 
         Notification::make()
             ->title('Rekod kehadiran berjaya disimpan!')
-            ->body('Tarikh: ' . Carbon::parse($this->selectedDate)->format('d/m/Y'))
+            ->body('Tarikh: '.Carbon::parse($this->selectedDate)->format('d/m/Y'))
             ->success()
             ->send();
     }
@@ -146,7 +155,7 @@ class CohortAttendance extends Page
         $startOfMonth = Carbon::parse($this->selectedDate)->startOfMonth()->format('Y-m-d');
         $endOfMonth = Carbon::parse($this->selectedDate)->endOfMonth()->format('Y-m-d');
 
-        $exporter = new AttendanceSpreadsheetService();
+        $exporter = new AttendanceSpreadsheetService;
         $filePath = $exporter->exportCohortAttendanceCsv($cohort, $startOfMonth, $endOfMonth);
 
         return response()->download($filePath);

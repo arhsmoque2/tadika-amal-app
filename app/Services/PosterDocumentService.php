@@ -7,13 +7,15 @@ use App\Models\School;
 use App\Models\Student;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use Mpdf\Mpdf;
+use Mpdf\Output\Destination;
 
 class PosterDocumentService
 {
     /**
      * Render a high-impact Daily Morning Health Bulletin poster (HTML).
      */
-    public function renderHealthBulletinPosterHtml(School $school, string $date = null): string
+    public function renderHealthBulletinPosterHtml(School $school, ?string $date = null): string
     {
         $targetDate = $date ?: Carbon::today()->format('Y-m-d');
 
@@ -59,10 +61,10 @@ class PosterDocumentService
             mkdir($outputDir, 0755, true);
         }
 
-        $outputPath = $outputDir . '/' . Str::slug($fileName) . '_' . date('Ymd_His') . '.pdf';
+        $outputPath = $outputDir.'/'.Str::slug($fileName).'_'.date('Ymd_His').'.pdf';
 
-        if (class_exists(\Mpdf\Mpdf::class)) {
-            $mpdf = new \Mpdf\Mpdf([
+        if (class_exists(Mpdf::class)) {
+            $mpdf = new Mpdf([
                 'format' => 'A4',
                 'orientation' => $orientation,
                 'margin_left' => 10,
@@ -72,7 +74,7 @@ class PosterDocumentService
             ]);
 
             $mpdf->WriteHTML($htmlContent);
-            $mpdf->Output($outputPath, \Mpdf\Output\Destination::FILE);
+            $mpdf->Output($outputPath, Destination::FILE);
         } else {
             file_put_contents($outputPath, $htmlContent);
         }

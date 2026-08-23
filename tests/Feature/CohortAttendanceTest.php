@@ -6,7 +6,6 @@ use App\Models\AttendanceRecord;
 use App\Models\Cohort;
 use App\Models\School;
 use App\Models\Student;
-use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -68,7 +67,7 @@ class CohortAttendanceTest extends TestCase
     public function test_supports_absence_and_medical_status_codes(): void
     {
         $statuses = ['hadir', 'tidak_hadir', 'sakit', 'cuti'];
-        
+
         foreach ($statuses as $status) {
             $this->assertContains($status, ['hadir', 'tidak_hadir', 'sakit', 'cuti']);
         }

@@ -9,6 +9,8 @@ use App\Models\Student;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
+use Mpdf\Mpdf;
+use Mpdf\Output\Destination;
 
 class AssessmentReportPdfService
 {
@@ -22,8 +24,8 @@ class AssessmentReportPdfService
             mkdir($outputDir, 0755, true);
         }
 
-        $fileName = 'Laporan_Penilaian_' . Str::slug($student->name) . '_' . Str::slug($period) . '_' . $academicYear . '.pdf';
-        $outputPath = $outputDir . '/' . $fileName;
+        $fileName = 'Laporan_Penilaian_'.Str::slug($student->name).'_'.Str::slug($period).'_'.$academicYear.'.pdf';
+        $outputPath = $outputDir.'/'.$fileName;
 
         // Group skills by developmental domain
         $skillsByDomain = Skill::where('school_id', $student->school_id)
@@ -58,8 +60,8 @@ class AssessmentReportPdfService
 
         $html = View::make('reports.annual-assessment-pdf', $viewData)->render();
 
-        if (class_exists(\Mpdf\Mpdf::class)) {
-            $mpdf = new \Mpdf\Mpdf([
+        if (class_exists(Mpdf::class)) {
+            $mpdf = new Mpdf([
                 'mode' => 'utf-8',
                 'format' => 'A4',
                 'orientation' => 'P',
@@ -69,7 +71,7 @@ class AssessmentReportPdfService
                 'margin_bottom' => 15,
             ]);
             $mpdf->WriteHTML($html);
-            $mpdf->Output($outputPath, \Mpdf\Output\Destination::FILE);
+            $mpdf->Output($outputPath, Destination::FILE);
         } else {
             // Write html as fallback for previewing
             file_put_contents(str_replace('.pdf', '.html', $outputPath), $html);

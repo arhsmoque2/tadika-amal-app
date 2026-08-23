@@ -2,6 +2,8 @@
 
 namespace App\Filament\Admin\Resources\Users;
 
+use function __;
+
 use App\Filament\Admin\Resources\Users\Pages\CreateUser;
 use App\Filament\Admin\Resources\Users\Pages\EditUser;
 use App\Filament\Admin\Resources\Users\Pages\ListUsers;
@@ -16,8 +18,6 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Cache;
-
-use function __;
 
 class UserResource extends Resource
 {

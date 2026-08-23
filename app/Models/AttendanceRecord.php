@@ -11,8 +11,11 @@ class AttendanceRecord extends Model
     use HasFactory;
 
     public const STATUS_HADIR = 'hadir';
+
     public const STATUS_TIDAK_HADIR = 'tidak_hadir';
+
     public const STATUS_SAKIT = 'sakit';
+
     public const STATUS_CUTI = 'cuti';
 
     protected $fillable = [

@@ -41,7 +41,7 @@ class AiReportDiagnosticService
         $presentDays = AttendanceRecord::where('student_id', $student->id)
             ->where('status', AttendanceRecord::STATUS_HADIR)
             ->count();
-        $attendanceRate = $totalDays > 0 ? round(($presentDays / $totalDays) * 100, 1) . '%' : '100%';
+        $attendanceRate = $totalDays > 0 ? round(($presentDays / $totalDays) * 100, 1).'%' : '100%';
 
         return [
             'meta' => [
@@ -71,7 +71,7 @@ class AiReportDiagnosticService
      *
      * @return array<string, mixed>
      */
-    public function buildSchoolDiagnosticSnapshot(int $schoolId, string $date = null): array
+    public function buildSchoolDiagnosticSnapshot(int $schoolId, ?string $date = null): array
     {
         $targetDate = $date ?: Carbon::today()->format('Y-m-d');
 
@@ -103,7 +103,7 @@ class AiReportDiagnosticService
         $feverScreenings = HealthScreening::where('screening_date', $targetDate)
             ->where(function ($q) {
                 $q->where('temperature', '>=', 37.5)
-                  ->orWhere('has_hfmd_symptoms', true);
+                    ->orWhere('has_hfmd_symptoms', true);
             })
             ->with('student')
             ->get()

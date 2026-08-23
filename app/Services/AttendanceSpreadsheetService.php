@@ -19,8 +19,8 @@ class AttendanceSpreadsheetService
             mkdir($outputDir, 0755, true);
         }
 
-        $fileName = 'Kehadiran_' . str_replace(' ', '_', $cohort->name) . '_' . $startDate . '_to_' . $endDate . '.csv';
-        $outputPath = $outputDir . '/' . $fileName;
+        $fileName = 'Kehadiran_'.str_replace(' ', '_', $cohort->name).'_'.$startDate.'_to_'.$endDate.'.csv';
+        $outputPath = $outputDir.'/'.$fileName;
 
         $period = CarbonPeriod::create($startDate, $endDate);
         $dates = [];
@@ -35,7 +35,7 @@ class AttendanceSpreadsheetService
         $records = AttendanceRecord::where('cohort_id', $cohort->id)
             ->whereBetween('date', [$startDate, $endDate])
             ->get()
-            ->groupBy(fn ($r) => $r->student_id . '_' . $r->date->format('Y-m-d'));
+            ->groupBy(fn ($r) => $r->student_id.'_'.$r->date->format('Y-m-d'));
 
         $handle = fopen($outputPath, 'w');
         // UTF-8 BOM for Excel compatibility
@@ -57,10 +57,10 @@ class AttendanceSpreadsheetService
             $totalDays = count($dates);
 
             foreach ($dates as $date) {
-                $key = $student->id . '_' . $date;
+                $key = $student->id.'_'.$date;
                 $record = $records->get($key)?->first();
                 $status = $record ? $record->status_badge['code'] : '-';
-                
+
                 if ($record && $record->status === AttendanceRecord::STATUS_HADIR) {
                     $presentCount++;
                 }
@@ -71,12 +71,13 @@ class AttendanceSpreadsheetService
             $percentage = $totalDays > 0 ? round(($presentCount / $totalDays) * 100, 1) : 0;
             $row[] = $presentCount;
             $row[] = $totalDays;
-            $row[] = $percentage . '%';
+            $row[] = $percentage.'%';
 
             fputcsv($handle, $row);
         }
 
         fclose($handle);
+
         return $outputPath;
     }
 }

@@ -14,15 +14,23 @@ use Illuminate\Support\Facades\Auth;
 class TeacherDashboard extends Page
 {
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-academic-cap';
+
     protected static ?string $navigationLabel = 'Papan Pemuka Guru';
+
     protected static ?string $title = 'Papan Pemuka Guru & Kelas';
+
     protected static ?int $navigationSort = 1;
+
     protected string $view = 'filament.pages.teacher-dashboard';
 
     public ?Teacher $teacher = null;
+
     public array $cohorts = [];
+
     public array $todaySlots = [];
+
     public array $pendingAttendanceCohorts = [];
+
     public int $totalStudents = 0;
 
     public function mount(): void

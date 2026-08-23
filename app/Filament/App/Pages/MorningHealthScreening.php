@@ -14,15 +14,23 @@ use Illuminate\Support\Facades\Auth;
 class MorningHealthScreening extends Page
 {
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-shield-check';
+
     protected static ?string $navigationLabel = 'Saringan Kesihatan Pagi';
+
     protected static ?string $title = 'Saringan Kesihatan Pagi (Pencegahan HFMD & Demam)';
+
     protected static ?int $navigationSort = 6;
+
     protected string $view = 'filament.pages.morning-health-screening';
 
     public ?int $selectedCohortId = null;
+
     public string $selectedDate = '';
+
     public array $screeningData = []; // [studentId => ['temp' => 36.5, 'symptoms' => [], 'status' => 'lulus', 'remarks' => '']]
+
     public array $students = [];
+
     public array $cohortOptions = [];
 
     public function mount(): void

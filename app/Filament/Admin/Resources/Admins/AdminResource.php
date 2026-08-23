@@ -2,6 +2,8 @@
 
 namespace App\Filament\Admin\Resources\Admins;
 
+use function __;
+
 use App\Filament\Admin\Resources\Admins\Pages\CreateAdmin;
 use App\Filament\Admin\Resources\Admins\Pages\EditAdmin;
 use App\Filament\Admin\Resources\Admins\Pages\ListAdmins;
@@ -16,8 +18,6 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Cache;
-
-use function __;
 
 class AdminResource extends Resource
 {

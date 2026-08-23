@@ -51,7 +51,7 @@ class Announcement extends Model
         $audience = match ($this->target_audience) {
             'parents' => 'Ibu Bapa & Penjaga',
             'teachers' => 'Semua Guru & Warga Tadika',
-            'cohort' => 'Ibu Bapa Murid Kelas ' . ($this->cohort?->name ?? ''),
+            'cohort' => 'Ibu Bapa Murid Kelas '.($this->cohort?->name ?? ''),
             default => 'Semua Ibu Bapa, Penjaga & Warga Tadika',
         };
 
@@ -64,18 +64,18 @@ class Announcement extends Model
 
         $date = $this->published_at ? $this->published_at->format('d/m/Y') : date('d/m/Y');
 
-        return "{$categoryIcon}\n" .
-               "🏫 *{$schoolName}*\n" .
-               "📅 Tarikh: {$date}\n" .
-               "👥 Kepada: {$audience}\n\n" .
-               "📌 *TAJUK: " . strtoupper($this->title) . "*\n\n" .
-               "{$this->content}\n\n" .
-               "Sekian, terima kasih.\n" .
+        return "{$categoryIcon}\n".
+               "🏫 *{$schoolName}*\n".
+               "📅 Tarikh: {$date}\n".
+               "👥 Kepada: {$audience}\n\n".
+               '📌 *TAJUK: '.strtoupper($this->title)."*\n\n".
+               "{$this->content}\n\n".
+               "Sekian, terima kasih.\n".
                "_Pengurusan {$schoolName}_";
     }
 
     public function getWhatsAppUrlAttribute(): string
     {
-        return 'https://wa.me/?text=' . rawurlencode($this->formatted_whats_app_text);
+        return 'https://wa.me/?text='.rawurlencode($this->formatted_whats_app_text);
     }
 }

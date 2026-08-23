@@ -2,7 +2,6 @@
 
 namespace App\Filament\App\Pages;
 
-use App\Models\AssessmentReport;
 use App\Models\Cohort;
 use App\Models\Skill;
 use App\Models\SkillEvaluation;
@@ -19,14 +18,21 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 class SkillEvaluationPage extends Page
 {
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-chart-bar-square';
+
     protected static ?string $navigationLabel = 'Penilaian Perkembangan Murid';
+
     protected static ?string $title = 'Matriks Penilaian Perkembangan Prasekolah (KSPK)';
+
     protected static ?int $navigationSort = 4;
+
     protected string $view = 'filament.pages.skill-evaluation';
 
     public ?int $selectedCohortId = null;
+
     public string $selectedPeriod = 'Akhir Tahun';
+
     public array $cohortOptions = [];
+
     public array $periodOptions = [
         'Penggal 1' => 'Penggal 1 (Pertengahan Tahun)',
         'Penggal 2' => 'Penggal 2',
@@ -34,9 +40,13 @@ class SkillEvaluationPage extends Page
     ];
 
     public array $students = [];
+
     public array $skills = [];
+
     public array $scales = [];
+
     public array $evaluations = []; // [ "studentId_skillId" => scale_id ]
+
     public array $remarks = []; // [ "studentId_skillId" => string ]
 
     public function mount(): void
@@ -107,7 +117,7 @@ class SkillEvaluationPage extends Page
         $this->remarks = [];
 
         foreach ($evalRecords as $rec) {
-            $key = $rec->student_id . '_' . $rec->skill_id;
+            $key = $rec->student_id.'_'.$rec->skill_id;
             $this->evaluations[$key] = $rec->skill_scale_id;
             $this->remarks[$key] = $rec->remarks ?? '';
         }
@@ -115,7 +125,7 @@ class SkillEvaluationPage extends Page
 
     public function setEvaluation(int $studentId, int $skillId, int $scaleId): void
     {
-        $key = $studentId . '_' . $skillId;
+        $key = $studentId.'_'.$skillId;
         $this->evaluations[$key] = $scaleId;
     }
 
@@ -168,7 +178,7 @@ class SkillEvaluationPage extends Page
         $student = Student::findOrFail($studentId);
         $cohort = Cohort::findOrFail($this->selectedCohortId);
 
-        $pdfService = new AssessmentReportPdfService();
+        $pdfService = new AssessmentReportPdfService;
         $pdfPath = $pdfService->generateReportPdf($student, $this->selectedPeriod, $cohort->academic_year);
 
         return response()->download($pdfPath);

@@ -2,7 +2,6 @@
 
 namespace Freis\FilamentCrudGenerator\Commands\FilamentCrud;
 
-use Composer\InstalledVersions;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;

@@ -14,22 +14,35 @@ use Illuminate\Support\Facades\Auth;
 class LessonPlanner extends Page
 {
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-book-open';
+
     protected static ?string $navigationLabel = 'RPH & Tema Mingguan';
+
     protected static ?string $title = 'Rancangan Pengajaran Harian (RPH) KSPK';
+
     protected static ?int $navigationSort = 7;
+
     protected string $view = 'filament.pages.lesson-planner';
 
     public ?int $selectedCohortId = null;
+
     public int $selectedWeek = 1;
+
     public string $theme_input = '';
+
     public string $tunjang_input = 'Tunjang Komunikasi (Bahasa Melayu)';
+
     public string $objectives_input = '';
+
     public string $activities_input = '';
+
     public string $materials_input = '';
+
     public string $reflection_input = '';
+
     public string $plan_date_input = '';
 
     public array $lessonPlans = [];
+
     public array $cohortOptions = [];
 
     public array $kspkTunjangOptions = [
@@ -78,6 +91,7 @@ class LessonPlanner extends Page
                 ->title('Sila lengkapkan maklumat tema dan objektif pembelajaran')
                 ->danger()
                 ->send();
+
             return;
         }
 

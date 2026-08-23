@@ -15,24 +15,39 @@ use Illuminate\Support\Facades\Auth;
 class IncidentLogPage extends Page
 {
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-exclamation-circle';
+
     protected static ?string $navigationLabel = 'Buku Log Kemalangan (JKM)';
+
     protected static ?string $title = 'Buku Rekod Kemalangan & Rawatan Awal (Pematuhan JKM)';
+
     protected static ?int $navigationSort = 9;
+
     protected string $view = 'filament.pages.incident-log-page';
 
     public ?int $selectedCohortId = null;
+
     public ?int $selectedStudentId = null;
+
     public string $incident_date = '';
+
     public string $incident_time = '';
+
     public string $location = 'Taman Permainan';
+
     public string $severity = 'ringan';
+
     public string $incident_description = '';
+
     public string $injury_details = '';
+
     public string $first_aid_given = '';
+
     public bool $parent_notified = true;
 
     public array $incidentLogs = [];
+
     public array $cohortOptions = [];
+
     public array $studentOptions = [];
 
     public function mount(): void
@@ -82,6 +97,7 @@ class IncidentLogPage extends Page
                 ->title('Sila lengkapkan butiran murid, penerangan kejadian, dan jenis kecederaan')
                 ->danger()
                 ->send();
+
             return;
         }
 

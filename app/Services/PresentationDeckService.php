@@ -2,11 +2,13 @@
 
 namespace App\Services;
 
-use App\Models\Cohort;
 use App\Models\LessonPlan;
 use App\Models\School;
-use Carbon\Carbon;
 use Illuminate\Support\Str;
+use PhpOffice\PhpPresentation\IOFactory;
+use PhpOffice\PhpPresentation\PhpPresentation;
+use PhpOffice\PhpPresentation\Style\Alignment;
+use PhpOffice\PhpPresentation\Style\Color;
 
 class PresentationDeckService
 {
@@ -21,11 +23,11 @@ class PresentationDeckService
             mkdir($outputDir, 0755, true);
         }
 
-        $fileName = 'Orientation_Deck_' . Str::slug($school->name) . '_' . date('Ymd') . '.pptx';
-        $outputPath = $outputDir . '/' . $fileName;
+        $fileName = 'Orientation_Deck_'.Str::slug($school->name).'_'.date('Ymd').'.pptx';
+        $outputPath = $outputDir.'/'.$fileName;
 
-        if (class_exists(\PhpOffice\PhpPresentation\PhpPresentation::class)) {
-            $presentation = new \PhpOffice\PhpPresentation\PhpPresentation();
+        if (class_exists(PhpPresentation::class)) {
+            $presentation = new PhpPresentation;
 
             // Set document properties
             $presentation->getDocumentProperties()
@@ -40,15 +42,15 @@ class PresentationDeckService
                 ->setWidth(800)
                 ->setOffsetX(80)
                 ->setOffsetY(180);
-            
-            $shape->getActiveParagraph()->getAlignment()->setHorizontal(\PhpOffice\PhpPresentation\Style\Alignment::HORIZONTAL_CENTER);
+
+            $shape->getActiveParagraph()->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $textRun = $shape->createTextRun("TAKLIMAT ORIENTASI IBU BAPA\n{$school->name}\nSESI {$academicYear}");
-            $textRun->getFont()->setBold(true)->setSize(28)->setColor(new \PhpOffice\PhpPresentation\Style\Color('FF059669')); // Emerald
+            $textRun->getFont()->setBold(true)->setSize(28)->setColor(new Color('FF059669')); // Emerald
 
             // Slide 2: Visi, Misi & Falsafah
             $slide2 = $presentation->createSlide();
             $shape2 = $slide2->createRichTextShape()->setHeight(400)->setWidth(850)->setOffsetX(50)->setOffsetY(60);
-            $shape2->createTextRun("VISI & FALSAFAH PENDIDIKAN AWAL KANAK-KANAK\n\n")->getFont()->setBold(true)->setSize(22)->setColor(new \PhpOffice\PhpPresentation\Style\Color('FF059669'));
+            $shape2->createTextRun("VISI & FALSAFAH PENDIDIKAN AWAL KANAK-KANAK\n\n")->getFont()->setBold(true)->setSize(22)->setColor(new Color('FF059669'));
             $shape2->createTextRun("• Membentuk sahsiah peribadi cemerlang berlandaskan adab dan nilai Islam.\n");
             $shape2->createTextRun("• Menerapkan Kurikulum Standard Prasekolah Kebangsaan (KSPK) secara interaktif dan holistik.\n");
             $shape2->createTextRun("• Mengutamakan keselamatan, kesejahteraan emosi, dan perkembangan potensi murid.\n");
@@ -56,7 +58,7 @@ class PresentationDeckService
             // Slide 3: Waktu Operasi & Rutin Harian
             $slide3 = $presentation->createSlide();
             $shape3 = $slide3->createRichTextShape()->setHeight(400)->setWidth(850)->setOffsetX(50)->setOffsetY(60);
-            $shape3->createTextRun("JADUAL WAKTU & RUTIN HARIAN\n\n")->getFont()->setBold(true)->setSize(22)->setColor(new \PhpOffice\PhpPresentation\Style\Color('FF059669'));
+            $shape3->createTextRun("JADUAL WAKTU & RUTIN HARIAN\n\n")->getFont()->setBold(true)->setSize(22)->setColor(new Color('FF059669'));
             $shape3->createTextRun("• 07:30 AM - 08:00 AM : Saringan Kesihatan Pagi & Ketibaan Murid (Gate Check)\n");
             $shape3->createTextRun("• 08:00 AM - 08:30 AM : Perhimpunan Pagi, Doa & Senaman Ringan\n");
             $shape3->createTextRun("• 08:30 AM - 10:00 AM : Sesi Pembelajaran Bersepadu KSPK & Al-Quran\n");
@@ -64,7 +66,7 @@ class PresentationDeckService
             $shape3->createTextRun("• 10:30 AM - 11:45 AM : Aktiviti Kreatif, Fizikal & Sudut Pembelajaran\n");
             $shape3->createTextRun("• 12:00 PM : Waktu Kepulangan Murid & Imbasan Kad Pengambilan\n");
 
-            $writer = \PhpOffice\PhpPresentation\IOFactory::createWriter($presentation, 'PowerPoint2007');
+            $writer = IOFactory::createWriter($presentation, 'PowerPoint2007');
             $writer->save($outputPath);
         } else {
             // High-fidelity fallback structure
@@ -84,25 +86,25 @@ class PresentationDeckService
             mkdir($outputDir, 0755, true);
         }
 
-        $fileName = 'RPH_Slide_' . Str::slug($lessonPlan->theme) . '_M' . $lessonPlan->week_number . '.pptx';
-        $outputPath = $outputDir . '/' . $fileName;
+        $fileName = 'RPH_Slide_'.Str::slug($lessonPlan->theme).'_M'.$lessonPlan->week_number.'.pptx';
+        $outputPath = $outputDir.'/'.$fileName;
 
-        if (class_exists(\PhpOffice\PhpPresentation\PhpPresentation::class)) {
-            $presentation = new \PhpOffice\PhpPresentation\PhpPresentation();
+        if (class_exists(PhpPresentation::class)) {
+            $presentation = new PhpPresentation;
             $currentSlide = $presentation->getActiveSlide();
 
             $shape = $currentSlide->createRichTextShape()->setHeight(300)->setWidth(800)->setOffsetX(80)->setOffsetY(180);
-            $shape->getActiveParagraph()->getAlignment()->setHorizontal(\PhpOffice\PhpPresentation\Style\Alignment::HORIZONTAL_CENTER);
-            $textRun = $shape->createTextRun("TEMA MINGGU {$lessonPlan->week_number}\n" . strtoupper($lessonPlan->theme));
-            $textRun->getFont()->setBold(true)->setSize(30)->setColor(new \PhpOffice\PhpPresentation\Style\Color('FF059669'));
+            $shape->getActiveParagraph()->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $textRun = $shape->createTextRun("TEMA MINGGU {$lessonPlan->week_number}\n".strtoupper($lessonPlan->theme));
+            $textRun->getFont()->setBold(true)->setSize(30)->setColor(new Color('FF059669'));
 
             $slide2 = $presentation->createSlide();
             $shape2 = $slide2->createRichTextShape()->setHeight(400)->setWidth(850)->setOffsetX(50)->setOffsetY(60);
             $shape2->createTextRun("OBJEKTIF & STANDARD PEMBELAJARAN\n\n")->getFont()->setBold(true)->setSize(22);
-            $shape2->createTextRun("Teras KSPK: " . ($lessonPlan->kspk_strand ?: 'Teras Asas') . "\n\n");
-            $shape2->createTextRun("Aktiviti Dirancang:\n" . ($lessonPlan->learning_activities ?: 'Aktiviti Pembelajaran Berpusatkan Murid'));
+            $shape2->createTextRun('Teras KSPK: '.($lessonPlan->kspk_strand ?: 'Teras Asas')."\n\n");
+            $shape2->createTextRun("Aktiviti Dirancang:\n".($lessonPlan->learning_activities ?: 'Aktiviti Pembelajaran Berpusatkan Murid'));
 
-            $writer = \PhpOffice\PhpPresentation\IOFactory::createWriter($presentation, 'PowerPoint2007');
+            $writer = IOFactory::createWriter($presentation, 'PowerPoint2007');
             $writer->save($outputPath);
         } else {
             file_put_contents($outputPath, "PPTX-CONTAINER: Weekly Lesson Plan - {$lessonPlan->theme} (Week {$lessonPlan->week_number})");

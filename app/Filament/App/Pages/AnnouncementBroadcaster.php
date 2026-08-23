@@ -12,18 +12,27 @@ use Illuminate\Support\Facades\Auth;
 class AnnouncementBroadcaster extends Page
 {
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-megaphone';
+
     protected static ?string $navigationLabel = 'Hebahan & WhatsApp';
+
     protected static ?string $title = 'Hebahan Pengumuman & Penjana Mesej WhatsApp';
+
     protected static ?int $navigationSort = 5;
+
     protected string $view = 'filament.pages.announcement-broadcaster';
 
     public string $title_input = '';
+
     public string $content_input = '';
+
     public string $category_input = 'general';
+
     public string $target_audience_input = 'all';
+
     public ?int $cohort_id_input = null;
 
     public array $announcements = [];
+
     public array $cohortOptions = [];
 
     public function mount(): void
@@ -48,6 +57,7 @@ class AnnouncementBroadcaster extends Page
                 ->title('Sila isi tajuk dan kandungan pengumuman')
                 ->danger()
                 ->send();
+
             return;
         }
 

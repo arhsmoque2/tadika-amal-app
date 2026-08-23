@@ -7,7 +7,6 @@ use App\Models\FeeInvoice;
 use App\Models\Student;
 use App\Services\FeeReceiptPdfService;
 use BackedEnum;
-use Carbon\Carbon;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Illuminate\Support\Facades\Auth;
@@ -16,14 +15,21 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 class FeeManagement extends Page
 {
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-banknotes';
+
     protected static ?string $navigationLabel = 'Yuran & Resit LHDN';
+
     protected static ?string $title = 'Pengurusan Yuran Tadika & Resit Rasmi Pelepasan Cukai LHDN';
+
     protected static ?int $navigationSort = 8;
+
     protected string $view = 'filament.pages.fee-management';
 
     public ?int $selectedCohortId = null;
+
     public string $selectedMonth = 'Ogos';
+
     public array $cohortOptions = [];
+
     public array $invoices = [];
 
     public array $monthOptions = [
@@ -78,7 +84,7 @@ class FeeManagement extends Page
             $cohort = Cohort::find($this->selectedCohortId);
 
             foreach ($students as $index => $student) {
-                $invNo = 'INV-' . date('Y') . '-' . str_pad($cohort->id, 2, '0', STR_PAD_LEFT) . '-' . str_pad($student->id, 3, '0', STR_PAD_LEFT) . '-' . substr($this->selectedMonth, 0, 3);
+                $invNo = 'INV-'.date('Y').'-'.str_pad($cohort->id, 2, '0', STR_PAD_LEFT).'-'.str_pad($student->id, 3, '0', STR_PAD_LEFT).'-'.substr($this->selectedMonth, 0, 3);
                 FeeInvoice::firstOrCreate(
                     [
                         'school_id' => $cohort->school_id,
@@ -107,7 +113,7 @@ class FeeManagement extends Page
     public function markAsPaid(int $invoiceId, string $method = 'fpx_online'): void
     {
         $invoice = FeeInvoice::findOrFail($invoiceId);
-        $receiptNo = 'REC-' . date('Ym') . '-' . str_pad($invoice->id, 4, '0', STR_PAD_LEFT);
+        $receiptNo = 'REC-'.date('Ym').'-'.str_pad($invoice->id, 4, '0', STR_PAD_LEFT);
 
         $invoice->update([
             'status' => 'paid',
@@ -121,7 +127,7 @@ class FeeManagement extends Page
 
         Notification::make()
             ->title('Bayaran berjaya disahkan!')
-            ->body('No. Resit: ' . $receiptNo)
+            ->body('No. Resit: '.$receiptNo)
             ->success()
             ->send();
     }
@@ -129,7 +135,7 @@ class FeeManagement extends Page
     public function downloadReceiptPdf(int $invoiceId): BinaryFileResponse
     {
         $invoice = FeeInvoice::with(['student', 'cohort', 'school'])->findOrFail($invoiceId);
-        $pdfService = new FeeReceiptPdfService();
+        $pdfService = new FeeReceiptPdfService;
         $filePath = $pdfService->generateReceiptPdf($invoice);
 
         return response()->download($filePath);

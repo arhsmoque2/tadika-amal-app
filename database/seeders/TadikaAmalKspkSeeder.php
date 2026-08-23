@@ -2,7 +2,12 @@
 
 namespace Database\Seeders;
 
+use App\Models\Announcement;
 use App\Models\Cohort;
+use App\Models\FeeInvoice;
+use App\Models\HealthScreening;
+use App\Models\IncidentLog;
+use App\Models\LessonPlan;
 use App\Models\Room;
 use App\Models\School;
 use App\Models\Skill;
@@ -103,7 +108,7 @@ class TadikaAmalKspkSeeder extends Seeder
                     'cohort_id' => $cohort6->id,
                     'mykid' => $data['mykid'],
                     'gender' => $data['gender'],
-                    'guardian_name' => 'Waris ' . $data['name'],
+                    'guardian_name' => 'Waris '.$data['name'],
                     'guardian_phone' => $data['guardian_phone'],
                     'is_active' => true,
                 ]
@@ -183,7 +188,7 @@ class TadikaAmalKspkSeeder extends Seeder
         }
 
         // 9. Sample Announcements
-        \App\Models\Announcement::firstOrCreate(
+        Announcement::firstOrCreate(
             ['school_id' => $school->id, 'title' => 'Cuti Peristiwa Sempena Sambutan Maulidur Rasul'],
             [
                 'content' => "Assalamu'alaikum wbt kepada semua ibu bapa & penjaga yang dihormati,\n\nDimaklumkan bahawa Tadika Islam Amal Bestari akan bercuti sempena Sambutan Maulidur Rasul pada hari Isnin ini. Sesi persekolahan akan bersambung seperti biasa pada hari Selasa.\n\nSekian, terima kasih.",
@@ -196,7 +201,7 @@ class TadikaAmalKspkSeeder extends Seeder
         );
 
         // 10. Sample Lesson Plan (RPH)
-        \App\Models\LessonPlan::firstOrCreate(
+        LessonPlan::firstOrCreate(
             ['school_id' => $school->id, 'cohort_id' => $cohort6->id, 'week_number' => 1],
             [
                 'teacher_id' => $teacher->id,
@@ -212,7 +217,7 @@ class TadikaAmalKspkSeeder extends Seeder
         // 11. Sample Health Screening
         $allStudents = Student::where('school_id', $school->id)->get();
         foreach ($allStudents as $st) {
-            \App\Models\HealthScreening::firstOrCreate(
+            HealthScreening::firstOrCreate(
                 [
                     'school_id' => $school->id,
                     'cohort_id' => $cohort6->id,
@@ -231,7 +236,7 @@ class TadikaAmalKspkSeeder extends Seeder
 
         // 12. Sample Fee Invoices & Paid Receipt
         foreach ($allStudents as $idx => $st) {
-            $inv = \App\Models\FeeInvoice::firstOrCreate(
+            $inv = FeeInvoice::firstOrCreate(
                 [
                     'school_id' => $school->id,
                     'student_id' => $st->id,
@@ -240,7 +245,7 @@ class TadikaAmalKspkSeeder extends Seeder
                 ],
                 [
                     'cohort_id' => $cohort6->id,
-                    'invoice_number' => 'INV-2026-06-' . str_pad($st->id, 3, '0', STR_PAD_LEFT) . '-AUG',
+                    'invoice_number' => 'INV-2026-06-'.str_pad($st->id, 3, '0', STR_PAD_LEFT).'-AUG',
                     'receipt_number' => $idx === 0 ? 'REC-202608-0001' : null,
                     'fee_category' => 'yuran_bulanan',
                     'amount' => 350.00,
@@ -254,7 +259,7 @@ class TadikaAmalKspkSeeder extends Seeder
 
         // 13. Sample Incident Log
         if ($allStudents->isNotEmpty()) {
-            \App\Models\IncidentLog::firstOrCreate(
+            IncidentLog::firstOrCreate(
                 [
                     'school_id' => $school->id,
                     'student_id' => $allStudents->first()->id,

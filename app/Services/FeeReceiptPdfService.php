@@ -6,6 +6,8 @@ use App\Models\FeeInvoice;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
+use Mpdf\Mpdf;
+use Mpdf\Output\Destination;
 
 class FeeReceiptPdfService
 {
@@ -19,9 +21,9 @@ class FeeReceiptPdfService
             mkdir($outputDir, 0755, true);
         }
 
-        $receiptNo = $invoice->receipt_number ?: 'REC-' . date('Ym') . '-' . str_pad($invoice->id, 4, '0', STR_PAD_LEFT);
-        $fileName = 'Resit_Yuran_' . Str::slug($receiptNo) . '_' . Str::slug($invoice->student->name ?? 'Murid') . '.pdf';
-        $outputPath = $outputDir . '/' . $fileName;
+        $receiptNo = $invoice->receipt_number ?: 'REC-'.date('Ym').'-'.str_pad($invoice->id, 4, '0', STR_PAD_LEFT);
+        $fileName = 'Resit_Yuran_'.Str::slug($receiptNo).'_'.Str::slug($invoice->student->name ?? 'Murid').'.pdf';
+        $outputPath = $outputDir.'/'.$fileName;
 
         $viewData = [
             'invoice' => $invoice,
@@ -34,8 +36,8 @@ class FeeReceiptPdfService
 
         $html = View::make('reports.official-fee-receipt-pdf', $viewData)->render();
 
-        if (class_exists(\Mpdf\Mpdf::class)) {
-            $mpdf = new \Mpdf\Mpdf([
+        if (class_exists(Mpdf::class)) {
+            $mpdf = new Mpdf([
                 'mode' => 'utf-8',
                 'format' => 'A5',
                 'orientation' => 'L',
@@ -45,7 +47,7 @@ class FeeReceiptPdfService
                 'margin_bottom' => 12,
             ]);
             $mpdf->WriteHTML($html);
-            $mpdf->Output($outputPath, \Mpdf\Output\Destination::FILE);
+            $mpdf->Output($outputPath, Destination::FILE);
         } else {
             file_put_contents(str_replace('.pdf', '.html', $outputPath), $html);
             file_put_contents($outputPath, "%PDF-1.4 Mock Receipt for {$receiptNo}");
