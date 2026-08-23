@@ -20,6 +20,7 @@ A modular, extensible school operations platform for Malaysian Islamic kindergar
 | **Decisions** | [`adr/`](adr/) | Architectural Decision Records (ADR-001 to ADR-004) |
 | **Research** | [`docs/pattern-research.md`](docs/pattern-research.md) | Insights & divergences from `school.ly` reference |
 | **Risks & Antipatterns**| [`GOTCHAS.md`](GOTCHAS.md) | Failure capsules & permanent fixes |
+| **Quality & Error Log**| [`errors-fixes.md`](errors-fixes.md) | Quality checks, scripts & remediation register |
 | **Parked Scope** | [`GAPS.md`](GAPS.md) | Open questions & deferred items (Parent Portal in v2) |
 | **Continuation** | [`HANDOFF.md`](HANDOFF.md) | Current verified state & next action |
 
@@ -30,10 +31,11 @@ A modular, extensible school operations platform for Malaysian Islamic kindergar
 | Concern | State | Evidence |
 | :--- | :--- | :--- |
 | **Docs & Platform Tombstone** | IMPLEMENTED | Full ARH documentation suite complete |
-| **ADR Suite (ADR 001 - 004)** | ACCEPTED | `adr/` directory populated |
-| **Phase 1 Acceptance** | COMPLETE | Aligned with platform-first mental model |
-| **Base Scaffolding (Laravel 12 + Filament v4)**| PENDING | Phase 2 target |
-| **Dynamic Schema Engine** | DESIGNED | Ready for implementation in Phase 3 |
+| **ADR Suite (ADR 001 - 007)** | ACCEPTED | `adr/` directory populated |
+| **Base Scaffolding & Core SIS**| IMPLEMENTED | Merged to `main` with 110+ models, migrations & Livewire pages |
+| **Document & LHDN Pipeline** | IMPLEMENTED | mPDF, PHPWord & CSV services active |
+| **JS & UI/UX Quality Gate** | VERIFIED | `pnpm doctor` / `composer doctor` passing 100% |
+
 
 ---
 
