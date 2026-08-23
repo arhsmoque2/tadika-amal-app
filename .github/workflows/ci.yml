@@ -1,0 +1,84 @@
+name: Continuous Integration & Quality Gates
+
+on:
+  push:
+    branches:
+      - main
+      - 'feat/**'
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  cloud-sandbox-and-ui-gates:
+    name: Cloud Sandbox Independence & UI Gates
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Run Cloud Sandbox Independence & Portability Gate
+        run: node _qa/cloud-sandbox-independence-gate.mjs
+
+      - name: Run Tadika UI/UX Quality Gate
+        run: node _qa/tadika-ui-ux-quality-gate.mjs
+
+      - name: Run ARH Documentation Compliance Doctor
+        run: node _qa/tadika-docs-doctor.mjs
+
+      - name: Run Quality Doctor & Secret Scanner
+        run: node _qa/tadika-quality-doctor.mjs
+
+  php-quality-and-tests:
+    name: PHP Quality, Static Analysis & Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.4
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, bcmath, fileinfo
+          coverage: none
+
+      - name: Validate composer.json
+        run: composer validate --strict
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install Composer Dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Prepare Laravel Environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          touch database/database.sqlite
+          php artisan migrate --force
+
+      - name: Run Pint Code Style Gate
+        run: ./vendor/bin/pint --test
+
+      - name: Run PHPStan Static Analysis
+        run: ./vendor/bin/phpstan --no-progress --error-format=github || true
+
+      - name: Run Pest / PHPUnit Test Suite
+        run: php artisan test

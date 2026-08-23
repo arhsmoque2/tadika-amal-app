@@ -1,0 +1,54 @@
+{
+    "name": "felipereisdev/filament-crud-maker",
+    "description": "CRUD generator for Filament v4/v5 admin panels",
+    "type": "library",
+    "license": "proprietary",
+    "autoload": {
+        "psr-4": {
+            "Freis\\FilamentCrudGenerator\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Freis\\FilamentCrudGenerator\\Tests\\": "tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Felipe Reis",
+            "email": "freis.dev@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "php": "^8.3",
+        "filament/filament": "^4.0|^5.0",
+        "laravel/framework": "^11.28|^12.0|^13.0"
+    },
+    "require-dev": {
+        "larastan/larastan": "^3.0",
+        "orchestra/testbench": "^9.0|^10.0|^11.0",
+        "pestphp/pest": "^3.0",
+        "laravel/pint": "^1.29"
+    },
+    "scripts": {
+        "test": "vendor/bin/pest",
+        "analyse": "phpstan analyse",
+        "format": [
+            "pint"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Freis\\FilamentCrudGenerator\\Providers\\FilamentCrudGeneratorServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}

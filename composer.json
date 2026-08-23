@@ -1,21 +1,21 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "jeffersongoncalves/filakitv4",
+    "name": "arhsmoque/tadika-amal-app",
     "type": "project",
-    "description": "FilaKit starter kit built on Laravel 13.x and Filament 4.x with a ready-to-use multi-panel structure.",
+    "description": "Tadika Amal - Integrated Islamic Preschool SIS, Health Screening, and Operational Management Platform",
     "keywords": [
-        "laravel-starter-kit",
-        "starter-kit",
-        "filament-starter-kit",
         "laravel",
         "filament",
         "filament-v4",
         "livewire",
-        "tailwindcss"
+        "tailwindcss",
+        "preschool",
+        "tadika",
+        "kspk"
     ],
     "license": "MIT",
     "require": {
-        "php": "^8.3",
+        "php": "^8.3|^8.4",
         "achyutn/filament-log-viewer": "^1.2",
         "dutchcodingcompany/filament-developer-logins": "^2.1",
         "filament/filament": "^4.5",
@@ -89,11 +89,24 @@
             "./vendor/bin/phpstan"
         ],
         "doctor": [
-            "node D:/_ARH-AGENT-OS/_AGENT-CAPABILITIES/arh-js-devkit/bin/arh-js-doctor.mjs ."
+            "node _qa/tadika-quality-doctor.mjs"
+        ],
+        "docs:check": [
+            "node _qa/tadika-docs-doctor.mjs"
+        ],
+        "qa:ui": [
+            "node _qa/tadika-ui-ux-quality-gate.mjs"
+        ],
+        "qa:sandbox": [
+            "node _qa/cloud-sandbox-independence-gate.mjs"
         ],
         "gate": [
             "./vendor/bin/pint --config=pint.json -q",
-            "node D:/_ARH-AGENT-OS/_AGENT-CAPABILITIES/arh-js-devkit/bin/arh-js-doctor.mjs ."
+            "node _qa/cloud-sandbox-independence-gate.mjs",
+            "node _qa/tadika-ui-ux-quality-gate.mjs"
+        ],
+        "test": [
+            "@php artisan test"
         ],
         "dev": [
             "Composer\\Config::disableProcessTimeout",

@@ -24,7 +24,11 @@
 | **ERR-014** | **Classroom & Playground Low-Connectivity Failure** | PWA Reliability Audit (G-008 Resolution) | **Agent-Manual** | Wi-Fi drops at kindergarten gates or playgrounds causing lost roll-call data. Wired `filament-pwa` service worker caching and Livewire local state buffering. |
 | **ERR-015** | **PHP Code Formatting & Import Sorting Drift** | Laravel Pint Harness (`pint.json` / `composer pint`) | **Checker-Automated** | Enforced automatic PSR-12 formatting, alphabetical import sorting, and unused import scrubbing across all Eloquent models. |
 | **ERR-016** | **Dead Code & Orphan Asset Creep** | Knip Static Analyzer (`knip.json`) | **Checker-Automated** | Configured `knip.json` scanning Vite bundles against `resources/` to prevent unused JS libraries or orphan CSS from bloating client assets. |
-| **ERR-017** | **Semantic Badge WCAG Contrast Failure** | Tadika UI/UX Gate: Gate 3 (`_qa/tadika-ui-ux-quality-gate.mjs`) | **Checker-Automated** | Prevented arbitrary un-themed hex colors; verified all status chips (*Hadir, Tidak Hadir, Sakit, Cuti*) meet $\ge 4.5:1$ contrast ratio in Light & Dark modes. |
+| **ERR-018** | **Dangling Git Submodule Gitlink without `.gitmodules`** | Cloud Sandbox Independence Gate (`_qa/cloud-sandbox-independence-gate.mjs`) | **Agent-Manual** | `packages/filament-crud-maker` was recorded in the git index as a gitlink (mode `160000`) without a `.gitmodules` file, causing empty directories on fresh clones. Unstaged gitlink and tracked all vendored package source files natively. |
+| **ERR-019** | **Host-Specific Windows Absolute Paths in Scripts** | Host-Path Independence Audit (`_qa/cloud-sandbox-independence-gate.mjs`) | **Checker-Automated** | `composer.json` and `package.json` had hardcoded `D:\_ARH-AGENT-OS\...` paths. Replaced with hermetic checked-in `_qa/` doctor scripts runnable in any OS/CI environment. |
+| **ERR-020** | **Un-rebranded Starter Kit Identifiers in Package Manifests** | Package Identity & Rebranding Gate | **Agent-Manual** | `composer.json` and `package.json` still carried starter kit names (`@jeffersongoncalves/filakitv4`). Rebranded to `arhsmoque/tadika-amal-app` and `tadika-amal-app`. |
+| **ERR-021** | **Missing Target Locale (`lang/ms.json`) for Malaysian Preschool** | Locale Invariant Gate | **Agent-Manual** | Absence of Bahasa Malaysia locale file for a Malaysian preschool platform. Created `lang/ms.json` with 54 domain terms (Tadika, KSPK, Hafazan, LHDN, JKM). |
+| **ERR-022** | **Zero Automated CI Workflows & Missing Feature Test Harness** | CI Automation & Feature Test Harness Gate | **Agent-Manual** | CI workflows were missing and only placeholder tests existed. Added `.github/workflows/ci.yml` and 6 comprehensive feature tests covering attendance, health screening, fees, incidents, and lesson planning. |
 
 ---
 
@@ -57,7 +61,36 @@
 
 ---
 
-### 4. PHP Strict Syntax Harness
+### 4. Cloud Sandbox Independence Gate & CI Automation
+- **Script / Command**: `node _qa/cloud-sandbox-independence-gate.mjs`
+- **Symptom**: Hardcoded host-specific Windows paths, missing CI workflows, missing feature tests, and missing localizations.
+- **Why It's Dangerous**: Breaks builds in cloud agent sandboxes, GitHub Actions, and reviewer environments.
+- **Fix**: Cleaned all paths to portable relative references, added GitHub Actions workflow `.github/workflows/ci.yml`, added `lang/ms.json`, and added 6 domain feature tests.
+- **Verification**: All 6 gates in `cloud-sandbox-independence-gate.mjs` passed with 0 errors.
+
+---
+
+## [ERR-RECEIPT] Verification Command & Automation
+
+To re-run all quality checks locally or in CI:
+
+```bash
+# 1. Run Cloud Sandbox Independence Gate
+node _qa/cloud-sandbox-independence-gate.mjs
+
+# 2. Run Domain UI/UX Quality Gate
+node _qa/tadika-ui-ux-quality-gate.mjs
+
+# 3. Run Docs Compliance Doctor
+node _qa/tadika-docs-doctor.mjs
+
+# 4. Run Quality Doctor & Secret Scanner
+node _qa/tadika-quality-doctor.mjs
+
+# 5. Run Combined Quality Gate
+pnpm run qa:all
+```
+
 - **Script / Command**: `Get-ChildItem -Path app,database -Filter *.php -Recurse | php -l`
 - **Symptom**: PHP 8.4 deprecations, union type mismatches, or syntax typos in newly created Livewire and Filament pages.
 - **Why It's Dangerous**: Untested syntax causes runtime `500 Server Error` white screens when users navigate to newly introduced routes.
