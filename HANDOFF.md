@@ -24,6 +24,7 @@
   - `ADR-004`: Append-Only Assessment Session Records.
   - `ADR-005`: Starter Kit Selection & Scaffolding Accelerators (`filakitv4` base + `filament-crud-maker` generator + `filament-shield`).
   - `ADR-006`: Academico SIS Adaptation for Timetables, Attendance Matrix, Document Pipeline & KSPK Assessment.
+  - `ADR-007`: Preschool Operational Extensions & Regulatory Compliance Suite (WhatsApp Broadcaster, Saringan Pagi, RPH Planner, LHDN Invoicing, JKM Incident Log).
 
 ### Delivered in Branch `feat/academico-sis-scaffolding`:
 - **Database Schemas & Migrations**:
@@ -31,19 +32,28 @@
   - `timetable_slots`, `events` (Weekly schedules per class & per teacher)
   - `attendance_records` (Fast daily roll-call: Hadir, Tidak Hadir, Sakit, Cuti)
   - `skills`, `skill_scales`, `skill_evaluations`, `assessment_reports` (Preschool KSPK rubric matrix)
+  - `announcements`, `lesson_plans`, `teacher_tasks`, `teacher_leaves`
+  - `health_screenings`, `pickup_logs`, `fee_invoices`, `incident_logs`, `student_moments`
 - **Eloquent Models & Tenant Scopes**:
   - `School`, `Teacher`, `Room`, `Cohort`, `Student`, `TimetableSlot`, `Event`, `AttendanceRecord`, `Skill`, `SkillScale`, `SkillEvaluation`, `AssessmentReport`.
-- **Document Services Pipeline**:
+  - `Announcement`, `LessonPlan`, `TeacherTask`, `TeacherLeave`, `HealthScreening`, `PickupLog`, `FeeInvoice`, `IncidentLog`, `StudentMoment`.
+- **Document & Reporting Services Pipeline**:
   - `DocumentTemplateService`: `.docx` dynamic templating via PHPWord `TemplateProcessor` (Offer letters & registration forms).
   - `AssessmentReportPdfService`: Official Malaysian preschool annual progress report card generation via mPDF & Blade.
+  - `FeeReceiptPdfService`: Official LHDN tax relief preschool fee receipt generator (Section 46(1)(r)).
   - `AttendanceSpreadsheetService`: CSV / Excel cohort attendance export.
-- **Filament & Livewire Pages**:
+- **Filament & Livewire Interactive Workspace Pages**:
   - `TeacherDashboard`: Assigned class roster, pending attendance warning banner, today's schedule slots, quick action triggers.
   - `CohortAttendance`: Livewire matrix roll-call page with single-click status cycling and "Tanda Semua Hadir".
   - `ClassTimetable`: Visual weekly grid view filtered by Cohort or Teacher.
   - `SkillEvaluationPage`: Full matrix assessment scoring interface against KSPK learning standards.
+  - `AnnouncementBroadcaster`: Broadcast composer with automatic Malaysian WhatsApp markdown generator and 1-click web links.
+  - `MorningHealthScreening`: 10-second gate check with temperature logging and HFMD symptom flags.
+  - `LessonPlanner`: Week-by-week RPH theme planner aligned with KSPK domains.
+  - `FeeManagement`: Invoicing management with 1-click verified LHDN PDF receipt download.
+  - `IncidentLogPage`: Standardized accident and first-aid digital logbook for JKM licensing compliance.
 - **Seeders**:
-  - `TadikaAmalKspkSeeder`: Populates sample preschool tenants, teachers, cohorts (5 & 6 Tahun), students, timetable slots, and official KSPK skills.
+  - `TadikaAmalKspkSeeder`: Populates sample preschool tenants, teachers, cohorts (5 & 6 Tahun), students, timetable slots, official KSPK skills, announcements, RPHs, health screenings, fee invoices, and incident logs.
 
 ---
 
@@ -57,5 +67,5 @@
 ## [WP-NEXT] Next Immediate Action: Review & Merge to Main
 
 1. Review PR / diff on branch `feat/academico-sis-scaffolding`.
-2. Run `php artisan migrate --seed` to test full seeder with SQLite/MySQL.
+2. Run `php artisan migrate:fresh --seed` to test full seeder with SQLite/MySQL.
 3. Merge `feat/academico-sis-scaffolding` to `main`.

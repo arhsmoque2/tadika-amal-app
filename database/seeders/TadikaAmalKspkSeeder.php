@@ -181,5 +181,98 @@ class TadikaAmalKspkSeeder extends Seeder
                 );
             }
         }
+
+        // 9. Sample Announcements
+        \App\Models\Announcement::firstOrCreate(
+            ['school_id' => $school->id, 'title' => 'Cuti Peristiwa Sempena Sambutan Maulidur Rasul'],
+            [
+                'content' => "Assalamu'alaikum wbt kepada semua ibu bapa & penjaga yang dihormati,\n\nDimaklumkan bahawa Tadika Islam Amal Bestari akan bercuti sempena Sambutan Maulidur Rasul pada hari Isnin ini. Sesi persekolahan akan bersambung seperti biasa pada hari Selasa.\n\nSekian, terima kasih.",
+                'category' => 'holiday',
+                'target_audience' => 'all',
+                'published_at' => now(),
+                'created_by' => $teacherUser->id,
+                'is_active' => true,
+            ]
+        );
+
+        // 10. Sample Lesson Plan (RPH)
+        \App\Models\LessonPlan::firstOrCreate(
+            ['school_id' => $school->id, 'cohort_id' => $cohort6->id, 'week_number' => 1],
+            [
+                'teacher_id' => $teacher->id,
+                'theme' => 'Diri Saya & Anggota Badan',
+                'tunjang_kspk' => 'Tunjang Komunikasi (Bahasa Melayu)',
+                'learning_objectives' => 'Murid dapat mengenal dan menyebut 5 bahagian anggota badan utama dalam Bahasa Melayu dan Bahasa Arab.',
+                'activities' => "1. Nyanyian lagu 'Anggota Badan'.\n2. Murid memadankan kad imbasan anggota badan pada poster peraga.\n3. Lembaran kerja mewarna dan menyurih perkataan.",
+                'materials_needed' => 'Kad imbasan, poster anggota badan, pensel warna.',
+                'plan_date' => now()->format('Y-m-d'),
+            ]
+        );
+
+        // 11. Sample Health Screening
+        $allStudents = Student::where('school_id', $school->id)->get();
+        foreach ($allStudents as $st) {
+            \App\Models\HealthScreening::firstOrCreate(
+                [
+                    'school_id' => $school->id,
+                    'cohort_id' => $cohort6->id,
+                    'student_id' => $st->id,
+                    'date' => now()->format('Y-m-d'),
+                ],
+                [
+                    'temperature' => 36.6,
+                    'symptoms' => [],
+                    'status' => 'lulus',
+                    'remarks' => 'Murid ceria dan sihat.',
+                    'screened_by' => $teacherUser->id,
+                ]
+            );
+        }
+
+        // 12. Sample Fee Invoices & Paid Receipt
+        foreach ($allStudents as $idx => $st) {
+            $inv = \App\Models\FeeInvoice::firstOrCreate(
+                [
+                    'school_id' => $school->id,
+                    'student_id' => $st->id,
+                    'month' => 'Ogos',
+                    'academic_year' => '2026',
+                ],
+                [
+                    'cohort_id' => $cohort6->id,
+                    'invoice_number' => 'INV-2026-06-' . str_pad($st->id, 3, '0', STR_PAD_LEFT) . '-AUG',
+                    'receipt_number' => $idx === 0 ? 'REC-202608-0001' : null,
+                    'fee_category' => 'yuran_bulanan',
+                    'amount' => 350.00,
+                    'status' => $idx === 0 ? 'paid' : 'pending',
+                    'payment_method' => $idx === 0 ? 'fpx_online' : null,
+                    'paid_at' => $idx === 0 ? now() : null,
+                    'processed_by' => $teacherUser->id,
+                ]
+            );
+        }
+
+        // 13. Sample Incident Log
+        if ($allStudents->isNotEmpty()) {
+            \App\Models\IncidentLog::firstOrCreate(
+                [
+                    'school_id' => $school->id,
+                    'student_id' => $allStudents->first()->id,
+                    'incident_date' => now()->format('Y-m-d'),
+                ],
+                [
+                    'cohort_id' => $cohort6->id,
+                    'incident_time' => '10:15:00',
+                    'location' => 'Taman Permainan Tadika',
+                    'severity' => 'ringan',
+                    'incident_description' => 'Murid tersadung ketika bermain kejar-kejar di atas rumput.',
+                    'injury_details' => 'Luka calar kecil pada lutut kanan.',
+                    'first_aid_given' => 'Dicuci dengan cecair antiseptik Dettol dan ditampal plaster Hansaplast.',
+                    'witness_teacher_id' => $teacher->id,
+                    'parent_notified' => true,
+                    'parent_notified_at' => now(),
+                ]
+            );
+        }
     }
 }
