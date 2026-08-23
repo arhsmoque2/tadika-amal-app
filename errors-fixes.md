@@ -18,6 +18,7 @@
 | **ERR-008** | **JavaScript & ESM Bundle Static Analysis** | ARH JS Doctor: Gate 1 Oxlint Rust Linter (`oxlint-gate.mjs`) | **Checker-Automated** | Scanned Vite JS assets, Livewire scripts, and npm dependencies (<20ms) confirming zero syntax bugs or invalid ESM imports. |
 | **ERR-009** | **Configuration & JSON Schema Keys** | ARH JS Doctor: Gate 3 Schema Validator (`schema-validator.mjs`) | **Checker-Automated** | Validated `package.json`, `composer.json`, and dynamic JSON schemas against required structural keys. |
 | **ERR-010** | **ARH Documentation Convention Integrity** | ARH Docs Validator (`docs-validator.mjs`) | **Checker-Automated** | Verified that all 7 required ARH documentation suite files (`README.md`, `ARCHITECTURE.md`, `CHANGELOG.md`, `DESIGN.md`, `DEVTOOLS.md`, `QUALITY-GATES.md`, `HANDOFF.md`) are present and compliant. |
+| **ERR-011** | **Missing Standard QA & Linter Configurations** | Benchmark Audit (`ARH-URUS`, `DPIK-TUGAS`, `Beelal Coffee`) | **Agent-Manual** | Ported missing static analysis and QA configs: `pint.json` (PSR-12), `phpstan.neon` (Larastan level 5), `knip.json` (dead code), `lighthouserc.json` (PWA/A11y), and `_qa/tadika-ui-ux-quality-gate.mjs`. |
 
 ---
 
