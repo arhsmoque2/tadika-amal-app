@@ -75,14 +75,32 @@ jobs:
           echo "pooled=$POOLED" >> "$GITHUB_OUTPUT"
           echo "direct=$DIRECT" >> "$GITHUB_OUTPUT"
 
-      - name: Run migrations (Cloud Run Job, direct connection)
-        env:
-          DATABASE_URL: ${{ steps.neon.outputs.direct }}
+      - name: Sync runtime secrets to GCP Secret Manager
+        run: |
+          # Helper function to create or update secret
+          sync_secret() {
+            local secret_name="$1"
+            local secret_val="$2"
+            if ! gcloud secrets describe "$secret_name" --project=arh-gcloud-vm >/dev/null 2>&1; then
+              printf "%s" "$secret_val" | gcloud secrets create "$secret_name" --data-file=- --project=arh-gcloud-vm --replication-policy=automatic --quiet
+            else
+              printf "%s" "$secret_val" | gcloud secrets versions add "$secret_name" --data-file=- --project=arh-gcloud-vm --quiet
+            fi
+          }
+
+          sync_secret "tadika_app_key" "${{ secrets.APP_KEY }}"
+          sync_secret "tadika_db_url_direct" "${{ steps.neon.outputs.direct }}"
+          sync_secret "tadika_db_url_pooled" "${{ steps.neon.outputs.pooled }}"
+          sync_secret "tadika_r2_access_key_id" "${{ secrets.R2_ACCESS_KEY_ID }}"
+          sync_secret "tadika_r2_secret_access_key" "${{ secrets.R2_SECRET_ACCESS_KEY }}"
+
+      - name: Run migrations (Cloud Run Job with Secret Manager references)
         run: |
           gcloud run jobs deploy tadika-migrate \
             --image="${{ env.IMAGE }}" \
             --region="asia-southeast1" \
-            --set-env-vars="DATABASE_URL=${DATABASE_URL},DB_CONNECTION=pgsql,APP_ENV=production,APP_KEY=${{ secrets.APP_KEY }}" \
+            --set-env-vars="DB_CONNECTION=pgsql,APP_ENV=production" \
+            --set-secrets="DATABASE_URL=tadika_db_url_direct:latest,APP_KEY=tadika_app_key:latest" \
             --args="sh,-c,php artisan migrate --force" \
             --max-retries=0 \
             --quiet
@@ -97,7 +115,7 @@ jobs:
             echo "exists=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Deploy to Cloud Run
+      - name: Deploy to Cloud Run (with Secret Manager references)
         id: deploy
         uses: google-github-actions/deploy-cloudrun@v3
         with:
@@ -119,14 +137,15 @@ jobs:
             QUEUE_CONNECTION=database
             LOG_CHANNEL=stack
             DB_CONNECTION=pgsql
-            DATABASE_URL=${{ steps.neon.outputs.pooled }}
-            APP_KEY=${{ secrets.APP_KEY }}
             AWS_DEFAULT_REGION=auto
             AWS_USE_PATH_STYLE_ENDPOINT=false
             AWS_BUCKET=${{ vars.R2_BUCKET || 'tadika-amal-storage' }}
             AWS_ENDPOINT=${{ vars.R2_ENDPOINT }}
-            AWS_ACCESS_KEY_ID=${{ secrets.R2_ACCESS_KEY_ID }}
-            AWS_SECRET_ACCESS_KEY=${{ secrets.R2_SECRET_ACCESS_KEY }}
+          secrets: |
+            DATABASE_URL=tadika_db_url_pooled:latest
+            APP_KEY=tadika_app_key:latest
+            AWS_ACCESS_KEY_ID=tadika_r2_access_key_id:latest
+            AWS_SECRET_ACCESS_KEY=tadika_r2_secret_access_key:latest
 
       - name: Grant public invoker
         run: |
@@ -151,7 +170,8 @@ jobs:
             --args="sh,-c,php artisan schedule:run" \
             --max-retries=0 \
             --task-timeout=120 \
-            --set-env-vars="APP_ENV=production,SESSION_DRIVER=database,CACHE_STORE=database,QUEUE_CONNECTION=database,DATABASE_URL=${{ steps.neon.outputs.pooled }},DB_CONNECTION=pgsql,APP_KEY=${{ secrets.APP_KEY }}" \
+            --set-env-vars="APP_ENV=production,SESSION_DRIVER=database,CACHE_STORE=database,QUEUE_CONNECTION=database,DB_CONNECTION=pgsql" \
+            --set-secrets="DATABASE_URL=tadika_db_url_pooled:latest,APP_KEY=tadika_app_key:latest" \
             --quiet
 
       - name: Ensure Cloud Scheduler triggers every minute
@@ -177,3 +197,4 @@ jobs:
           echo "- Image: \`${{ env.IMAGE }}\`" >> "$GITHUB_STEP_SUMMARY"
           echo "- Service URL: ${{ steps.deploy.outputs.url }}" >> "$GITHUB_STEP_SUMMARY"
           echo "- Migrations: Applied via \`tadika-migrate\` job" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Secrets: Protected via GCP Secret Manager references" >> "$GITHUB_STEP_SUMMARY"

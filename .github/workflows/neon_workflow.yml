@@ -8,6 +8,10 @@ on:
       - synchronize
       - closed
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   create_neon_branch:
     name: Create Neon Branch
@@ -30,21 +34,22 @@ jobs:
           username: neondb_owner
           database: neondb
 
-      - name: Post branch details as PR comment
+      - name: Post branch status as PR comment
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
-            ## 🌿 Neon Preview Branch
+            ## 🌿 Neon Preview Branch Created
 
-            A preview database branch has been created for this PR.
+            A dedicated preview database branch has been provisioned for this pull request.
 
-            | Detail | Value |
-            |--------|-------|
-            | **Branch** | `preview/pr-${{ github.event.number }}-${{ github.head_ref }}` |
-            | **DB URL (direct)** | `${{ steps.create_branch.outputs.db_url }}` |
-            | **DB URL (pooled)** | `${{ steps.create_branch.outputs.db_url_with_pooler }}` |
+            | Parameter | Status / Target |
+            | :--- | :--- |
+            | **Neon Project** | `${{ vars.NEON_PROJECT_ID }}` |
+            | **Database Branch** | `preview/pr-${{ github.event.number }}-${{ github.head_ref }}` |
+            | **Database Role** | `neondb_owner` |
+            | **Lifecycle** | Ephemeral (auto-dropped on PR close) |
 
-            > Branch will be deleted automatically when this PR is closed.
+            > *Note: Database connection credentials are securely injected into ephemeral test environments and masked from pull request comments.*
           comment_tag: neon-branch-preview
 
   delete_neon_branch:
