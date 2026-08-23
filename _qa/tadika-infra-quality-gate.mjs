@@ -186,6 +186,17 @@ export function validateInfrastructure(customRepoRoot = defaultRepoRoot) {
             logError('neon_workflow.yml missing create or delete branch action.');
         }
 
+        // Check database.php pgsql connection URL configuration
+        const dbConfigPath = path.join(repoRoot, 'config', 'database.php');
+        if (fs.existsSync(dbConfigPath)) {
+            const dbContent = fs.readFileSync(dbConfigPath, 'utf8');
+            if (dbContent.includes("'url' => env('DB_URL', env('DATABASE_URL'))") || dbContent.includes("'url' => env('DATABASE_URL')")) {
+                logSuccess('config/database.php pgsql driver accepts standard DATABASE_URL parameter.');
+            } else {
+                logError('config/database.php pgsql driver missing DATABASE_URL fallback mapping.');
+            }
+        }
+
         // Strictly verify PR comment step exists and is completely sanitized
         const hasCommentAction = neonContent.includes('thollander/actions-comment-pull-request');
         if (!hasCommentAction) {

@@ -13,6 +13,7 @@ class InfrastructureConfigTest extends TestCase
 
         $this->assertArrayHasKey('pgsql', $connections, 'Postgres connection configuration must exist for Neon');
         $this->assertSame('pgsql', $connections['pgsql']['driver'] ?? null);
+        $this->assertArrayHasKey('url', $connections['pgsql'], 'pgsql connection must define url key for DATABASE_URL mapping');
 
         $this->assertArrayHasKey('sqlite', $connections, 'SQLite connection must exist for hermetic test execution');
     }
