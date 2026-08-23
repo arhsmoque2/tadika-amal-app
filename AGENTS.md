@@ -16,6 +16,10 @@
    - Accident and injury tracking must comply with Jabatan Kebajikan Masyarakat (JKM) logbook standards.
 4. **Continuous Error & Fix Harvesting**:
    - Any resolved syntax error, layout collision, submodule trap, secret leak, or compliance gap **MUST be recorded immediately** in [`errors-fixes.md`](errors-fixes.md).
+5. **No Unverified "Passed" Claims**:
+   - Never mark a check, gate, or review item as passed, resolved, or compliant in a PR description, commit message, or `errors-fixes.md` unless you actually ran the real command and observed the real output — not "wrote a script that should catch this," but "ran `X` and saw `Y`."
+   - A static file-content scan (grep-for-a-pattern, "does this file exist," "does this JSON key match") is a legitimate and useful gate, but it is **not a substitute** for actually running `composer install`, `pnpm run build`, `php artisan migrate`, `php artisan test`, or `pint --test`. State which kind of check you ran when you report a result.
+   - **Why this is a hard rule, not a style preference**: PR #2's `errors-fixes.md` (ERR-006, ERR-011, ERR-015, ERR-022) claimed zero syntax errors, Pint compliance, and 6 passing feature tests — all self-reported without the pipeline ever actually executing. When CI was made to actually run `composer validate`, `php artisan migrate`, `pint --test`, and `php artisan test` for real, it found: a stale `composer.lock` missing two required packages, a PHP fatal from a property-type invariance violation on 9 Filament classes, an orphaned migration with an internal duplicate-column bug, 27 real Pint violations across 25 files, and a feature-test suite where every single test failed on first real run (wrong column names, invalid enum values, views rendered with no data). See `errors-fixes.md` ERR-023 through ERR-028 for the full detail. None of this was exotic — it was caught by the most basic possible action: running the command and reading the output.
 
 ---
 

@@ -2,7 +2,18 @@
 /**
  * Tadika Amal Apps — Cloud Sandbox Agent Independence & Quality Gate
  * Enforces zero-host lock-in, portable scripts, hermetic CI reproducibility,
- * submodule integrity, test coverage presence, and target locale completeness.
+ * submodule integrity, test coverage presence, target locale completeness,
+ * lockfile freshness, migration integrity, and Filament property-type
+ * invariance.
+ *
+ * IMPORTANT: this script only performs static, file-content checks — it does
+ * not run 'composer install', 'pnpm run build', 'php artisan migrate', or
+ * 'php artisan test'. It cannot substitute for actually running those real
+ * commands (see .github/workflows/ci.yml, which does). Every gate here was
+ * added because a static check *can* catch that specific class of bug
+ * without needing a full install — not because static checks are sufficient
+ * on their own. See errors-fixes.md ERR-023 through ERR-028 for the actual
+ * CI-caught bugs that motivated Gates 7-9.
  */
 
 import fs from 'node:fs';
@@ -177,6 +188,139 @@ if (!fs.existsSync(testDir)) {
     } else {
         console.log(`  ✅ Verified ${testFiles.length} domain feature test files in tests/Feature/:`);
         testFiles.forEach(f => console.log(`     • ${f}`));
+    }
+}
+console.log();
+
+// 7. Lockfile Freshness Invariant (composer.lock / pnpm-lock.yaml vs their manifests)
+console.log('🔒 Gate 7: Lockfile Freshness Invariant...');
+const composerJsonPath = path.join(repoRoot, 'composer.json');
+const composerLockPath = path.join(repoRoot, 'composer.lock');
+if (fs.existsSync(composerJsonPath) && fs.existsSync(composerLockPath)) {
+    try {
+        const composerJson = JSON.parse(fs.readFileSync(composerJsonPath, 'utf8'));
+        const composerLock = JSON.parse(fs.readFileSync(composerLockPath, 'utf8'));
+        const lockedNames = new Set([
+            ...(composerLock.packages || []).map(p => p.name),
+            ...(composerLock['packages-dev'] || []).map(p => p.name),
+        ]);
+        const isPlatformPackage = name => name === 'php' || name.startsWith('ext-') || name.startsWith('lib-') || name === 'composer-plugin-api' || name === 'composer-runtime-api';
+        const required = [
+            ...Object.keys(composerJson.require || {}),
+            ...Object.keys(composerJson['require-dev'] || {}),
+        ].filter(name => !isPlatformPackage(name));
+        const missingFromLock = required.filter(name => !lockedNames.has(name));
+        if (missingFromLock.length > 0) {
+            console.error(`  ❌ composer.lock is stale: ${missingFromLock.join(', ')} required in composer.json but missing from composer.lock. Run 'composer update ${missingFromLock.join(' ')}'.`);
+            totalErrors++;
+        } else {
+            console.log(`  ✅ composer.lock covers all ${required.length} composer.json dependencies.`);
+        }
+    } catch (e) {
+        console.error(`  ❌ Error validating composer.lock freshness: ${e.message}`);
+        totalErrors++;
+    }
+}
+
+const pkgJsonPath = path.join(repoRoot, 'package.json');
+const pnpmLockPath = path.join(repoRoot, 'pnpm-lock.yaml');
+if (fs.existsSync(pkgJsonPath) && fs.existsSync(pnpmLockPath)) {
+    try {
+        const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
+        const declaredOverrides = (pkgJson.pnpm && pkgJson.pnpm.overrides) || {};
+        const lockContent = fs.readFileSync(pnpmLockPath, 'utf8');
+        // pnpm-lock.yaml records the resolved overrides in a top-level `overrides:` block,
+        // e.g. "overrides:\n  rollup: '>=4.59.0'\n  yaml: '>=2.8.3'\n". Extract it without a
+        // YAML dependency, matching this file's zero-extra-dependency style.
+        const overridesBlockMatch = lockContent.match(/^overrides:\n((?:  \S.*\n)+)/m);
+        const lockedOverridesText = overridesBlockMatch ? overridesBlockMatch[1] : '';
+        const declaredKeys = Object.keys(declaredOverrides);
+        const missingOverrides = declaredKeys.filter(key => !new RegExp(`^  ${key}:`, 'm').test(lockedOverridesText));
+        if (declaredKeys.length > 0 && (missingOverrides.length > 0 || !overridesBlockMatch)) {
+            console.error(`  ❌ pnpm-lock.yaml is stale: package.json's pnpm.overrides (${declaredKeys.join(', ')}) is not reflected in pnpm-lock.yaml's overrides block. Run 'pnpm install --no-frozen-lockfile'.`);
+            totalErrors++;
+        } else {
+            console.log(`  ✅ pnpm-lock.yaml overrides block matches package.json's pnpm.overrides.`);
+        }
+    } catch (e) {
+        console.error(`  ❌ Error validating pnpm-lock.yaml freshness: ${e.message}`);
+        totalErrors++;
+    }
+}
+console.log();
+
+// 8. Migration Integrity Invariant (duplicate columns within a table, duplicate table creation)
+console.log('🗄️ Gate 8: Migration Integrity Invariant...');
+const migrationsDir = path.join(repoRoot, 'database', 'migrations');
+if (fs.existsSync(migrationsDir)) {
+    const migrationFiles = fs.readdirSync(migrationsDir).filter(f => f.endsWith('.php'));
+    const tableCreators = new Map(); // table name -> [migration files that create it]
+    let migrationIssues = 0;
+
+    for (const file of migrationFiles) {
+        const content = fs.readFileSync(path.join(migrationsDir, file), 'utf8');
+        const createRegex = /Schema::create\(\s*'(\w+)'\s*,\s*function\s*\(Blueprint\s+\$table\)\s*\{/g;
+        let match;
+        while ((match = createRegex.exec(content)) !== null) {
+            const table = match[1];
+            const bodyStart = match.index + match[0].length;
+            let depth = 1;
+            let i = bodyStart;
+            while (depth > 0 && i < content.length) {
+                if (content[i] === '{') depth++;
+                else if (content[i] === '}') depth--;
+                i++;
+            }
+            const body = content.slice(bodyStart, i);
+            const colMatches = [...body.matchAll(/\$table->\w+\(\s*'([a-z_]+)'/g)].map(m => m[1]);
+            const dupCols = [...new Set(colMatches.filter(c => colMatches.filter(x => x === c).length > 1))];
+            if (dupCols.length > 0) {
+                console.error(`  ❌ [${file}] table '${table}' declares duplicate column(s) in the same Schema::create() block: ${dupCols.join(', ')}`);
+                migrationIssues++;
+            }
+
+            if (!tableCreators.has(table)) tableCreators.set(table, []);
+            tableCreators.get(table).push(file);
+        }
+    }
+
+    for (const [table, files] of tableCreators) {
+        if (files.length > 1) {
+            console.error(`  ❌ Table '${table}' is created by ${files.length} different migrations: ${files.join(', ')}`);
+            migrationIssues++;
+        }
+    }
+
+    totalErrors += migrationIssues;
+    if (migrationIssues === 0) {
+        console.log(`  ✅ Scanned ${migrationFiles.length} migration files: no duplicate columns or duplicate table creation.`);
+    }
+}
+console.log();
+
+// 9. Filament Navigation Icon Type Invariance (Filament v4 requires string|BackedEnum|null)
+console.log('🎨 Gate 9: Filament Property Type Invariance Invariant...');
+const filamentDir = path.join(repoRoot, 'app', 'Filament');
+if (fs.existsSync(filamentDir)) {
+    let typeIssues = 0;
+    function scanFilamentTypes(dir) {
+        for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+            const fullPath = path.join(dir, entry.name);
+            if (entry.isDirectory()) {
+                scanFilamentTypes(fullPath);
+            } else if (entry.isFile() && entry.name.endsWith('.php')) {
+                const content = fs.readFileSync(fullPath, 'utf8');
+                if (/protected\s+static\s+\?string\s+\$navigationIcon\b/.test(content)) {
+                    console.error(`  ❌ [${path.relative(repoRoot, fullPath)}] declares '\$navigationIcon' as '?string' — Filament v4's Page/Resource base class requires 'string|BackedEnum|null'. This is a PHP property-type invariance violation and fatals at class-load time, not a lint warning.`);
+                    typeIssues++;
+                }
+            }
+        }
+    }
+    scanFilamentTypes(filamentDir);
+    totalErrors += typeIssues;
+    if (typeIssues === 0) {
+        console.log('  ✅ All Filament Page/Resource classes declare $navigationIcon as string|BackedEnum|null.');
     }
 }
 console.log();
