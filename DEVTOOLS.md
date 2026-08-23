@@ -52,19 +52,22 @@ pnpm run qa:sandbox
 # 2. Cloud Infrastructure Quality Gate (Cloud Run, Neon DB pooling, R2 S3 adapter, Secret Manager)
 pnpm run qa:infra
 
-# 3. Domain-Specific UI/UX Quality Gate (Blade balance, Touch targets >=44px, LHDN/JKM legal text)
+# 3. Infrastructure Quality Gate Unit Tests (Fixtures & Negative Regression Tests)
+pnpm run test:qa
+
+# 4. Domain-Specific UI/UX Quality Gate (Blade balance, Touch targets >=44px, LHDN/JKM legal text)
 pnpm run qa:ui
 
-# 4. ARH Documentation Compliance Doctor
+# 5. ARH Documentation Compliance Doctor
 pnpm run docs:check
 
-# 5. Combined Master Automated Quality Gate
+# 6. Combined Master Automated Quality Gate
 pnpm run qa:all
 
-# 6. PHP Code Style & Static Linting (Laravel Pint with PSR-12 and Alpha Imports)
+# 7. PHP Code Style & Static Linting (Laravel Pint with PSR-12 and Alpha Imports)
 composer pint
 
-# 7. PHP Feature & Unit Test Suite (Hermetic SQLite In-Memory)
+# 8. PHP Feature & Unit Test Suite (Hermetic SQLite In-Memory + S3/R2 Disk Mocking)
 php artisan test
 ```
 
@@ -74,7 +77,7 @@ php artisan test
 
 When developing inside ephemeral cloud sandboxes (Claude Code, Codespaces, Gitpod):
 1. **Zero Secret Requirement**: Do not attempt to query live GCP WIF, Neon API, or Cloudflare tokens locally.
-2. **Hermetic Testing**: The test suite runs against in-memory SQLite and fake storage disks out-of-the-box.
+2. **Hermetic Testing**: The test suite runs against in-memory SQLite and fake storage disks out-of-the-box (17 feature/unit tests, 51 assertions).
 3. **Static Pre-Push Verification**: Run `pnpm run qa:all` before pushing. Static audits verify Dockerfile, DB URLs, R2 configs, and CI workflow safety offline without needing cloud CLI tools.
 4. **Automated CI/CD**: Real provisioning, branch creation, image build, and deployments execute securely on GitHub Actions CI.
 
