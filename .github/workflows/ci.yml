@@ -25,7 +25,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
         with:
-          version: 9
+          version: 9.15.9
 
       - name: Run Cloud Sandbox Independence & Portability Gate
         run: node _qa/cloud-sandbox-independence-gate.mjs
@@ -61,7 +61,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
         with:
-          version: 9
+          version: 9.15.9
 
       - name: Validate composer.json
         run: composer validate --strict

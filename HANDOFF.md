@@ -135,7 +135,7 @@ Anything that fails here is real signal — see `errors-fixes.md` ERR-023 throug
 - Repository: `main` fast-forwarded from `3393e3b` to fetched `origin/main` `a6a38a2`.
 - Static gates: all four `_qa/` scripts pass with zero warnings.
 - Composer: `composer install --prefer-dist --no-interaction` completed; `composer validate --strict` passes.
-- Frontend: moved pnpm overrides from `package.json` to `pnpm-workspace.yaml`; regenerated lockfile; `pnpm install --frozen-lockfile` passes; `pnpm run build` passes and writes `public/build/manifest.json`.
+- Frontend: pinned pnpm 9.15.9 in `package.json` and CI, kept overrides in the pnpm 9-supported `package.json` location, regenerated the lockfile with pnpm 9; `pnpm install --frozen-lockfile` passes; `pnpm run build` passes and writes `public/build/manifest.json`.
 - Tests: `php vendor/bin/pest --compact` passes with 12 tests and 34 assertions. `php artisan test` is not a registered Laravel command in this checkout; Pest is the working runner.
 - Formatting: `php vendor/bin/pint --test app config database routes tests` passes. The full vendored `packages/filament-crud-maker` tree still has line-ending/style findings.
 - PHPStan: `php vendor/bin/phpstan --no-progress --memory-limit=512M` completes but reports 57 existing errors. CI still runs it advisory-only (`|| true`); do not claim static analysis is green.

@@ -76,12 +76,12 @@
 
 ---
 
-### 17. pnpm 11 Overrides Configuration Drift (ERR-029)
+### 17. pnpm Lockfile Configuration Drift (ERR-029)
 - **Script / Command**: `pnpm install --frozen-lockfile`.
-- **Symptom**: pnpm 11 ignored `package.json`'s `pnpm.overrides` block and rejected the lockfile with `ERR_PNPM_LOCKFILE_CONFIG_MISMATCH`.
-- **Why It's Dangerous**: Clean-room frontend installation failed even though the static lockfile doctor reported the override values as present.
-- **Fix**: Moved the overrides to the pnpm 11-supported `pnpm-workspace.yaml` configuration file and regenerated `pnpm-lock.yaml`.
-- **Verification**: `pnpm install --frozen-lockfile` exits 0; `pnpm run build` produces `public/build/manifest.json`.
+- **Symptom**: GitHub Actions failed with `ERR_PNPM_LOCKFILE_CONFIG_MISMATCH`; an attempted workspace-level override migration then failed on CI pnpm 9 with `packages field missing or empty`.
+- **Why It's Dangerous**: Clean-room frontend installation failed in the merge gate even though local pnpm 11 accepted the configuration.
+- **Fix**: Kept the overrides in the pnpm 9-supported `package.json` location, removed the workspace-only configuration, pinned pnpm 9.15.9 in `package.json` and CI, and regenerated `pnpm-lock.yaml` with pnpm 9.
+- **Verification**: pnpm 9.15.9 `install --frozen-lockfile` exits 0 locally; the lockfile contains the expected overrides; `pnpm run build` produces `public/build/manifest.json`.
 
 ### 18. PHPStan Local Baseline (ERR-030)
 - **Script / Command**: `php vendor/bin/phpstan --no-progress --memory-limit=512M`.
