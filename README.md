@@ -26,16 +26,32 @@ A modular, extensible school operations platform for Malaysian Islamic kindergar
 
 ---
 
+## [README-DEPLOYMENT] Live Production Deployment
+
+| Service | Endpoint | Status |
+| :--- | :--- | :--- |
+| **Main Web Portal** | [https://tadika-amal-app-gmnvf7efyq-as.a.run.app](https://tadika-amal-app-gmnvf7efyq-as.a.run.app) | `200 OK` (Live) |
+| **Health Probe** | [https://tadika-amal-app-gmnvf7efyq-as.a.run.app/up](https://tadika-amal-app-gmnvf7efyq-as.a.run.app/up) | `200 OK` (Live) |
+| **Admin Operations Panel** | [https://tadika-amal-app-gmnvf7efyq-as.a.run.app/admin/login](https://tadika-amal-app-gmnvf7efyq-as.a.run.app/admin/login) | `200 OK` (Live) |
+| **Teacher & Staff Workspace** | [https://tadika-amal-app-gmnvf7efyq-as.a.run.app/app/login](https://tadika-amal-app-gmnvf7efyq-as.a.run.app/app/login) | `200 OK` (Live) |
+
+- **Compute & Runtime**: Google Cloud Run (`asia-southeast1`) via FrankenPHP 8.4 container image.
+- **Relational Database**: Neon Serverless PostgreSQL with auto-scaling connection pooling.
+- **Background Cron**: Google Cloud Scheduler triggering `php artisan schedule:run` every minute.
+
+---
+
 ## [README-STATUS] Current Status
 
 | Concern | State | Evidence |
 | :--- | :--- | :--- |
 | **Docs & Platform Tombstone** | IMPLEMENTED | Full ARH documentation suite complete |
-| **ADR Suite (ADR 001 - 008)** | ACCEPTED | `adr/` directory populated with ADR-001 through ADR-008 |
+| **ADR Suite (ADR 001 - 011)** | ACCEPTED | `adr/` directory populated with ADR-001 through ADR-011 |
 | **Base Scaffolding & Core SIS**| IMPLEMENTED | 110+ models, migrations & Livewire workspace pages |
 | **Multi-Doc & Presentation Pipeline** | IMPLEMENTED | `.xlsx`, `.docx`, `.pptx`, `.pdf`, and HTML poster services active |
 | **AI JSON Diagnostic Bridge** | IMPLEMENTED | Teacher Co-Pilot prompt generator & Sentinel health snapshots |
 | **UI/UX & Regulatory Quality Gate** | VERIFIED | `_qa/tadika-ui-ux-quality-gate.mjs` passing 100% (0 warnings) |
+| **Production Cloud Run & Neon** | LIVE & ACTIVE | Cloud Run revision deployed with Secret Manager references |
 
 ---
 
@@ -46,6 +62,6 @@ A modular, extensible school operations platform for Malaysian Islamic kindergar
 Get-Content ARCHITECTURE.md
 Get-Content RECIPES.md
 
-# Run local UI/UX Quality Gate
-node _qa/tadika-ui-ux-quality-gate.mjs
+# Run local quality doctors & pre-push gates
+pnpm run qa:all
 ```
