@@ -1,21 +1,98 @@
-# AGENTS.md — Tadika Amal Apps
+# AGENTS.md — Tadika Amal Apps Operational & Quality Standards
 
-## 1. Capability Route & Cold-Start Discipline
+> **Role**: Autonomous, Compliant, Quality-Guarded Engineering Agent / Developer.
+> **Objective**: Drive preschool operations software with zero runtime regressions, verified mobile ergonomics, statutory LHDN/JKM compliance, and continuous error harvesting.
 
-When entering this repository:
-1. Read [`README.md`](README.md) and [`PROPOSAL.md`](PROPOSAL.md) to understand current state and decisions.
-2. The user will select between **Option A (Filament v4)**, **Option B (Vue 3 / Inertia)**, or **Option C (Hybrid)**.
-3. Once the decision is confirmed, initialize the scaffold following standard Laravel 12 + PHP 8.4 + Tailwind CSS v4 patterns.
+---
 
-## 2. Technology & Tooling Standards
-- **PHP**: PHP 8.4+ via `composer`.
-- **Node.js**: `pnpm` + Vite.
-- **Database**: PostgreSQL (Neon) or SQLite in-memory for testing.
-- **Code Style**: Laravel Pint (`pint.json`).
-- **Tests**: Pest / PHPUnit + Playwright for browser E2E flows.
-- **Git Authority**: Private repo on `arhsmoque2/tadika-amal-app`.
+## 1. Prime Directives & Invariants
 
-## 3. Prime Directives
-- **Reuse > Create**: Leverage established packages (`filament`, `saade/filament-fullcalendar`, `hammadzafar05/filament-mobile-preset`, `kstmostofa/laravel-whatsapp`).
-- **Verify > Infer**: Always verify rendered UI with real browser tests and Playwright before declaring done.
-- **Zero Actions Waste**: Run builds locally or on Google Cloud Build to preserve GitHub Actions quota.
+1. **The Core Invariant**: *"The platform provides containers, the school provides content."*
+   - Never hardcode rigid curriculum subjects (*Iqra'*, *Hafazan*, *Solat*, *Math*) as fixed database table columns. They are configured dynamically at runtime via the KSPK skill schema engine ([`ADR-003`](adr/ADR-003-json-schema-for-runtime-configurable-fields.md)).
+2. **Strict Multi-Tenancy Scoping**:
+   - Every Eloquent model, database migration, and query MUST enforce `school_id` foreign key isolation and composite unique constraints to prevent cross-school data pollution.
+3. **Statutory Compliance Readiness**:
+   - Preschool fee receipts must carry the official Malaysian Income Tax Section 46(1)(r) tax relief declaration and computerized serial format (`REC-YYYYMM-XXXX`).
+   - Accident and injury tracking must comply with Jabatan Kebajikan Masyarakat (JKM) logbook standards.
+4. **Continuous Error & Fix Harvesting**:
+   - Any resolved syntax error, layout collision, submodule trap, secret leak, or compliance gap **MUST be recorded immediately** in [`errors-fixes.md`](errors-fixes.md).
+
+---
+
+## 2. Standard Practice & Workflow Loop
+
+Every agent or developer working in this repository must follow this 4-step practice:
+
+```
+┌─────────────────┐     ┌──────────────────────┐     ┌─────────────────────┐     ┌──────────────────────┐
+│ 1. Implement    │ ──> │ 2. Run Quality Gates │ ──> │ 3. Harvest Fixes    │ ──> │ 4. Commit & Handoff  │
+│ Feature / Fix   │     │ (pnpm qa:all + Pint) │     │ into errors-fixes.md│     │ with clean receipts  │
+└─────────────────┘     └──────────────────────┘     └─────────────────────┘     └──────────────────────┘
+```
+
+### Step 1: Implementation Discipline
+- Maintain mobile ergonomics: interactive status pills, attendance toggles, and screening controls must maintain $\ge 44\text{px} \times 44\text{px}$ touch targets.
+- Ensure all Blade directives (`@if`, `@forelse`, `@can`) are symmetrically closed.
+- Restrict colors to the official `Emerald` / `Slate` / `Rose` / `Amber` semantic design tokens.
+
+### Step 2: Quality Gate Execution (Mandatory Before Commit)
+Run the automated verification suite before declaring any task complete:
+
+```powershell
+# 1. Run full JavaScript, UI/UX, Secret & A11y Doctor
+pnpm doctor
+
+# 2. Run Domain UI/UX & Blade Integrity Gate
+pnpm run qa:ui
+
+# 3. Run PHP Syntax Check (Recursive)
+Get-ChildItem -Path app,database -Filter *.php -Recurse | ForEach-Object { $res = php -l $_.FullName 2>&1; if ($res -notmatch "No syntax errors detected") { Write-Host $res } }
+
+# 4. Run Laravel Pint (PSR-12 & Clean Alpha Import Sorting)
+composer pint
+```
+
+### Step 3: Error & Fix Recording Protocol
+Whenever an unexpected error or lint breakage is caught:
+1. Open [`errors-fixes.md`](errors-fixes.md).
+2. Append a new record to `[ERR-MATRIX]` containing:
+   - **ID**: `ERR-XXX` (sequential).
+   - **Issue / Risk Description**: What failed or could have failed in production.
+   - **Detection Engine / Script**: The exact CLI tool (e.g. `Oxlint`, `secret-scanner.mjs`, `_qa/tadika-ui-ux-quality-gate.mjs`, `php -l`, `pint`).
+   - **Fix Type**: `Agent-Manual` or `Checker-Automated`.
+   - **Root Cause & Permanent Fix**: Technical rationale and remediation.
+3. Add a subsection under `[ERR-DETAIL]` if the issue involves architectural lessons.
+
+### Step 4: Clean Commit & Handoff
+- Check `git status` to ensure zero loose temporary files or untracked `.git` folders.
+- Update [`HANDOFF.md`](HANDOFF.md) with verified state and exact test receipts.
+
+---
+
+## 3. DevTool Capabilities & Scripts Inventory
+
+| Script / Command | Toolchain / Engine | Primary Capability & Purpose |
+| :--- | :--- | :--- |
+| `pnpm doctor` | `_AGENT-CAPABILITIES/arh-js-devkit/` | Runs master doctor: Oxlint (<20ms), Secret Scanner, Schema Validator, Layout/A11y Gate, Ratchet, and ARH Docs integrity. |
+| `pnpm run qa:ui` | `_qa/tadika-ui-ux-quality-gate.mjs` | Audits Blade directive balance, mobile touch bounding boxes ($\ge 44\text{px}$), design token contrast, and statutory LHDN/JKM legal text. |
+| `pnpm run qa:all` | Node.js / Pnpm | Executes `pnpm doctor` and `pnpm run qa:ui` sequentially in a single pass. |
+| `pnpm run docs:check` | `bin/arh-docs-doctor.mjs` | Validates presence and non-empty status of the 7 canonical ARH documentation suite files. |
+| `composer doctor` | Node.js / Composer | Composer proxy executing the master JS/UI doctor. |
+| `composer pint` | Laravel Pint (`pint.json`) | Enforces strict PSR-12 code style, short array syntax, and alphabetical `use` statement sorting. |
+| `composer phpstan` | Larastan (`phpstan.neon`) | Static analysis at Level 5 with Octane compatibility and Eloquent model property inspection. |
+| `npx knip` | Knip (`knip.json`) | Scans Vite bundles against `resources/` to eliminate dead code and orphan npm dependencies. |
+| `npx lighthouserc` | Google Lighthouse (`lighthouserc.json`) | Asserts performance ($\ge 0.85$), accessibility ($\ge 0.95$), and PWA offline baseline. |
+| `php -l` (Recursive) | PHP 8.4 Engine CLI | High-speed syntax linting across all models, migrations, and Livewire classes. |
+
+---
+
+## 4. Documentation Suite Navigation
+
+Every change must maintain synchronization across canonical documentation:
+- [`README.md`](README.md): Operational overview and status matrix.
+- [`INTENT.md`](INTENT.md): System boundary and platform principles.
+- [`ARCHITECTURE.md`](ARCHITECTURE.md): Data schemas, multi-tenancy, and security invariants.
+- [`DEVTOOLS.md`](DEVTOOLS.md): Pinned versions, environment setup, and CLI commands.
+- [`QUALITY-GATES.md`](QUALITY-GATES.md): Multi-tier acceptance thresholds.
+- [`errors-fixes.md`](errors-fixes.md): The live quality audit and remediation log.
+- [`HANDOFF.md`](HANDOFF.md): Real-time verified milestone continuity.

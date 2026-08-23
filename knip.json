@@ -1,0 +1,15 @@
+{
+    "$schema": "https://unpkg.com/knip@5/overview/schema.json",
+    "entry": [
+        "resources/js/app.js",
+        "resources/css/app.css"
+    ],
+    "project": [
+        "resources/**/*.{js,ts,vue,blade.php}"
+    ],
+    "ignore": [
+        "public/**",
+        "vendor/**",
+        "node_modules/**"
+    ]
+}

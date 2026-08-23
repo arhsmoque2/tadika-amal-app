@@ -1,0 +1,30 @@
+{
+    "name": "tadika-amal-app",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "vite build",
+        "dev": "vite",
+        "doctor": "node _qa/tadika-quality-doctor.mjs",
+        "docs:check": "node _qa/tadika-docs-doctor.mjs",
+        "qa:ui": "node _qa/tadika-ui-ux-quality-gate.mjs",
+        "qa:sandbox": "node _qa/cloud-sandbox-independence-gate.mjs",
+        "qa:all": "node _qa/cloud-sandbox-independence-gate.mjs && node _qa/tadika-quality-doctor.mjs && node _qa/tadika-docs-doctor.mjs && node _qa/tadika-ui-ux-quality-gate.mjs"
+    },
+    "pnpm": {
+        "overrides": {
+            "rollup": ">=4.59.0",
+            "yaml": ">=2.8.3",
+            "picomatch": ">=2.3.2"
+        }
+    },
+    "devDependencies": {
+        "@tailwindcss/vite": "^4.3.3",
+        "autoprefixer": "^10.5.4",
+        "axios": "^1.19.0",
+        "concurrently": "^10.0.4",
+        "laravel-vite-plugin": "^3.2.0",
+        "tailwindcss": "^4.3.3",
+        "vite": "^8.2.1"
+    }
+}
