@@ -49,15 +49,15 @@ class MorningHealthScreeningTest extends TestCase
             'date' => now()->toDateString(),
             'temperature' => 36.5,
             'symptoms' => [],
-            'status' => 'admit',
+            'status' => 'lulus',
             'screened_by' => $teacher->id,
         ]);
 
         $this->assertFalse($screening->isFever());
-        $this->assertEquals('admit', $screening->status);
+        $this->assertEquals('lulus', $screening->status);
         $this->assertDatabaseHas('health_screenings', [
             'id' => $screening->id,
-            'status' => 'admit',
+            'status' => 'lulus',
         ]);
     }
 
@@ -90,12 +90,12 @@ class MorningHealthScreeningTest extends TestCase
             'date' => now()->toDateString(),
             'temperature' => 38.2,
             'symptoms' => ['ulser_mulut', 'ruam_tangan_kaki'],
-            'status' => 'isolate_refer',
+            'status' => 'kuarantin',
             'remarks' => 'Disyaki simptom HFMD. Ibu bapa dihubungi.',
         ]);
 
         $this->assertTrue($screening->isFever());
-        $this->assertEquals('isolate_refer', $screening->status);
+        $this->assertEquals('kuarantin', $screening->status);
         $this->assertContains('ulser_mulut', $screening->symptoms);
     }
 }

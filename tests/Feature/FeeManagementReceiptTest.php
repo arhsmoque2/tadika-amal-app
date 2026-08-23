@@ -53,7 +53,7 @@ class FeeManagementReceiptTest extends TestCase
             'fee_category' => 'yuran_bulanan',
             'amount' => 450.00,
             'status' => 'paid',
-            'payment_method' => 'online_transfer',
+            'payment_method' => 'fpx_online',
             'paid_at' => now(),
             'processed_by' => $admin->id,
         ]);

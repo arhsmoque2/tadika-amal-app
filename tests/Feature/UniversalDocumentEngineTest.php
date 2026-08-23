@@ -13,7 +13,7 @@ class UniversalDocumentEngineTest extends TestCase
 {
     public function test_assessment_report_pdf_template_compiles(): void
     {
-        $school = new School(['name' => 'Tadika Amal Cawangan Cyberjaya']);
+        $school = new School(['name' => 'TADIKA AMAL CAWANGAN CYBERJAYA']);
         $cohort = new Cohort(['name' => 'Al-Fateh 6 Tahun']);
         $cohort->setRelation('teacher', null);
         $student = new Student([
@@ -76,7 +76,7 @@ class UniversalDocumentEngineTest extends TestCase
         ]);
         $this->assertNotNull($view);
         $rendered = $view->render();
-        $this->assertStringContainsString('RESIT RASMI PEMBAYARAN YURAN', $rendered);
+        $this->assertStringContainsString('RESIT RASMI BAYARAN', $rendered);
         $this->assertStringContainsString('46(1)(r)', $rendered);
     }
 
