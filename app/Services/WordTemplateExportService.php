@@ -76,17 +76,17 @@ class WordTemplateExportService
 
         $tokens = [
             'INCIDENT_NO' => $incident->incident_number,
-            'INCIDENT_DATE' => $incident->incident_date ? Carbon::parse($incident->incident_date)->format('d/m/Y H:i') : '-',
+            'INCIDENT_DATE' => Carbon::parse($incident->incident_date)->format('d/m/Y H:i'),
             'STUDENT_NAME' => strtoupper($incident->student?->name ?: 'MURID'),
             'MYKID' => $incident->student?->mykid ?: '-',
             'CLASS_NAME' => $incident->student?->cohort?->name ?: '-',
             'SEVERITY' => strtoupper($incident->severity),
             'LOCATION' => $incident->location ?: 'Kawasan Sekolah',
-            'DESCRIPTION' => $incident->description,
-            'ACTION_TAKEN' => $incident->action_taken ?: 'Rawatan pertolongan cemas awal',
+            'DESCRIPTION' => $incident->incident_description,
+            'ACTION_TAKEN' => $incident->followup_actions ?: $incident->first_aid_given ?: 'Rawatan pertolongan cemas awal',
             'PARENT_NOTIFIED' => $incident->parent_notified ? 'YA' : 'TIDAK',
             'JKM_REPORTABLE' => $incident->jkm_reportable ? 'YA (DILAPORKAN KEPADA JKM)' : 'TIDAK (REKOD DALAMAN)',
-            'REPORTED_BY' => $incident->reporter?->name ?: 'Guru Bertugas',
+            'REPORTED_BY' => $incident->witnessTeacher?->full_name ?: 'Guru Bertugas',
         ];
 
         if (class_exists(TemplateProcessor::class) && file_exists($templatePath)) {

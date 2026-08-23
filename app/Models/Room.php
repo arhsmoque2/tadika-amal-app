@@ -18,11 +18,17 @@ class Room extends Model
         'description',
     ];
 
+    /**
+     * @return BelongsTo<School, $this>
+     */
     public function school(): BelongsTo
     {
         return $this->belongsTo(School::class);
     }
 
+    /**
+     * @return HasMany<Cohort, $this>
+     */
     public function cohorts(): HasMany
     {
         return $this->hasMany(Cohort::class);

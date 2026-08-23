@@ -26,13 +26,13 @@ class AiReportDiagnosticService
 
         $strands = [];
         foreach ($evaluations as $eval) {
-            $strandName = $eval->skill?->category ?: 'Perkembangan Holistik';
+            $strandName = $eval->skill?->domain_category ?: 'Perkembangan Holistik';
             $strands[$strandName][] = [
                 'skill_code' => $eval->skill?->code,
                 'skill_name' => $eval->skill?->name,
                 'rating_score' => $eval->skillScale?->value,
                 'rating_label' => $eval->skillScale?->name,
-                'teacher_notes' => $eval->notes,
+                'teacher_notes' => $eval->remarks,
             ];
         }
 
@@ -100,18 +100,19 @@ class AiReportDiagnosticService
         }
 
         // Morning health screening flags (HFMD / Fever)
-        $feverScreenings = HealthScreening::where('screening_date', $targetDate)
+        $feverScreenings = HealthScreening::where('school_id', $schoolId)
+            ->where('date', $targetDate)
             ->where(function ($q) {
                 $q->where('temperature', '>=', 37.5)
-                    ->orWhere('has_hfmd_symptoms', true);
+                    ->orWhereJsonContains('symptoms', 'hfmd_rash');
             })
-            ->with('student')
+            ->with('student.cohort')
             ->get()
-            ->map(fn ($s) => [
+            ->map(fn (HealthScreening $s) => [
                 'student_name' => $s->student?->name,
                 'cohort' => $s->student?->cohort?->name,
                 'temperature' => (float) $s->temperature,
-                'hfmd_symptoms' => (bool) $s->has_hfmd_symptoms,
+                'hfmd_symptoms' => in_array('hfmd_rash', $s->symptoms ?? [], true),
                 'action_status' => $s->status,
             ])
             ->values()

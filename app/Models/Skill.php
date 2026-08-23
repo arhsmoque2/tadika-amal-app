@@ -20,11 +20,17 @@ class Skill extends Model
         'sort_order',
     ];
 
+    /**
+     * @return BelongsTo<School, $this>
+     */
     public function school(): BelongsTo
     {
         return $this->belongsTo(School::class);
     }
 
+    /**
+     * @return HasMany<SkillEvaluation, $this>
+     */
     public function evaluations(): HasMany
     {
         return $this->hasMany(SkillEvaluation::class);
