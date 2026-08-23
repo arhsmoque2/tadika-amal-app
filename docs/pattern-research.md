@@ -6,13 +6,21 @@
 
 ## [RES-1] Candidate Repositories Matrix
 
-| Repository | Stack & Tools | Evaluated Role | Decision |
-| :--- | :--- | :--- | :--- |
-| **`jeffersongoncalves/filakitv4`** | Laravel 13 / Filament v4.5 / Livewire 3.7 / TailwindCSS v4 | **Base Skeleton** | **Adopted as Base Foundation** (Decoupled Schemas/Tables, Multi-Panel, PWA, Dev Logins). |
-| **`AqibUllah/Laravel-Filament-Starter-Kit`** | Laravel 12 / Filament v4 / Shield / ActivityLog / Excel | **Feature Reference** | **Adopted Selected Capabilities** (Filament Shield RBAC, ActivityLog audit trail for ADR-004, Excel export). |
-| **`felipereisdev/filament-crud-maker`** | Laravel 11-13 / Filament v4-v5 Generator Tool | **CLI Tooling & Accelerator** | **Adopted as Scaffolding Engine** (`make:filament-crud` for zero-boilerplate schema generation). |
-| **`mhmdhussein/school.ly`** | Laravel 12 / Fortify / Inertia v2 / React 19 / TypeScript | **Architecture Reference** | **Adopted Architectural Patterns** (Multi-tenant scoping, Fortify 2FA flows). Frontend parked for v2 Parent Portal. |
-| **`academico-sis/academico`** | Laravel 12 / Filament v5 / mPDF / PHPWord / Maatwebsite Excel | **Domain Scaffolding & Engine** | **Adopted Core SIS Modules** (Timetable Grid, Student Attendance Matrix, Teacher Dashboard, Skill Assessment Engine, DOCX/PDF Report Card Pipeline). |
+| Repository | Source URL | Stack & Tools | Evaluated Role | Decision |
+| :--- | :--- | :--- | :--- | :--- |
+| **`jeffersongoncalves/filakitv4`** | `https://github.com/jeffersongoncalves/filakitv4.git` | Laravel 13 / Filament v4.5 / Livewire 3.7 / TailwindCSS v4 | **Base Skeleton** | **Adopted as Base Foundation** (Decoupled Schemas/Tables, Multi-Panel, PWA, Dev Logins). |
+| **`AqibUllah/Laravel-Filament-Starter-Kit`** | `https://github.com/AqibUllah/Laravel-Filament-Starter-Kit.git` | Laravel 12 / Filament v4 / Shield / ActivityLog / Excel | **Feature Reference** | **Adopted Selected Capabilities** (Filament Shield RBAC, ActivityLog audit trail for ADR-004, Excel export). |
+| **`felipereisdev/filament-crud-maker`** | `https://github.com/felipereisdev/filament-crud-maker.git` | Laravel 11-13 / Filament v4-v5 Generator Tool | **CLI Tooling & Accelerator** | **Adopted as Scaffolding Engine** (`make:filament-crud` for zero-boilerplate schema generation). |
+| **`mhmdhussein/school.ly`** | `https://github.com/mhmdhussein/school.ly` | Laravel 12 / Fortify / Inertia v2 / React 19 / TypeScript | **Architecture Reference** | **Adopted Architectural Patterns** (Multi-tenant scoping, Fortify 2FA flows). Frontend parked for v2 Parent Portal. |
+| **`academico-sis/academico`** | `https://github.com/academico-sis/academico.git` | Laravel 12 / Filament v5 / mPDF / PHPWord / Maatwebsite Excel | **Domain Scaffolding & Engine** | **Adopted Core SIS Modules** (Timetable Grid, Student Attendance Matrix, Teacher Dashboard, Skill Assessment Engine, DOCX/PDF Report Card Pipeline). |
+| **`pxlrbt/filament-excel`** | `https://github.com/pxlrbt/filament-excel.git` | Filament Tables v4 & v5 / PhpSpreadsheet / Laravel Excel | **Tabular Data Export** | **Adopted for Universal Excel/CSV Export** (`ExportAction` & `ExportBulkAction` on all Filament resources). |
+| **`konnco/filament-import`** | `https://github.com/konnco/filament-import.git` | Filament v3 / Livewire 3 | **Spreadsheet Importer** | **Rejected / Incompatible** (Locked to Filament v3; lacks modern column-mapping & queue batching). |
+| **`waadmawlood/filament-import-wizard`** | `https://github.com/waadmawlood/filament-import-wizard.git` | Filament v4-v5 / PhpSpreadsheet 5 / League CSV / Livewire | **Migration & Transition Importer** | **Adopted for Universal Import** (4-step visual wizard, snake_case auto-mapping, `BelongsTo` linking, upsert merge). |
+| **`codeparl/document-builder`** *(UnnovateBrains)* | `https://github.com/codeparl/document-builder.git` | Laravel 11-12 / mPDF / PhpSpreadsheet / Barcode / QR | **Unified Document Pipeline** | **Adopted Pipeline Design Patterns** (Driver-based document execution plan, QR code generation for pickup gates). |
+| **`santwer/Exporter`** | `https://github.com/santwer/Exporter.git` | Laravel 10-13 / PHPWord 1.4 / LibreOffice | **Templated Word Document Generator** | **Adopted for DOCX Templating** (Dynamic `${token}` replacement, multi-row table injection, badge/seal embedding). |
+| **`bernskiold/laravel-ppt`** | `https://github.com/bernskiold/laravel-ppt.git` | Laravel 11-13 / PHPPresentation 1.2 / Spatie Tools | **PowerPoint Presentation Deck Engine** | **Adopted for Slide Decks** (Auto-generating kindergarten orientation decks, weekly RPH lesson slides, AGM reports). |
+| **`saroven/laravel-reportify`** | `https://github.com/saroven/laravel-reportify.git` | Laravel 9-13 / mPDF / Laravel Excel | **Multi-Format Reporting** | **Evaluated / Reference Only** (Redundant with `document-builder` and `filament-excel`). |
+| **`elgiborsolution/laravel-report-builder`** | `https://github.com/elgiborsolution/laravel-report-builder.git` | Laravel 10-13 / Expression Language / DomPDF / Browsershot | **Dynamic Reporting + AI JSON Bridge** | **Adopted for Dynamic Reports & AI Chat Bridge** (HTML poster rendering + structured JSON output for LLM co-pilot). |
 
 ---
 
@@ -20,59 +28,55 @@
 
 ### 1. `jeffersongoncalves/filakitv4`
 * **Source**: `https://github.com/jeffersongoncalves/filakitv4.git`
-* **Local Reference**: `D:\_AGENT-WORKSPACE\lab-test-scratchpad\filakitv4`
-* **Key Assets Adopted**:
-  - **Filament v4 Architecture**: Decoupled `Schemas/` (`*Form.php`, `*Infolist.php`) and `Tables/` (`*Table.php`) directory structure adhering to Filament v4 best practices.
-  - **Multi-Panel Engine**: Clean separation into `AdminPanelProvider`, `AppPanelProvider` (for teachers/staff), and `GuestPanelProvider`.
-  - **PWA Integration**: `jeffersongoncalves/filament-pwa` resolves **G-008** (offline/mobile-friendly interface for classroom operations).
-  - **Developer Tooling**: Integrated `dutchcodingcompany/filament-developer-logins` for rapid switching between roles in local testing, Larastan Level 9 static analysis, Laravel Pint, and Pest 4 test harness.
+* **Key Assets Adopted**: Decoupled `Schemas/` and `Tables/` directory structure, multi-panel routing (`AdminPanelProvider`, `AppPanelProvider`), and PWA shell caching (`jeffersongoncalves/filament-pwa`).
 
-### 2. `AqibUllah/Laravel-Filament-Starter-Kit`
-* **Source**: `https://github.com/AqibUllah/Laravel-Filament-Starter-Kit.git`
-* **Local Reference**: `D:\_AGENT-WORKSPACE\lab-test-scratchpad\Laravel-Filament-Starter-Kit`
+### 2. `waadmawlood/filament-import-wizard`
+* **Source**: `https://github.com/waadmawlood/filament-import-wizard.git`
 * **Key Assets Adopted**:
-  - **Visual RBAC**: `bezhansalleh/filament-shield:^4.0` for Spatie Role & Permission management directly inside Filament UI.
-  - **Audit Logging**: `pxlrbt/filament-activity-log` and `spatie/laravel-activitylog` enforcing ADR-004 audit trail on attendance and assessment edits.
-  - **Excel Export**: `pxlrbt/filament-excel` for automated tabular student and attendance report exports.
-* **Divergence / Omissions**:
-  - Excluded SaaS billing (`filament/spark-billing-provider`, Stripe, Cashier), AI agents (`laravel/ai`), and MCP server components not required for v1 school operations.
+  - **4-Step Wizard Modal**: Upload -> Column Mapping -> Review & Schema Validation -> Background Queue Import.
+  - **Reverse Mapping UI**: Shows model fields first with CSV dropdowns, preventing operator confusion.
+  - **BelongsTo Relationship Resolution**: Matches related records on the fly (e.g. resolves `cohort_id` by matching class name `"6 Tahun Al-Farabi"`).
+  - **Upsert Matching**: Configurable match keys (e.g. `mykid`, `ic_number`, `staff_no`) to update existing records without creating duplicates.
+  - **Validation & Rejection CSV**: Previews first 100 rows and outputs a downloadable rejection CSV for invalid rows.
 
-### 3. `felipereisdev/filament-crud-maker`
-* **Source**: `https://github.com/felipereisdev/filament-crud-maker.git`
-* **Local Reference**: `D:\_AGENT-WORKSPACE\lab-test-scratchpad\filament-crud-maker`
+### 3. `pxlrbt/filament-excel`
+* **Source**: `https://github.com/pxlrbt/filament-excel.git`
 * **Key Assets Adopted**:
-  - **Artisan CRUD Generator**: `php artisan make:filament-crud {Model}` generating Model, Migration, Form Schema, and Table simultaneously.
-  - **30+ Supported Field Types**: Native generation of JSON payloads, key-value maps, images, date pickers, and polymorphic/nested relationships.
-  - **Filament v4 Mode B Conformance**: Emits decoupled Schema and Table class structures matching `filakitv4`.
+  - **Zero-Boilerplate Export**: Direct reflection of Filament Table columns into `.xlsx` and `.csv`.
+  - **Bulk & Header Actions**: Attached across `StudentResource`, `TeacherResource`, `FeeInvoiceResource`, and `CohortAttendance`.
+  - **Background Queuing**: Heavy multi-cohort export jobs run in workers with automatic signed download notifications.
 
-### 4. `mhmdhussein/school.ly`
-* **Source**: `https://github.com/mhmdhussein/school.ly`
-* **Local Reference**: `D:\_AGENT-WORKSPACE\lab-test-scratchpad\school.ly`
+### 4. `santwer/Exporter`
+* **Source**: `https://github.com/santwer/Exporter.git`
 * **Key Assets Adopted**:
-  - **Tenant Scoping**: Global query scopes applying `school_id` / `institution_id` across models.
-  - **Authentication**: Fortify 2FA and password recovery patterns.
-* **Divergence**:
-  - Rigid relational curriculum migrations (`grade`, `subject`, `first_name`) rejected in favor of dynamic JSON schema engine (**ADR-003**).
-  - React 19/Inertia stack parked for v2 Parent Portal (**ADR-002**).
+  - **Token Replacement**: Replaces `${student_name}`, `${mykid}`, `${guardian_name}`, `${fee_amount}` inside `.docx` templates.
+  - **Table Injection (WithTables)**: Injects multi-row attendance logs, fee breakdown tables, and timetable schedules into Word files.
+  - **Use Cases**: Official Admission Offer Letters (*Surat Tawaran Kemasukan*), JKM Statutory Incident Dossiers, Parent-School Contracts.
 
-### 5. `academico-sis/academico`
-* **Source**: `https://github.com/academico-sis/academico.git`
-* **Local Reference**: `D:\_AGENT-WORKSPACE\lab-test-scratchpad\academico-temp`
+### 5. `bernskiold/laravel-ppt`
+* **Source**: `https://github.com/bernskiold/laravel-ppt.git`
 * **Key Assets Adopted**:
-  - **Timetable & Scheduling Matrix**: Ported `CourseTime` and `CalendarCombined` weekly multi-filter calendar for cohorts and teachers.
-  - **Single-Click Attendance Grid**: Adapted `CourseAttendance` into `CohortAttendance` Livewire view for rapid classroom roll-call (Hadir, Tidak Hadir, Sakit, Cuti).
-  - **Teacher Workspace**: `TeacherDashboard` pattern providing dedicated teacher overview with pending attendance flags and scheduled classes.
-  - **Multi-Format Document Pipeline**:
-    - **DOCX**: `phpoffice/phpword` `TemplateProcessor` generating registration forms and offer letters from templates.
-    - **PDF**: `mpdf/mpdf` + Blade views for official preschool assessment dossiers and certificates.
-    - **XLS**: `maatwebsite/excel` for fast tabular imports and exports.
-    - **PPT/Media**: Spatie MediaLibrary plugin for classroom slides and attachments.
-  - **Skill Evaluation Matrix**: Adapted `app/Models/Skills/` and `SkillEvaluationPage` for scoring Malaysian KSPK developmental domains.
+  - **Fluent Slide Deck Builder**: Slide masters, brand palettes (Emerald/Slate), typography, bullet boxes, multi-column layouts, charts.
+  - **Use Cases**:
+    - **Parent Orientation Deck**: Auto-generated briefing presentation with class rosters, teacher introductions, and school rules.
+    - **Weekly RPH Thematic Lesson Deck**: Auto-generated classroom presentation based on the active KSPK weekly theme.
+    - **Year-End AGM Presentation**: Enrolment statistics, attendance percentages, and financial summaries.
+
+### 6. `elgiborsolution/laravel-report-builder`
+* **Source**: `https://github.com/elgiborsolution/laravel-report-builder.git`
+* **Key Assets Adopted**:
+  - **Metadata-Driven Query Engine**: Definitions, parameters, aggregates, formulas, and conditional styling.
+  - **HTML Poster / Certificate Generator**: Blade layout engine producing visual achievement certificates (*Sijil Penghargaan*) and health bulletins.
+  - **Structured JSON Output (JsonRenderer)**: Emits structured metadata, rows, aggregates, and formulas.
+  - **AI Chat & Sentinel Bridge**: Feeds structured JSON into AI chat prompts (Gemini/Claude) for:
+    1. *Teacher Co-Pilot*: Auto-drafting warm, qualitative KSPK progress remarks (*Ulasan Perkembangan Murid*).
+    2. *Administrative Sentinel*: Detecting cohort attendance anomalies and fee arrears patterns.
 
 ---
 
-## [RES-3] Conformance & Quality Checklist
+## [RES-3] Conformance & Architectural Invariants
 
-1. [x] All 4 candidate repositories audited locally in `_AGENT-WORKSPACE/lab-test-scratchpad/`.
-2. [x] Architectural alignment confirmed: Zero hardcoded curriculum tables; dynamic schema model preserved.
-3. [x] Documented in `docs/pattern-research.md` and formalized in `adr/ADR-005` and `adr/ADR-006`.
+1. [x] All candidate repositories cloned and audited in `_AGENT-WORKSPACE/lab-test-scratchpad/`.
+2. [x] Incompatible / legacy packages flagged (`konnco/filament-import` rejected for Filament v4).
+3. [x] Tri-format export + presentation decks + AI JSON reporting unified into formal architectural contracts (**ADR-008**).
+4. [x] Preserved core invariant: The platform provides the containers and pipelines; the school configures the content.

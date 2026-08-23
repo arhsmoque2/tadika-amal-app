@@ -17,8 +17,8 @@ A modular, extensible school operations platform for Malaysian Islamic kindergar
 | **Tooling** | [`DEVTOOLS.md`](DEVTOOLS.md) | Pinned toolchains and developer commands |
 | **Runbooks** | [`RECIPES.md`](RECIPES.md) | Tested copy-paste setup, test, and seeding recipes |
 | **Gates** | [`QUALITY-GATES.md`](QUALITY-GATES.md) | Quality thresholds before feature transition |
-| **Decisions** | [`adr/`](adr/) | Architectural Decision Records (ADR-001 to ADR-004) |
-| **Research** | [`docs/pattern-research.md`](docs/pattern-research.md) | Insights & divergences from `school.ly` reference |
+| **Decisions** | [`adr/`](adr/) | Architectural Decision Records (ADR-001 to ADR-008) |
+| **Research** | [`docs/pattern-research.md`](docs/pattern-research.md) | In-depth audit of 8 candidate repositories & evaluation matrix |
 | **Risks & Antipatterns**| [`GOTCHAS.md`](GOTCHAS.md) | Failure capsules & permanent fixes |
 | **Quality & Error Log**| [`errors-fixes.md`](errors-fixes.md) | Quality checks, scripts & remediation register |
 | **Parked Scope** | [`GAPS.md`](GAPS.md) | Open questions & deferred items (Parent Portal in v2) |
@@ -31,11 +31,11 @@ A modular, extensible school operations platform for Malaysian Islamic kindergar
 | Concern | State | Evidence |
 | :--- | :--- | :--- |
 | **Docs & Platform Tombstone** | IMPLEMENTED | Full ARH documentation suite complete |
-| **ADR Suite (ADR 001 - 007)** | ACCEPTED | `adr/` directory populated |
-| **Base Scaffolding & Core SIS**| IMPLEMENTED | Merged to `main` with 110+ models, migrations & Livewire pages |
-| **Document & LHDN Pipeline** | IMPLEMENTED | mPDF, PHPWord & CSV services active |
-| **JS & UI/UX Quality Gate** | VERIFIED | `pnpm doctor` / `composer doctor` passing 100% |
-
+| **ADR Suite (ADR 001 - 008)** | ACCEPTED | `adr/` directory populated with ADR-001 through ADR-008 |
+| **Base Scaffolding & Core SIS**| IMPLEMENTED | 110+ models, migrations & Livewire workspace pages |
+| **Multi-Doc & Presentation Pipeline** | IMPLEMENTED | `.xlsx`, `.docx`, `.pptx`, `.pdf`, and HTML poster services active |
+| **AI JSON Diagnostic Bridge** | IMPLEMENTED | Teacher Co-Pilot prompt generator & Sentinel health snapshots |
+| **UI/UX & Regulatory Quality Gate** | VERIFIED | `_qa/tadika-ui-ux-quality-gate.mjs` passing 100% (0 warnings) |
 
 ---
 
@@ -45,4 +45,7 @@ A modular, extensible school operations platform for Malaysian Islamic kindergar
 # Read architecture and setup recipes
 Get-Content ARCHITECTURE.md
 Get-Content RECIPES.md
+
+# Run local UI/UX Quality Gate
+node _qa/tadika-ui-ux-quality-gate.mjs
 ```
