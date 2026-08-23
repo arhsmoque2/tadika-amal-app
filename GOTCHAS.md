@@ -62,3 +62,20 @@
 **Permanent Fix:** The timetable grid ships blank. Standard slot type labels (Subject, Recess, Assembly, Free Play) are offered as optional starting-point suggestions — not pre-filled defaults. The teacher names everything.
 
 **Verification:** A new teacher who has never used the platform can build a completely different timetable structure from scratch without removing any platform-imposed content.
+
+---
+
+## Regex-based static infrastructure gates have false-negatives via comments or missing blocks
+
+**Symptom:** Static CI quality gates passed even when PHP extensions were commented out or when a secret leak check in GitHub Actions workflow was skipped due to indentation or action step formatting changes.
+
+**Root Cause:** Naive substring matching (`dockerContent.includes(ext)`) did not strip comments before matching. Regex matching on workflow steps returned `null` for `commentMatch` on structural changes, silently skipping validation without triggering a warning or error.
+
+**Permanent Fix:**
+1. Strip comments before AST/Regex token parsing (e.g. `stripDockerComments()`).
+2. Parse the actual `RUN install-php-extensions` argument block to ensure required extension tokens are passed to the binary.
+3. Require mandatory presence of security-critical steps (`actions-comment-pull-request`); throw an explicit error if the step or message body cannot be extracted.
+4. Accompany every static quality gate script with a dedicated fixture test suite (`node --test _qa/tests/*.test.mjs`) containing negative regression tests that prove the gate fails on invalid/leaking inputs.
+5. Complement static config linting with runtime PHPUnit/Pest feature tests asserting real driver configuration and storage operations.
+
+**Verification:** Run `node --test _qa/tests/tadika-infra-quality-gate.test.mjs` (asserting all 6 negative/positive fixture tests pass) and `php artisan test` (verifying `CloudflareR2FilesystemConfigTest` and `InfrastructureConfigTest`).

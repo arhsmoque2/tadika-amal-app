@@ -40,9 +40,24 @@ php artisan migrate:fresh --seed
 
 ---
 
-## [RECIPE-TEST] Run Pest Tests
+## [RECIPE-TEST] Run Pest / PHPUnit Tests
 
 ```powershell
-# Run the full automated verification test suite
+# Run the full automated verification test suite (Hermetic SQLite + S3 Fake)
 php artisan test --parallel
+```
+
+---
+
+## [RECIPE-INFRA-QA] Run Infrastructure Quality Gates & Regression Fixtures
+
+```powershell
+# 1. Run static infrastructure config & deployment security gate
+node _qa/tadika-infra-quality-gate.mjs
+
+# 2. Run gate unit tests & negative regression fixtures
+node --test _qa/tests/tadika-infra-quality-gate.test.mjs
+
+# 3. Run complete automated master quality gate
+pnpm run qa:all
 ```
