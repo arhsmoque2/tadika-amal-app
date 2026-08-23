@@ -76,6 +76,20 @@
 
 ---
 
+### 17. pnpm 11 Overrides Configuration Drift (ERR-029)
+- **Script / Command**: `pnpm install --frozen-lockfile`.
+- **Symptom**: pnpm 11 ignored `package.json`'s `pnpm.overrides` block and rejected the lockfile with `ERR_PNPM_LOCKFILE_CONFIG_MISMATCH`.
+- **Why It's Dangerous**: Clean-room frontend installation failed even though the static lockfile doctor reported the override values as present.
+- **Fix**: Moved the overrides to the pnpm 11-supported `pnpm-workspace.yaml` configuration file and regenerated `pnpm-lock.yaml`.
+- **Verification**: `pnpm install --frozen-lockfile` exits 0; `pnpm run build` produces `public/build/manifest.json`.
+
+### 18. PHPStan Local Baseline (ERR-030)
+- **Script / Command**: `php vendor/bin/phpstan --no-progress --memory-limit=512M`.
+- **Symptom**: The default 128 MB worker limit crashed analysis; with 512 MB, PHPStan reports 57 existing type errors across application and factory code.
+- **Why It's Dangerous**: CI currently treats PHPStan as advisory, so model-property and missing-symbol defects can merge without blocking.
+- **Fix**: No speculative baseline or broad suppression was added. The concrete error list is retained as the next type-safety work item.
+- **Verification**: Pest passes independently (`12 passed, 34 assertions`); PHPStan completes analysis at 512 MB and exits non-zero with the 57-error inventory.
+
 ## [ERR-RECEIPT] Verification Command & Automation
 
 To re-run all quality checks locally or in CI:
@@ -222,4 +236,3 @@ pnpm doctor
 # 4. Run Combined Suite
 pnpm run qa:all
 ```
-

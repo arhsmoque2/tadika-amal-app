@@ -129,3 +129,14 @@ php artisan serve
 ```
 
 Anything that fails here is real signal — see `errors-fixes.md` ERR-023 through ERR-028 for what this exact checklist already found once (a stale lockfile, a PHP fatal from a property-type mismatch, a duplicate migration, 27 Pint violations, a fully broken test suite, and a missing CI build step). `AGENTS.md` Prime Directive #5 has the rule this checklist exists to enforce: nothing gets called "passed" without actually being run.
+
+## [WP-LOCAL-VERIFICATION-2026-08-23] Codex Pickup Receipt
+
+- Repository: `main` fast-forwarded from `3393e3b` to fetched `origin/main` `a6a38a2`.
+- Static gates: all four `_qa/` scripts pass with zero warnings.
+- Composer: `composer install --prefer-dist --no-interaction` completed; `composer validate --strict` passes.
+- Frontend: moved pnpm overrides from `package.json` to `pnpm-workspace.yaml`; regenerated lockfile; `pnpm install --frozen-lockfile` passes; `pnpm run build` passes and writes `public/build/manifest.json`.
+- Tests: `php vendor/bin/pest --compact` passes with 12 tests and 34 assertions. `php artisan test` is not a registered Laravel command in this checkout; Pest is the working runner.
+- Formatting: `php vendor/bin/pint --test app config database routes tests` passes. The full vendored `packages/filament-crud-maker` tree still has line-ending/style findings.
+- PHPStan: `php vendor/bin/phpstan --no-progress --memory-limit=512M` completes but reports 57 existing errors. CI still runs it advisory-only (`|| true`); do not claim static analysis is green.
+- Next action: triage the 57 PHPStan errors, then decide whether the vendored CRUD-maker package should be formatted or excluded from the application Pint scope.
