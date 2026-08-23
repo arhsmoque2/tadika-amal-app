@@ -2,6 +2,7 @@
     "name": "tadika-amal-app",
     "private": true,
     "type": "module",
+    "packageManager": "pnpm@9.15.9",
     "scripts": {
         "build": "vite build",
         "dev": "vite",
