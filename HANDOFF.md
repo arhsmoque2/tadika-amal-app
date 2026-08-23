@@ -1,5 +1,20 @@
 # Handoff
 
+## [WP-PRESERVATION-NOTICE] Merge-Order Notice for This Section
+
+> PR #8 ("docs: finalize Tadika architecture and deployment design") rewrites
+> this file and, in its current diff, **deletes** the `[WP-LOCAL-AGENT-HANDOFF]`
+> and `[WP-LOCAL-VERIFICATION-2026-08-23]` sections below wholesale rather than
+> merging them. Whichever of that PR or this branch merges second should
+> reconcile by keeping both: PR #8's new "Current state" / "Suggested first
+> commands" framing *and* the concrete, evidence-backed findings below (the
+> secretlint/knip/Lighthouse status table, the dead `packages/filament-crud-maker`
+> finding, the Codex pickup receipt). Neither supersedes the other — they cover
+> different things. Also see `adr/ADR-010-infra-stack-per-layer-selection.md`
+> for the per-layer infra reasoning (database/storage/queue/email/monitoring)
+> that resolves the Cloud Run vs. Laravel Cloud question this session and PR #8
+> raised in parallel.
+
 ## [WP-STATE] Current State
 
 > Phase 1 (Docs Overhaul & Architecture Alignment), Phase 2 (Base SIS & Compliance Scaffolding), and Phase 3 (Universal Import/Export, Multi-Format Document Generation & AI JSON Pipeline per ADR-008) are fully implemented and verified against the ARH Quality Gate.
@@ -26,6 +41,8 @@
   - `ADR-006`: Academico SIS Adaptation for Timetables, Attendance Matrix, Document Pipeline & KSPK Assessment.
   - `ADR-007`: Preschool Operational Extensions & Regulatory Compliance Suite (WhatsApp Broadcaster, Saringan Pagi, RPH Planner, LHDN Invoicing, JKM Incident Log).
   - `ADR-008`: Universal Multi-Module Import, Tri-Format Export, Presentation Generator, and AI-Ready Diagnostic Pipeline.
+  - `ADR-009` *(pending — see PR #8)*: Production Architecture — Cloud Run + Neon + private object storage.
+  - `ADR-010`: Per-Layer Infra Stack Selection — resolves database/storage/queue/email/monitoring picks against cost, sustainability, free-tier, and performance criteria, with a secrets-prep checklist for the deploying agent.
 
 ### Delivered Services & Reporting Pipelines:
 1. **Universal Import & Export**:
@@ -129,6 +146,15 @@ php artisan serve
 ```
 
 Anything that fails here is real signal — see `errors-fixes.md` ERR-023 through ERR-028 for what this exact checklist already found once (a stale lockfile, a PHP fatal from a property-type mismatch, a duplicate migration, 27 Pint violations, a fully broken test suite, and a missing CI build step). `AGENTS.md` Prime Directive #5 has the rule this checklist exists to enforce: nothing gets called "passed" without actually being run.
+
+### D. Before deploying: secrets a local agent must provision
+
+`adr/ADR-010-infra-stack-per-layer-selection.md` has the full per-layer
+reasoning and a 7-item secrets table (Neon `DATABASE_URL`, Cloudflare R2 API
+token + bucket, Upstash Redis REST URL/token, Resend API key + verified
+sending domain, Cloud Run deploy service account, `APP_KEY`, GCP Secret Manager
+wiring) with a suggested provisioning order. None of these exist in this repo
+today and none should ever be committed — Secret Manager references only.
 
 ## [WP-LOCAL-VERIFICATION-2026-08-23] Codex Pickup Receipt
 
