@@ -1,0 +1,65 @@
+name: Neon Database Branching
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - closed
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  create_neon_branch:
+    name: Create Neon Branch
+    if: |
+      github.event.action == 'opened' ||
+      github.event.action == 'reopened' ||
+      github.event.action == 'synchronize'
+    runs-on: ubuntu-latest
+    outputs:
+      db_url: ${{ steps.create_branch.outputs.db_url }}
+      db_url_with_pooler: ${{ steps.create_branch.outputs.db_url_with_pooler }}
+    steps:
+      - name: Create Neon branch
+        id: create_branch
+        uses: neondatabase/create-branch-action@v5
+        with:
+          project_id: ${{ vars.NEON_PROJECT_ID }}
+          branch_name: preview/pr-${{ github.event.number }}-${{ github.head_ref }}
+          api_key: ${{ secrets.NEON_API_KEY }}
+          username: neondb_owner
+          database: neondb
+
+      - name: Post branch status as PR comment
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            ## 🌿 Neon Preview Branch Created
+
+            A dedicated preview database branch has been provisioned for this pull request.
+
+            | Parameter | Status / Target |
+            | :--- | :--- |
+            | **Neon Project** | `${{ vars.NEON_PROJECT_ID }}` |
+            | **Database Branch** | `preview/pr-${{ github.event.number }}-${{ github.head_ref }}` |
+            | **Database Role** | `neondb_owner` |
+            | **Lifecycle** | Ephemeral (auto-dropped on PR close) |
+
+            > *Note: Database connection credentials are securely injected into ephemeral test environments and masked from pull request comments.*
+          comment_tag: neon-branch-preview
+
+  delete_neon_branch:
+    name: Delete Neon Branch
+    if: github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete Neon branch
+        uses: neondatabase/delete-branch-action@v3
+        with:
+          project_id: ${{ vars.NEON_PROJECT_ID }}
+          branch: preview/pr-${{ github.event.number }}-${{ github.head_ref }}
+          api_key: ${{ secrets.NEON_API_KEY }}

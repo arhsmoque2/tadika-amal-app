@@ -1,0 +1,200 @@
+name: Deploy to Cloud Run
+
+on:
+  workflow_run:
+    workflows: [Continuous Integration & Quality Gates]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch: {}
+
+concurrency:
+  group: tadika-deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  DEPLOY_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+  IMAGE: asia-southeast1-docker.pkg.dev/arh-gcloud-vm/tadika-amal/tadika-amal-app:${{ github.event.workflow_run.head_sha || github.sha }}
+
+jobs:
+  deploy:
+    name: Build, migrate, deploy
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    outputs:
+      service_url: ${{ steps.deploy.outputs.url }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.DEPLOY_SHA }}
+
+      - name: Authenticate to GCP (Workload Identity Federation)
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: projects/102469945521/locations/global/workloadIdentityPools/urus-github-pool/providers/urus-github-provider
+          service_account: tadika-deployer@arh-gcloud-vm.iam.gserviceaccount.com
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker asia-southeast1-docker.pkg.dev --quiet
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ env.IMAGE }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Install neonctl
+        run: npm install -g neonctl
+
+      - name: Fetch Neon connection strings
+        id: neon
+        env:
+          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+        run: |
+          POOLED=$(neonctl connection-string --project-id "${{ vars.NEON_PROJECT_ID }}" --role-name neondb_owner --database-name neondb --pooled | tr -d '[:space:]')
+          DIRECT=$(neonctl connection-string --project-id "${{ vars.NEON_PROJECT_ID }}" --role-name neondb_owner --database-name neondb | tr -d '[:space:]')
+          if [ -z "$POOLED" ] || [ -z "$DIRECT" ]; then
+            echo "::error::neonctl returned an empty connection string - check NEON_API_KEY / NEON_PROJECT_ID"
+            exit 1
+          fi
+          echo "::add-mask::$POOLED"
+          echo "::add-mask::$DIRECT"
+          echo "pooled=$POOLED" >> "$GITHUB_OUTPUT"
+          echo "direct=$DIRECT" >> "$GITHUB_OUTPUT"
+
+      - name: Sync runtime secrets to GCP Secret Manager
+        run: |
+          # Helper function to create or update secret
+          sync_secret() {
+            local secret_name="$1"
+            local secret_val="$2"
+            if ! gcloud secrets describe "$secret_name" --project=arh-gcloud-vm >/dev/null 2>&1; then
+              printf "%s" "$secret_val" | gcloud secrets create "$secret_name" --data-file=- --project=arh-gcloud-vm --replication-policy=automatic --quiet
+            else
+              printf "%s" "$secret_val" | gcloud secrets versions add "$secret_name" --data-file=- --project=arh-gcloud-vm --quiet
+            fi
+          }
+
+          sync_secret "tadika_app_key" "${{ secrets.APP_KEY }}"
+          sync_secret "tadika_db_url_direct" "${{ steps.neon.outputs.direct }}"
+          sync_secret "tadika_db_url_pooled" "${{ steps.neon.outputs.pooled }}"
+          sync_secret "tadika_r2_access_key_id" "${{ secrets.R2_ACCESS_KEY_ID }}"
+          sync_secret "tadika_r2_secret_access_key" "${{ secrets.R2_SECRET_ACCESS_KEY }}"
+
+      - name: Run migrations (Cloud Run Job with Secret Manager references)
+        run: |
+          gcloud run jobs deploy tadika-migrate \
+            --image="${{ env.IMAGE }}" \
+            --region="asia-southeast1" \
+            --set-env-vars="DB_CONNECTION=pgsql,APP_ENV=production" \
+            --set-secrets="DATABASE_URL=tadika_db_url_direct:latest,APP_KEY=tadika_app_key:latest" \
+            --args="sh,-c,php artisan migrate --force" \
+            --max-retries=0 \
+            --quiet
+          gcloud run jobs execute tadika-migrate --region="asia-southeast1" --wait --quiet
+
+      - name: Check whether the Cloud Run service already exists
+        id: check_service
+        run: |
+          if gcloud run services describe "tadika-amal-app" --region="asia-southeast1" --quiet >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Deploy to Cloud Run (with Secret Manager references)
+        id: deploy
+        uses: google-github-actions/deploy-cloudrun@v3
+        with:
+          service: tadika-amal-app
+          region: asia-southeast1
+          image: ${{ env.IMAGE }}
+          no_traffic: ${{ steps.check_service.outputs.exists == 'true' }}
+          flags: >-
+            --concurrency=80
+            --min-instances=0
+            --max-instances=4
+            --allow-unauthenticated
+          env_vars: |
+            APP_NAME=Tadika Amal
+            APP_ENV=production
+            APP_DEBUG=false
+            SESSION_DRIVER=database
+            CACHE_STORE=database
+            QUEUE_CONNECTION=database
+            LOG_CHANNEL=stack
+            DB_CONNECTION=pgsql
+            AWS_DEFAULT_REGION=auto
+            AWS_USE_PATH_STYLE_ENDPOINT=false
+            AWS_BUCKET=${{ vars.R2_BUCKET || 'tadika-amal-storage' }}
+            AWS_ENDPOINT=${{ vars.R2_ENDPOINT }}
+          secrets: |
+            DATABASE_URL=tadika_db_url_pooled:latest
+            APP_KEY=tadika_app_key:latest
+            AWS_ACCESS_KEY_ID=tadika_r2_access_key_id:latest
+            AWS_SECRET_ACCESS_KEY=tadika_r2_secret_access_key:latest
+
+      - name: Grant public invoker
+        run: |
+          gcloud run services add-iam-policy-binding "tadika-amal-app" \
+            --region="asia-southeast1" \
+            --member="allUsers" \
+            --role="roles/run.invoker" \
+            --quiet || true
+
+      - name: Shift traffic to latest revision
+        run: |
+          gcloud run services update-traffic "tadika-amal-app" \
+            --region="asia-southeast1" \
+            --to-latest \
+            --quiet
+
+      - name: Update the scheduler Cloud Run Job
+        run: |
+          gcloud run jobs deploy tadika-scheduler \
+            --image="${{ env.IMAGE }}" \
+            --region="asia-southeast1" \
+            --args="sh,-c,php artisan schedule:run" \
+            --max-retries=0 \
+            --task-timeout=120 \
+            --set-env-vars="APP_ENV=production,SESSION_DRIVER=database,CACHE_STORE=database,QUEUE_CONNECTION=database,DB_CONNECTION=pgsql" \
+            --set-secrets="DATABASE_URL=tadika_db_url_pooled:latest,APP_KEY=tadika_app_key:latest" \
+            --quiet
+
+      - name: Ensure Cloud Scheduler triggers every minute
+        run: |
+          if gcloud scheduler jobs describe tadika-scheduler-trigger --location="asia-southeast1" --quiet >/dev/null 2>&1; then
+            echo "Scheduler trigger already exists."
+          else
+            gcloud scheduler jobs create http tadika-scheduler-trigger \
+              --location="asia-southeast1" \
+              --schedule="* * * * *" \
+              --uri="https://run.googleapis.com/v2/projects/arh-gcloud-vm/locations/asia-southeast1/jobs/tadika-scheduler:run" \
+              --http-method=POST \
+              --oauth-service-account-email="tadika-deployer@arh-gcloud-vm.iam.gserviceaccount.com" \
+              --oauth-token-scope="https://www.googleapis.com/auth/cloud-platform" \
+              --attempt-deadline="90s" \
+              --time-zone="UTC" \
+              --quiet
+          fi
+
+      - name: Job Summary
+        run: |
+          echo "### 🚀 Tadika Amal Deploy Complete" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Image: \`${{ env.IMAGE }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Service URL: ${{ steps.deploy.outputs.url }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Migrations: Applied via \`tadika-migrate\` job" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Secrets: Protected via GCP Secret Manager references" >> "$GITHUB_STEP_SUMMARY"

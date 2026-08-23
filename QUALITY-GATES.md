@@ -2,12 +2,15 @@
 
 ## [QG-LOCAL] Local Transition Gate
 
-> A feature slice or pull request may only be handed off when all three verification tiers pass.
+> A feature slice or pull request may only be handed off when all verification tiers pass.
 
 ```text
 PASS: vendor/bin/pint --test
 PASS: php artisan test
-PASS: node D:/_ARH-AGENT-OS/_AGENT-CAPABILITIES/arh-js-devkit/bin/arh-js-doctor.mjs .
+PASS: node _qa/cloud-sandbox-independence-gate.mjs
+PASS: node _qa/tadika-infra-quality-gate.mjs
+PASS: node _qa/tadika-ui-ux-quality-gate.mjs
+PASS: node _qa/tadika-docs-doctor.mjs
 ```
 
 ---
@@ -60,6 +63,27 @@ PASS: node D:/_ARH-AGENT-OS/_AGENT-CAPABILITIES/arh-js-devkit/bin/arh-js-doctor.
 4. **Performance Benchmark & Quality Ratchet (`benchmark-verify.mjs` & `ratchet-gate.mjs`)**:
    - Dynamic schema compilation must pass median-of-trials benchmark testing ($N \ge 100$ iterations) with P95 outlier guards.
    - Total gzip asset weights are tracked against `.arh-quality-gate.json` baseline with zero allowance for uncompressed bloat.
+
+---
+
+## [QG-TIER-4] Tier 4: Cloud Infrastructure, Database & Storage Gate (Zero-Ask Static + CI Live)
+
+> Automated infrastructure safety ensuring seamless cloud sandbox development and secure cloud deployment:
+
+1. **Cloud Run & Container Invariant (`_qa/tadika-infra-quality-gate.mjs`)**:
+   - Multi-stage Dockerfile verification (`composer:2` vendor, `node:22-alpine` assets, `dunglas/frankenphp:1-php8.4-bookworm` runtime).
+   - Baked PHP extensions verification: `pdo_pgsql`, `pgsql`, `pdo_sqlite`, `gd`, `zip`, `intl`, `bcmath`, `opcache`, `pcntl`.
+   - Keyless WIF deployment authentication and zero plaintext secrets in `--set-env-vars` (GCP Secret Manager `--set-secrets` mandatory).
+   - Standalone `tadika-migrate` Cloud Run Job for isolated DDL migrations before web traffic switch.
+2. **Neon PostgreSQL Invariant**:
+   - Dual connection URL architecture: PgBouncer pooled (`-pooler.neon.tech`) for runtime web requests, direct connection for migrations.
+   - Ephemeral PR database branching (`neon_workflow.yml`) with automated teardown on PR closure and masked credentials (`::add-mask::`).
+3. **Cloudflare R2 Object Storage Invariant**:
+   - S3 Flysystem configuration mapped to `AWS_ENDPOINT`, `AWS_BUCKET`, `AWS_DEFAULT_REGION=auto`, and `use_path_style_endpoint=false`.
+   - Private bucket storage with short-lived presigned URL delivery and zero local disk bloat.
+4. **Zero-Ask Cloud Sandbox Independence**:
+   - Static infra gate runs hermetically with 0 required cloud secrets or CLI binaries.
+   - Test suites default to SQLite in-memory and fake storage disks for 100% offline pass in sandbox containers.
 
 ---
 
