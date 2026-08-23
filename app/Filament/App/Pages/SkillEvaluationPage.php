@@ -9,6 +9,7 @@ use App\Models\SkillEvaluation;
 use App\Models\SkillScale;
 use App\Models\Student;
 use App\Services\AssessmentReportPdfService;
+use BackedEnum;
 use Carbon\Carbon;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
@@ -17,7 +18,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class SkillEvaluationPage extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-chart-bar-square';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-chart-bar-square';
     protected static ?string $navigationLabel = 'Penilaian Perkembangan Murid';
     protected static ?string $title = 'Matriks Penilaian Perkembangan Prasekolah (KSPK)';
     protected static ?int $navigationSort = 4;

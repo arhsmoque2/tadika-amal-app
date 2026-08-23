@@ -5,6 +5,7 @@ namespace App\Filament\App\Pages;
 use App\Models\Cohort;
 use App\Models\HealthScreening;
 use App\Models\Student;
+use BackedEnum;
 use Carbon\Carbon;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 
 class MorningHealthScreening extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-shield-check';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-shield-check';
     protected static ?string $navigationLabel = 'Saringan Kesihatan Pagi';
     protected static ?string $title = 'Saringan Kesihatan Pagi (Pencegahan HFMD & Demam)';
     protected static ?int $navigationSort = 6;

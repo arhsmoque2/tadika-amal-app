@@ -4,13 +4,14 @@ namespace App\Filament\App\Pages;
 
 use App\Models\Announcement;
 use App\Models\Cohort;
+use BackedEnum;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Illuminate\Support\Facades\Auth;
 
 class AnnouncementBroadcaster extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-megaphone';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-megaphone';
     protected static ?string $navigationLabel = 'Hebahan & WhatsApp';
     protected static ?string $title = 'Hebahan Pengumuman & Penjana Mesej WhatsApp';
     protected static ?int $navigationSort = 5;

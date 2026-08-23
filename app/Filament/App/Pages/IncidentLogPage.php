@@ -6,6 +6,7 @@ use App\Models\Cohort;
 use App\Models\IncidentLog;
 use App\Models\Student;
 use App\Models\Teacher;
+use BackedEnum;
 use Carbon\Carbon;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\Auth;
 
 class IncidentLogPage extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-exclamation-circle';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-exclamation-circle';
     protected static ?string $navigationLabel = 'Buku Log Kemalangan (JKM)';
     protected static ?string $title = 'Buku Rekod Kemalangan & Rawatan Awal (Pematuhan JKM)';
     protected static ?int $navigationSort = 9;

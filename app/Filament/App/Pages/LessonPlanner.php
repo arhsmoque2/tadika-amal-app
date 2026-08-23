@@ -5,6 +5,7 @@ namespace App\Filament\App\Pages;
 use App\Models\Cohort;
 use App\Models\LessonPlan;
 use App\Models\Teacher;
+use BackedEnum;
 use Carbon\Carbon;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 
 class LessonPlanner extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-book-open';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-book-open';
     protected static ?string $navigationLabel = 'RPH & Tema Mingguan';
     protected static ?string $title = 'Rancangan Pengajaran Harian (RPH) KSPK';
     protected static ?int $navigationSort = 7;

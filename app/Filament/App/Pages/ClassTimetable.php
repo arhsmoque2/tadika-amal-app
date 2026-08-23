@@ -5,11 +5,12 @@ namespace App\Filament\App\Pages;
 use App\Models\Cohort;
 use App\Models\Teacher;
 use App\Models\TimetableSlot;
+use BackedEnum;
 use Filament\Pages\Page;
 
 class ClassTimetable extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-calendar-days';
     protected static ?string $navigationLabel = 'Jadual Waktu Kelas & Guru';
     protected static ?string $title = 'Jadual Waktu Prasekolah';
     protected static ?int $navigationSort = 3;

@@ -6,6 +6,7 @@ use App\Models\Cohort;
 use App\Models\FeeInvoice;
 use App\Models\Student;
 use App\Services\FeeReceiptPdfService;
+use BackedEnum;
 use Carbon\Carbon;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
@@ -14,7 +15,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class FeeManagement extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-banknotes';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-banknotes';
     protected static ?string $navigationLabel = 'Yuran & Resit LHDN';
     protected static ?string $title = 'Pengurusan Yuran Tadika & Resit Rasmi Pelepasan Cukai LHDN';
     protected static ?int $navigationSort = 8;

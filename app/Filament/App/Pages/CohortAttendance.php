@@ -6,6 +6,7 @@ use App\Models\AttendanceRecord;
 use App\Models\Cohort;
 use App\Models\Student;
 use App\Services\AttendanceSpreadsheetService;
+use BackedEnum;
 use Carbon\Carbon;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
@@ -14,7 +15,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class CohortAttendance extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-check';
     protected static ?string $navigationLabel = 'Rekod Kehadiran Harian';
     protected static ?string $title = 'Rekod Kehadiran Murid (Matriks)';
     protected static ?int $navigationSort = 2;

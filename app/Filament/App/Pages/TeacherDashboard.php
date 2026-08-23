@@ -6,13 +6,14 @@ use App\Models\AttendanceRecord;
 use App\Models\Cohort;
 use App\Models\Teacher;
 use App\Models\TimetableSlot;
+use BackedEnum;
 use Carbon\Carbon;
 use Filament\Pages\Page;
 use Illuminate\Support\Facades\Auth;
 
 class TeacherDashboard extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-academic-cap';
     protected static ?string $navigationLabel = 'Papan Pemuka Guru';
     protected static ?string $title = 'Papan Pemuka Guru & Kelas';
     protected static ?int $navigationSort = 1;
