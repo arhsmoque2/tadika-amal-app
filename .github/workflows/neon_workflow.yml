@@ -1,0 +1,60 @@
+name: Neon Database Branching
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - closed
+
+jobs:
+  create_neon_branch:
+    name: Create Neon Branch
+    if: |
+      github.event.action == 'opened' ||
+      github.event.action == 'reopened' ||
+      github.event.action == 'synchronize'
+    runs-on: ubuntu-latest
+    outputs:
+      db_url: ${{ steps.create_branch.outputs.db_url }}
+      db_url_with_pooler: ${{ steps.create_branch.outputs.db_url_with_pooler }}
+    steps:
+      - name: Create Neon branch
+        id: create_branch
+        uses: neondatabase/create-branch-action@v5
+        with:
+          project_id: ${{ vars.NEON_PROJECT_ID }}
+          branch_name: preview/pr-${{ github.event.number }}-${{ github.head_ref }}
+          api_key: ${{ secrets.NEON_API_KEY }}
+          username: neondb_owner
+          database: neondb
+
+      - name: Post branch details as PR comment
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            ## 🌿 Neon Preview Branch
+
+            A preview database branch has been created for this PR.
+
+            | Detail | Value |
+            |--------|-------|
+            | **Branch** | `preview/pr-${{ github.event.number }}-${{ github.head_ref }}` |
+            | **DB URL (direct)** | `${{ steps.create_branch.outputs.db_url }}` |
+            | **DB URL (pooled)** | `${{ steps.create_branch.outputs.db_url_with_pooler }}` |
+
+            > Branch will be deleted automatically when this PR is closed.
+          comment_tag: neon-branch-preview
+
+  delete_neon_branch:
+    name: Delete Neon Branch
+    if: github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete Neon branch
+        uses: neondatabase/delete-branch-action@v3
+        with:
+          project_id: ${{ vars.NEON_PROJECT_ID }}
+          branch: preview/pr-${{ github.event.number }}-${{ github.head_ref }}
+          api_key: ${{ secrets.NEON_API_KEY }}
