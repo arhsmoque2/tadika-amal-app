@@ -150,9 +150,9 @@ Anything that fails here is real signal — see `errors-fixes.md` ERR-023 throug
 ### D. Before deploying: secrets a local agent must provision
 
 `adr/ADR-010-infra-stack-per-layer-selection.md` has the full per-layer
-reasoning and a 7-item secrets table (Neon `DATABASE_URL`, GCS service-account
-key + bucket, Upstash Redis REST URL/token, SES SMTP creds + verified sending
-domain, Cloud Run deploy service account, `APP_KEY`, GCP Secret Manager
+reasoning and a 7-item secrets table (Neon `DATABASE_URL`, Cloudflare R2 API
+token + bucket, Upstash Redis REST URL/token, Resend API key + verified
+sending domain, Cloud Run deploy service account, `APP_KEY`, GCP Secret Manager
 wiring) with a suggested provisioning order. None of these exist in this repo
 today and none should ever be committed — Secret Manager references only.
 
