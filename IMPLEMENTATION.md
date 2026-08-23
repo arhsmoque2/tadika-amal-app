@@ -6,7 +6,7 @@
 
 ```text
 Phase 1: Documents & Platform Tombstone (COMPLETED)
-Phase 2: Laravel 12 & Filament v4 Scaffolding + Core Entities (CURRENT TARGET)
+Phase 2: Laravel 13 & Filament v4 Scaffolding + Core Entities (CURRENT TARGET)
 Phase 3: Dynamic Schema Engine & Student Profile Builder (CAP-PROFILE-BUILDER, CAP-STUDENT-REGISTRY)
 Phase 4: Attendance & Timetable Grid (CAP-ATTENDANCE, CAP-TIMETABLE-BUILDER)
 Phase 5: Configurable Assessment & Append-Only History (CAP-ASSESSMENT-BUILDER, CAP-ASSESSMENT-RECORD)
@@ -18,7 +18,7 @@ Phase 6: Reporting, Querying & Hardening (CAP-QUERY-REPORT, CAP-ROLES-ACCESS)
 ## [IMP-PHASES] Execution Phases in Detail
 
 ### Phase 2: Base Scaffolding & Core Relational Data
-- Scaffold pristine Laravel 12 project using `composer create-project`.
+- Verify the existing Laravel 13 project and lockfile rather than scaffolding a second application.
 - Install Filament v4 (`filament/filament:^4.0`), Spatie Permission, and SQLite/PostgreSQL setup.
 - Run migrations for `schools`, `users`, `cohorts`, and baseline `students`.
 - Seed default Admin & Teacher accounts.

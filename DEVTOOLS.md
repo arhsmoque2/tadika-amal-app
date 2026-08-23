@@ -1,89 +1,73 @@
-# Devtools
+# Development and Deployment Tools
 
-## [DEV-TOOLCHAIN] Pinned Toolchain & System Standards
+This is the executable tool contract for the next implementation session. Commands run from the repository root.
 
-> Toolchains are pinned in accordance with ARH OS Standards (`AGENTS.md` §3).
+## Pinned toolchain
 
-- **PHP**: `8.4.x` (verified active on system: `PHP 8.4.24`)
-- **Composer**: `2.x` (`C:\Users\Abdul Rahman Hilmi\AppData\Local\Programs\composer\composer.bat`)
-- **Node.js**: `^22.x` (managed via `fnm 1.39.0`)
-- **Package Manager**: `pnpm 11.22.0` / `npm`
+- PHP 8.4.x
+- Composer 2.x
+- Node.js 22.x via `fnm`
+- pnpm 9.15.9, matching `package.json` and `pnpm-lock.yaml`
+- Docker or Google Cloud Build for the production image
+- `gcloud` for Cloud Run, Artifact Registry, Scheduler, and GCS
+- `uv` only for ARH Python tooling; it is not Tadika's application runtime
 
----
-
-## [DEV-SETUP] Local Setup
+## Local setup
 
 ```powershell
-# 1. Install PHP dependencies
-composer install
-
-# 2. Setup environment
-copy .env.example .env
+composer validate --strict
+composer install --prefer-dist --no-interaction
+Copy-Item .env.example .env
 php artisan key:generate
-
-# 3. Migrate and seed base schema
-php artisan migrate:fresh --seed
-
-# 4. Install & build frontend assets
-pnpm install
+New-Item -ItemType File -Force database/database.sqlite | Out-Null
+php artisan migrate:fresh --seed --force
+pnpm install --frozen-lockfile
 pnpm run build
 ```
 
----
-
-## [DEV-SERVER] Local Development Server
+## Local processes
 
 ```powershell
-# Run the Laravel dev server (default port 8000)
-php artisan serve
-
-# Run Vite asset compiler (for customized styles / Livewire assets)
+php artisan serve --host=127.0.0.1 --port=8000
 pnpm run dev
+php artisan queue:work --tries=3
+php artisan schedule:work
 ```
 
----
+Use ARH Server Deploy Bootstrap only for a built/static or running preview surface. It is not the production deployment mechanism.
 
-## [DEV-CHECK] Quality & Verification Gates
+## Verification commands
 
 ```powershell
-# 1. Domain-Specific UI/UX Quality Gate (Blade balance, Touch targets >=44px, LHDN/JKM legal text)
-pnpm run qa:ui
-
-# 2. Master ARH JS Doctor (Oxlint, Secret Scanner, Schema Validator, Layout/A11y, Ratchet, Docs)
-pnpm doctor
-
-# 3. Combined Automated Quality Gate
 pnpm run qa:all
-
-# 4. Recursive PHP Syntax Linting (PHP 8.4)
-Get-ChildItem -Path app,database -Filter *.php -Recurse | ForEach-Object { $res = php -l $_.FullName 2>&1; if ($res -notmatch "No syntax errors detected") { Write-Host $res } }
-
-# 5. PHP Code Style & Static Linting (Laravel Pint with PSR-12 and Alpha Imports)
-composer pint
-
-# 6. PHP Static Analysis (Larastan Level 5)
-composer phpstan
-
-# 7. Dead Code & Orphan Dependency Scanner (Knip)
+pnpm run docs:check
+pnpm run doctor
+pnpm run qa:ui
+vendor/bin/pint --test app config database routes tests
+vendor/bin/phpstan --no-progress --memory-limit=512M
+php artisan test
+npx secretlint "**/*"
 npx knip
-
-# 8. PWA & Lighthouse Accessibility / Performance Assertions
-npx lighthouserc
 ```
 
----
+Do not describe PHPStan, secretlint, Knip, or Lighthouse as passing until the command has actually run and its exit code has been recorded.
 
-## [DEV-PRACTICE] Operational Practice & Error Logging
+## Production image
 
-1. **Continuous Error Harvesting**: Any bug, lint failure, layout collision, or deployment trap must be recorded in [`errors-fixes.md`](errors-fixes.md) before closing a task.
-2. **Pre-Commit Verification**: Run `pnpm run qa:all` and `composer pint` before committing changes.
-3. **Multi-Tenancy Guard**: Every new migration and Eloquent model must include `school_id` foreign-key isolation.
+Create a multi-stage Dockerfile with Composer, Node/pnpm asset build, and PHP 8.4 runtime stages. Include PostgreSQL and required document/image extensions, non-root writable `storage` and `bootstrap/cache`, runtime `PORT` handling, and an explicit `/up` health route. Do not bake real secrets or a usable dummy `APP_KEY` into the production runtime.
 
----
+## Cloud Run setup order
 
-## [DEV-PERF] Performance Profiling & Benchmark Verifier
+1. Create a dedicated GCP project or obtain approval to use the existing ARH project.
+2. Enable Cloud Run, Cloud Build, Scheduler, Secret Manager, Storage, and Artifact Registry APIs.
+3. Create a dedicated Neon production project and isolated preview branch.
+4. Create a private GCS bucket in `asia-southeast1` and grant the Cloud Run service account object access.
+5. Configure Workload Identity Federation for the repository.
+6. Build and run the image against SQLite/test Postgres.
+7. Deploy a preview revision with preview secrets and run migrations.
+8. Verify login, tenant isolation, attendance, assessment append, upload/download, queue, scheduler, and `/up`.
+9. Deploy production only after the preview receipt is complete.
 
-```powershell
-# Run Median-of-Trials performance speedup benchmark
-node -e "import('D:/_ARH-AGENT-OS/_AGENT-CAPABILITIES/arh-js-devkit/lib/benchmark-verify.mjs').then(m => console.log('Benchmark harness loaded.'))"
-```
+## Secret handling
+
+Use SOPS as the primary store and the ARH secret injector as the runtime fallback. Inject `APP_KEY`, Neon URLs, mail/payment/WhatsApp credentials, and storage credentials at runtime. Never request secrets in chat or place them in `.env.example`.

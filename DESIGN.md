@@ -1,87 +1,113 @@
-# Design
+# Code-Level Design
 
-## [DESIGN-PANEL] Filament Operational Workspace (v1)
+This document turns the eight stated capabilities into code contracts. It describes the intended implementation boundary; a statement here is not a claim that the code already exists.
 
-> The teacher and admin interface is built entirely with Filament v4 components, customized to provide dense, efficient data-entry and query views.
+## Design rules
 
-- **Theme**: Clean emerald/slate aesthetic tailored for educational clarity.
-- **Navigation**: Sidebar with scoped resources:
-  - 📋 **Kehadiran Harian** (Daily Attendance Sheet)
-  - 🎓 **Senarai Murid** (Student Registry & Profiles)
-  - 📝 **Rekod Pentaksiran** (Assessment Recording & History)
-  - 📅 **Jadual Waktu** (Timetable Grid)
-  - ⚙️ **Konfigurasi Platform** (Admin Schema & Cohort Builders)
+- Laravel is the application boundary. Filament pages/resources are adapters over domain actions and policies.
+- `school_id` is carried through every school-owned command, query, model, policy, migration, and test.
+- Curriculum names are data, never migration columns or hardcoded enum values.
+- A write has one authoritative action/service, one authorization check, and one audit outcome.
+- Historical records are immutable after the save transaction commits.
 
----
+## Capability-to-code map
 
-## [DESIGN-THEME-INTEGRITY] Design System & Token Consistency
+| Capability | Primary code objects | Persistence | Acceptance contract |
+|---|---|---|---|
+| Profile builder | `ProfileSchemaResource`, `ProfileSchema`, `ProfileSchemaCompiler` | `profile_schemas` with versioned JSON schema | New fields are additive; removed fields are archived |
+| Student registry | `StudentResource`, `Student`, `RegisterStudent`, `StudentPolicy` | `students`, profile values, object storage | MyKid uniqueness is school-scoped; deactivation preserves history |
+| Cohorts | `CohortResource`, `Cohort`, `AssignStudentToCohort` | `cohorts`, membership/assignment records | Transfers do not rewrite historical attendance or assessment ownership |
+| Timetable | `TimetableResource/Page`, `Timetable`, `TimetableSlotData` | `timetables` and JSON slots or normalized slots | Valid time ranges; today is derived from school timezone |
+| Attendance | `CohortAttendance`, `RecordAttendance`, `AttendancePolicy` | `attendance_records` | One student/cohort/date record; post-lock change is an audited correction |
+| Assessment builder | `AssessmentSchemaResource`, `AssessmentSchema`, `SchemaValidator` | versioned assessment schema JSON | Schema edits never mutate saved session payloads |
+| Assessment record | `RecordAssessmentSession`, `AssessmentRecordPolicy` | append-only `assessment_records` | Corrections point to the original and cannot replace it |
+| Query/report | `StudentRecordQuery`, `AttendanceSummaryQuery`, `AssessmentHistoryQuery` | indexed relational queries | Empty result is explicit; teacher scope is enforced in the query |
+| Roles/access | panel providers, policies, permission checks, audit action | users/roles/audit log | Admin all-school; teacher assigned cohorts; parent is future read-only scope |
 
-> Theme consistency is enforced via design tokens (derived from `@lapidist/design-lint` and `vlmkit` patterns). Raw arbitrary hex colors and random spacing classes are prohibited.
+## Shared domain contracts
 
-### 1. Color Tokens (Tailwind v4 / Filament Primary Map)
-- **Primary / Brand**: `Emerald` (Islamic Kindergarten visual identity)
-  - `primary-50`: `#ecfdf5` (tinted card surfaces)
-  - `primary-500`: `#10b981` (active tabs, primary buttons)
-  - `primary-600`: `#059669` (hover/focus states)
-  - `primary-900`: `#064e3b` (primary text accents)
-- **Neutrals / Canvas**: `Slate`
-  - `surface-canvas`: `slate-50` (`#f8fafc`)
-  - `surface-card`: `#ffffff`
-  - `border-subtle`: `slate-200` (`#e2e8f0`)
-  - `text-main`: `slate-900` (`#0f172a`)
-  - `text-muted`: `slate-500` (`#64748b`)
-- **Semantic Status**:
-  - `Success / Hadir`: `emerald-600` / `emerald-50` chip background
-  - `Danger / Tidak Hadir`: `rose-600` / `rose-50` chip background
-  - `Warning / Dalam Latihan`: `amber-600` / `amber-50` chip background
+### Tenant context
 
-### 2. Spacing & Typography Scale
-- **Grid Spacing Rhythm**: Strict 4px/8px modular grid (`p-2`, `p-4`, `p-6`, `gap-3`, `gap-4`).
-- **Typography Tokens**: Inter / Plus Jakarta Sans font stack:
-  - `heading-lg`: `1.25rem` (`text-xl`), font-semibold
-  - `body-default`: `0.875rem` (`text-sm`), font-normal
-  - `label-dense`: `0.75rem` (`text-xs`), font-medium uppercase tracking-wider
+`SchoolContext` resolves the authenticated actor's active school. Every action accepts the context explicitly or obtains it from the authenticated request and rejects a missing/mismatched school. Tests must include two schools and prove cross-school reads and writes fail.
 
----
+### Schema versioning
 
-## [DESIGN-ATTENDANCE] Daily Attendance Screen Contract
+Profile and assessment schemas use a stable schema identifier plus a monotonically increasing version. A record stores the schema version used at save time. The compiler accepts only allow-listed field types:
 
-> A rapid-fire roster view designed to be completed in under 60 seconds.
+```text
+text | number | status | date | checkbox
+```
 
-- **Header**: Today's auto-populated date, class selector, count indicator (`X/Y Hadir`).
-- **Body**: Dense list/table with student avatar, full name, and single-click toggle chips:
-  - `[ Hadir (Emerald) ]` / `[ Tidak Hadir (Rose) ]`
-  - Inline expandable text input for absence remarks (e.g., *Cuti sakit*).
-- **Touch Target Standard**: Status chips must maintain a minimum bounding box of $44\text{px} \times 44\text{px}$ on mobile/tablet screens.
-- **Keyboard Navigation**: Full Tab/Shift+Tab navigation across students with `Space`/`Enter` status toggling (no pointer-only traps).
-- **Actions**: `Simpan Kehadiran` (Save & Lock).
+Field keys are machine-safe, labels are display data, and status options are school-owned data. A schema change creates a new version; it does not rewrite historical JSON.
 
----
+### Audit contract
 
-## [DESIGN-ASSESSMENT] Dynamic Assessment & Session Entry
+Every privileged or corrective write records actor, school, action, subject type/id, reason when required, and timestamp. Audit writes occur in the same database transaction as the business write whenever possible.
 
-> Follows **ADR-003** & **ADR-004**. Two distinct UI modes:
+## Capability flows
 
-### 1. Schema Builder (Admin View)
-- Built using Filament `Repeater`.
-- Enables admin/headmaster to define assessment areas (e.g., *Iqra'*, *Hafazan*, *Matematik*) and add custom fields (`Text`, `Number`, `Dropdown Select`, `Date`, `Checkbox`).
+### Student registration
 
-### 2. Session Recorder (Teacher View)
-- Teacher picks student(s) and assessment category.
-- Form dynamically renders the fields based on the active JSON schema.
-- **Text Collision Invariant**: Dynamic field labels and student names are bounded with automatic wrapping (`break-words`) to prevent layer collisions.
-- Action: `Simpan Rekod Sesi`. Appends a new timestamped row to history with zero mutation of past records.
+1. `StudentResource` loads the active profile schema through `ProfileSchemaCompiler`.
+2. `RegisterStudent` validates standard and configured fields.
+3. It verifies school-scoped MyKid uniqueness and cohort membership.
+4. It stores the student and photo reference in one transaction; the object upload is finalized only after authorization and validation succeed.
+5. It emits an audit record and returns the student identifier.
 
----
+Draft state is explicit. A draft cannot appear in an active attendance roster.
 
-## [DESIGN-TIMETABLE] Blank-Grid Timetable Interface
+### Attendance
 
-> Empowers the teacher to configure daily slots without rigid curriculum presets.
+`CohortAttendance` loads the roster through a school/cohort-scoped query and submits a batch to `RecordAttendance`.
 
-- **Layout**: 5-day columns (Isnin – Jumaat).
-- **Zero Collapsed Invariant**: Empty time slots render a designated placeholder container ($h \ge 48\text{px}$) to avoid $0\text{px}$ height collapse.
-- **Slot Builder**: Addable time blocks with:
-  - `Masa Mula` & `Masa Tamat` (Time pickers)
-  - `Nama Slot` (Free text: e.g., *Iqra'*, *Rehat*, *Sains*)
-  - `Kategori` (Subject, Recess, Assembly, Free Play)
-- **Today's Dashboard**: Opening the dashboard on a Wednesday automatically filters and highlights Wednesday's slots.
+- The unique key is `(school_id, student_id, attendance_date)`.
+- The action rejects students outside the teacher's assigned cohort.
+- Before the configured lock time, a teacher may amend today's record.
+- After lock, only an admin correction action may amend it, with a required reason and audit record.
+- Attendance summaries use database aggregation, not PHP-side manual totals.
+
+### Assessment
+
+`AssessmentSchemaCompiler` translates versioned JSON into Filament components and validation rules. `RecordAssessmentSession` validates the submitted payload against the selected version, checks student/cohort scope, and inserts an immutable record. A correction stores `corrects_id`, `is_correction`, and the correction reason; no update path is exposed for the original record.
+
+### Timetable
+
+Timetable slots are school/cohort-owned records with `day_of_week`, `start_time`, `end_time`, `label`, and optional `category`. The write action rejects overlapping slots within a cohort unless an explicit override policy is later accepted. The dashboard derives today's day from the school's configured timezone; it does not store a second “today” value.
+
+### Query and reporting
+
+Queries are named read services, not controller-local query fragments:
+
+- `StudentRecordQuery::forStudent()`
+- `AttendanceSummaryQuery::forCohort()`
+- `AssessmentHistoryQuery::forStudentAndSchema()`
+- `ClassOverviewQuery::forDateRange()`
+
+Each query begins with school scope, applies actor scope, then applies filters. Export and PDF services consume query DTOs so reports cannot bypass authorization.
+
+## UI contracts
+
+- Attendance is optimized for one-hand tablet use: status controls are native buttons, keyboard operable, and at least 44px square.
+- Long Malay labels wrap; no fixed-height label container may clip text.
+- Empty tables explain whether no records exist or filters exclude records.
+- Destructive/deactivating actions require confirmation and preserve historical references.
+- Parent-facing UI is deferred; do not add parent navigation or permissions until its ADR is accepted.
+
+## Error and recovery behavior
+
+- Validation errors remain on the form with field-level messages.
+- Authorization failures are indistinguishable from missing records to unauthorized actors.
+- Duplicate submissions are idempotent where a natural key exists.
+- Queue failures are retried with bounded attempts and recorded in failed jobs.
+- Object-storage failure prevents the business record from claiming a completed upload.
+- Database transaction failure returns no success receipt.
+
+## Implementation order
+
+1. Normalize Laravel version and install/runtime verification.
+2. Establish school, actor, policy, audit, and test factories.
+3. Implement profile/student/cohort vertical slice.
+4. Implement attendance/timetable vertical slice.
+5. Implement schema compiler and append-only assessment slice.
+6. Implement reports/exports and durable object storage.
+7. Add Cloud Run packaging and deployment verification.

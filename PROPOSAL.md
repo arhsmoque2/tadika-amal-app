@@ -29,7 +29,7 @@ This proposal evaluates the optimal technology stack, comparing **Filament v4 (M
 │                                                                                        │
 │   ┌───────────────────────────────┐        ┌───────────────────────────────────────┐   │
 │   │    OPTION A: ALL-FILAMENT     │        │     OPTION B: INERTIA + VUE 3         │   │
-│   │  • Laravel 12 + Filament v4   │        │  • Laravel 12 + Inertia.js v2         │   │
+│   │  • Laravel 13 + Filament v4   │        │  • Laravel 13 + Inertia.js v2         │   │
 │   │  • Multi-Panel Architecture   │        │  • Vue 3 SPA + Tailwind CSS v4        │   │
 │   │  • 100% Native PHP / Livewire │        │  • High-polish PWA Mobile Experience  │   │
 │   └───────────────────────────────┘        └───────────────────────────────────────┘   │
@@ -63,7 +63,7 @@ This proposal evaluates the optimal technology stack, comparing **Filament v4 (M
 1. **`academico-sis/academico`**:
    - Clean school information system built with Laravel and Filament. Provides foundational schema for classes, enrollment, academic terms, and attendance.
 2. **`muhamadfikrii/app-samlosier`**:
-   - Modern Laravel 12 + Filament 4 digital school system with role-based dashboard cards and student profiles.
+   - Modern Laravel + Filament 4 digital school system with role-based dashboard cards and student profiles.
 3. **`saade/filament-fullcalendar`**:
    - Full calendar drag-and-drop integration for school terms, holiday schedule, and exam milestones.
 4. **`hammadzafar05/filament-mobile-preset`**:
@@ -87,7 +87,7 @@ Start-Process "D:\ARH-GITHUB\arhsmoque2\tadika-amal-app\preview\index.html"
 ## 6. Implementation Roadmap
 
 - [x] **Phase 1: Architecture & Scope Definition** — Domain requirements, stack comparison, schema blueprint, and interactive prototype.
-- [ ] **Phase 2: Repository Scaffolding & Base Install** — Laravel 12 foundation with chosen stack, database migrations, and seeders.
+- [ ] **Phase 2: Repository Scaffolding & Base Install** — Verify the existing Laravel 13 foundation, migrations, and seeders.
 - [ ] **Phase 3: Core Modules Build** — Student enrollment, Iqra' tracker, attendance kiosk, and billing system.
 - [ ] **Phase 4: WhatsApp Alerts & FPX Integration** — Automated notifications and payment collection.
 - [ ] **Phase 5: Cloud Deployment & Validation** — Serverless deployment with PostgreSQL and cloud storage.

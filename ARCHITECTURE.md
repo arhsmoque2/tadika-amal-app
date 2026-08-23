@@ -1,92 +1,97 @@
 # Architecture
 
-## [ARCH-BOUNDARY] System Boundary
+## Purpose and boundary
 
-> Tadika Amal Apps is a modular school operations platform. For v1, it runs as a monolithic Laravel 12 application with a Filament v4 panel serving Teachers and Administrators.
+Tadika Amal is a multi-school operations system for staff records, cohorts, attendance, configurable assessments, timetables, reports, and controlled future parent access. It is a Laravel monolith for v1, not a collection of microservices.
 
 ```text
-Teacher / Admin Web Browser
-  -> Laravel 12 HTTP Kernel
-      -> Authentication / Role Middleware (Spatie Permission)
-      -> Filament v4 Admin/Teacher Panel
-          -> Dynamic Schema Engine (JSON Schema -> Filament Form)
-          -> Eloquent Models (Multi-Tenant Scoped)
-      -> PostgreSQL / MySQL Database
-          -> Core tables (users, schools, cohorts, students, attendances)
-          -> Config tables (profile_schemas, assessment_schemas)
-          -> Session tables (assessment_records - append-only)
-      -> Local / S3-compatible Storage (Passport photos, attachments)
+Teacher/Admin browser
+  -> Cloud Run web container
+       -> Laravel 13 HTTP kernel
+            -> Filament 4 / Livewire panels
+            -> policies + school scope
+            -> domain actions and read services
+            -> Eloquent/PostgreSQL
+            -> private object storage
+       -> Cloud Run Job / Scheduler for scheduled work
 ```
 
----
+The repository currently declares Laravel `^13.0` in `composer.json`; older documents saying Laravel 12 are historical and must not be used as deployment instructions.
 
-## [ARCH-PROCESS] Process Model
+## Runtime topology
 
-> The initial release is a monolithic web service with optional background worker queues for maintenance and exports.
+### Web process
 
-- **Web Server**: PHP 8.2+ running with Octane or standard PHP-FPM / Nginx.
-- **Worker Queue**: Laravel default database/Redis queue worker for background reports and notifications.
-- **Static Assets**: Vite-compiled Filament CSS/JS bundle.
+The web process serves Filament, Livewire, Blade, and Vite-built assets. It is stateless: no request may rely on a local file surviving a restart or reaching a different instance.
 
----
+Preferred production image: PHP 8.4 with Laravel Octane/FrankenPHP, following the proven DPiK pattern. The fallback is PHP-FPM/NGINX if the image, health check, or browser smoke test fails.
 
-## [ARCH-API] Domain Data Model
+### Database
 
-> The architecture enforces a strict separation between core operational identity and dynamic curriculum data.
+Neon PostgreSQL is the system of record. Production, preview, and development use separate projects or isolated branches with separate credentials. Migrations run from the direct connection; runtime pooling is enabled only after transaction-pooler compatibility is verified.
 
-### Core Tables
-1. `schools` / `tenants`: Primary isolation boundary (`id`, `name`, `code`, `created_at`).
-2. `users`: System actors (`id`, `school_id`, `name`, `email`, `role`, `password`, `created_at`).
-3. `cohorts`: Groupings of students (`id`, `school_id`, `name`, `academic_year`, `teacher_id`).
-4. `students`: Enrolled individuals (`id`, `school_id`, `cohort_id`, `name`, `mykid`, `photo_path`, `data` [JSON], `created_at`).
-5. `attendances`: Daily log (`id`, `school_id`, `cohort_id`, `student_id`, `date`, `status` [Hadir/Tidak Hadir], `reason`, `recorded_by`).
+### Storage
 
-### Dynamic Schema & Record Tables
-1. `profile_schemas`: Definitions of custom student profile cards (`id`, `school_id`, `schema` [JSON], `created_at`).
-2. `assessment_schemas`: Definitions of assessment domains (`id`, `school_id`, `name`, `fields` [JSON], `created_at`).
-3. `assessment_records`: Append-only assessment history (`id`, `school_id`, `assessment_schema_id`, `student_id`, `cohort_id`, `recorded_by`, `data` [JSON], `is_correction`, `corrects_id`, `created_at`).
-4. `timetables`: Grid schedules (`id`, `school_id`, `cohort_id`, `day_of_week`, `slots` [JSON], `updated_at`).
+Student photographs, attachments, generated PDF/Office files, and exports use a private GCS bucket in the same region as Cloud Run. Cloudflare R2 is an approved alternative if the operator chooses the ARH-URUS storage pattern. Local storage is development-only.
 
----
+### Scheduled and asynchronous work
 
-## [ARCH-STORAGE] Dynamic Schema Engine
+The initial queue driver is the database driver because it avoids adding Redis before there is measured need. A dedicated worker process/job is required for long reports, imports, notifications, and document generation. Cloud Scheduler invokes a Cloud Run Job for `php artisan schedule:run`; scheduled work must be idempotent.
 
-> Follows **ADR-003**: Field definitions are stored as JSON specifications and compiled into Filament Form components dynamically at runtime.
+## Domain model
 
-```json
-{
-  "section": "Maklumat Tambahan",
-  "fields": [
-    {
-      "name": "nama_panggilan",
-      "label": "Nama Panggilan",
-      "type": "text",
-      "required": false
-    },
-    {
-      "name": "kumpulan_darah",
-      "label": "Kumpulan Darah",
-      "type": "select",
-      "options": ["A", "B", "AB", "O"]
-    }
-  ]
-}
+All tenant-owned tables include `school_id` and indexes supporting it. The minimum model groups are:
+
+- Identity: `User`, `Admin`, roles, permissions, audit entries.
+- School structure: `School`, `Cohort`, teacher assignments, cohort membership.
+- Registry: `Student`, guardian/contact data, profile schema values, photo reference.
+- Operations: attendance records, health/incident records when implemented, timetable slots.
+- Configuration: profile schemas and assessment schemas with versions.
+- History: append-only assessment records, corrections, exports, generated documents.
+
+Foreign keys and composite unique constraints prevent cross-school references. A policy is mandatory even where the database key is present.
+
+## Security boundaries
+
+1. Authentication identifies the actor; authorization identifies the school and cohort scope.
+2. Admin may configure school data and view all school records.
+3. Teacher may operate only on assigned cohorts.
+4. Parent access is future read-only access to explicitly linked children.
+5. Object storage is private and served through authorized, short-lived URLs.
+6. Secrets are injected by the deployment environment; `.env` files and real student data never enter Git.
+7. Production `APP_KEY` is generated once and never rotated without an encryption migration plan.
+
+## Data invariants
+
+- No curriculum-specific columns or enums are built into migrations.
+- Assessment records are append-only after commit.
+- Attendance uniqueness is school + student + date.
+- Archived students, cohorts, and schema fields remain queryable for historical records.
+- A failed file upload cannot be represented as a completed attachment.
+- Reports and exports execute through authorized read services.
+
+## Deployment topology
+
+```text
+GitHub main
+  -> CI: PHP, JS, docs, secret, browser gates
+  -> Cloud Build / Artifact Registry
+  -> Cloud Run revision (asia-southeast1)
+       -> Neon (private credential)
+       -> GCS (service-account IAM)
+  -> Cloud Scheduler -> Cloud Run Job
 ```
 
----
+GitHub Actions uses Workload Identity Federation. No long-lived GCP service-account key is committed. Preview deployments use an isolated Neon branch and non-production secrets. Local/Tailnet UI previews use ARH Server Deploy Bootstrap and do not imply production deployment.
 
-## [ARCH-SECURITY] Security & Role Boundaries
+## Failure boundaries
 
-> Access is governed by Spatie Laravel Permission and Filament Tenant scopes.
+- Neon unavailable: reads and writes fail visibly; no local fallback may create divergent school data.
+- Storage unavailable: upload/export operation fails and leaves no false success state.
+- Worker unavailable: web requests remain usable where possible; queued work is visible as pending and retried.
+- Scheduler unavailable: the next scheduled run must be safe to replay.
+- New revision unhealthy: Cloud Run keeps the prior healthy revision serving traffic.
 
-1. **Isolation**: A teacher can only query or record data for students in their assigned `cohort_id` under their `school_id`.
-2. **Admin Override**: Administrators can configure schemas, manage school-wide cohorts, and issue correction overrides.
-3. **Data Integrity**: Assessment records are strictly append-only; standard API endpoints do not expose `UPDATE` routes for `assessment_records` (see **ADR-004**).
+## Capacity and evolution
 
----
-
-## [ARCH-INVARIANTS] Runtime Invariants
-
-- Attendance records for a given date are locked at the close of school hours; late modifications create an audit record.
-- Historical assessment records are never mutated; corrections spawn linked new rows.
-- Schema removal does not delete existing JSON keys from student or assessment records.
+The v1 target is small schools with hundreds of students, not a public high-volume SaaS. Start with one web service and database queue. Add Redis, separate workers, read models, or a parent portal only when a measured workload or accepted capability requires them.

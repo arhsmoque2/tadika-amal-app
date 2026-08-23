@@ -1,68 +1,75 @@
 # Quality Gates
 
-## [QG-LOCAL] Local Transition Gate
+These gates prevent the repository from claiming a capability or deployment that has only been described. Each gate records the command, exit code, and receipt location.
 
-> A feature slice or pull request may only be handed off when all three verification tiers pass.
+## Gate 0 — documentation truth
 
-```text
-PASS: vendor/bin/pint --test
-PASS: php artisan test
-PASS: node D:/_ARH-AGENT-OS/_AGENT-CAPABILITIES/arh-js-devkit/bin/arh-js-doctor.mjs .
+```powershell
+pnpm run docs:check
 ```
 
----
+Required documents exist and are non-hollow: README, ARCHITECTURE, DESIGN, DEVTOOLS, QUALITY-GATES, HANDOFF, AGENTS, ADRs, and capability/intent documents. Claims are marked implemented, configured, verified, or planned.
 
-## [QG-TIER-1] Tier 1: Static Code, Security & Design Token Gate (<1s)
+## Gate 1 — dependency and source integrity
 
-> Fast static analysis running prior to commit or push:
+```powershell
+composer validate --strict
+composer install --prefer-dist --no-interaction
+pnpm install --frozen-lockfile
+pnpm run build
+npx secretlint "**/*"
+```
 
-1. **PHP Styling & Static Types**: Laravel Pint (`vendor/bin/pint --test`) enforcing strict PSR-12 conventions.
-2. **Design Token Conformance (`@lapidist/design-lint`)**:
-   - Zero raw arbitrary hex colors in Blade/Filament templates (e.g. no `#123456`). All colors must map to the defined `Emerald` / `Slate` palette.
-   - Spacing rhythm restricted to the 4px/8px modular grid (`p-2`, `p-4`, `p-6`, `gap-3`, `gap-4`).
-3. **Secret Scanner**: Real-time scanning ensuring 0 exposed tokens, credentials, or private keys (`secret-scanner.mjs`).
+No lockfile drift, exposed secrets, failed asset build, or unreviewed dependency mutation is accepted.
 
----
+## Gate 2 — PHP correctness
 
-## [QG-TIER-2] Tier 2: Headless DOM, Layout & Geometry Math Gate (<5s)
+```powershell
+Get-ChildItem app,database,config,routes,tests -Filter *.php -Recurse |
+  ForEach-Object { php -l $_.FullName }
+vendor/bin/pint --test app config database routes tests
+vendor/bin/phpstan --no-progress --memory-limit=512M
+php artisan test
+```
 
-> Deterministic DOM & geometry calculations derived from `vlmkit` and `layout-lint-mcp`:
+PHPStan is a blocking gate once existing findings are triaged. Until then, its exact finding count is recorded as a limitation; `|| true` is not a pass.
 
-1. **Viewport Matrix Coverage**:
-   - **Mobile Portrait**: `390px x 844px` (touch target minimum $\ge 44\text{px}$)
-   - **Mobile Landscape**: `844px x 390px` (zero vertical lockouts or swallowed controls)
-   - **Tablet Portrait**: `768px x 1024px` (dense table readability & collapsible navigation)
-   - **Tablet Landscape**: `1024px x 768px`
-   - **Desktop**: `1440px x 900px` (dense wide data grid)
+## Gate 3 — database and tenancy
 
-2. **DOM Geometry Invariants (`layout-integrity-gate.mjs`)**:
-   - **Zero Swallowed Elements**: No child content clipped invisibly by parent `overflow: hidden` (`scrollWidth > clientWidth`).
-   - **Zero Page Spills**: `document.documentElement.scrollWidth <= window.innerWidth` across all viewports.
-   - **Text-Collision & Protrusion Trap**: Same-layer text elements must never overlap (guards dynamic assessment labels and student names).
-   - **Sticky & Scroll Bounds**: Sticky headers (e.g., student roster column) must remain pinned without occluding scrollable rows beneath.
-   - **Zero Collapsed Containers**: No timetable slots or card containers may collapse to $0\text{px}$ height.
-   - **Touch Target Area**: Interactive buttons and status chips must maintain $\ge 44\text{px} \times 44\text{px}$ touch target bounds on mobile/tablet.
+```powershell
+Copy-Item .env.example .env -Force
+php artisan key:generate
+New-Item -ItemType File -Force database/database.sqlite | Out-Null
+php artisan migrate:fresh --seed --force
+php artisan test --filter=Tenant
+```
 
----
+Tests must prove two schools cannot read or write each other's students, cohorts, attendance, assessments, files, or reports. Test migration rollback where practical and verify seeded demo data.
 
-## [QG-TIER-3] Tier 3: Behavioral, Interaction & Performance Ratchet (CI / Pre-Release)
+## Gate 4 — capability behavior
 
-> Interactive operability, internationalization robustness, and regression guards:
+Required feature tests cover profile schema versioning, school-scoped MyKid uniqueness, student deactivation, cohort transfer history, timetable overlap/timezone selection, attendance lock and correction, assessment compilation and append-only correction, query empty states, date-range totals, and role denial paths. Each test maps to a `CAP-*` identifier and a scenario in `SCENARIOS.md`.
 
-1. **Keyboard Operability & Focus Order (`vlmkit check interactions`)**:
-   - **Zero Pointer-Only Controls**: Clickable elements must be native `<button>`, `<a>`, or have `role="button"` + `tabindex="0"` with `Enter`/`Space` handlers.
-   - **Focus Rings**: Visual focus indicators must never be suppressed (`outline: none` without visible replacement).
-   - **Element Occlusion Trap**: Floating overlays/modals must not intercept clicks intended for background table controls (`elementFromPoint` audit).
-2. **String Expansion Stress Test (`stress i18n`)**:
-   - Layouts must survive $+30\%$ string length expansion without truncation or card breakage, ensuring Malay language labels (*e.g., "Rancangan Pengajaran Harian"*) wrap gracefully.
-3. **WCAG Contrast & Theme Parity (`check theme`)**:
-   - Text on status chips (Emerald/Rose/Amber) must meet minimum $4.5:1$ contrast ratio across both light and dark backgrounds.
-4. **Performance Benchmark & Quality Ratchet (`benchmark-verify.mjs` & `ratchet-gate.mjs`)**:
-   - Dynamic schema compilation must pass median-of-trials benchmark testing ($N \ge 100$ iterations) with P95 outlier guards.
-   - Total gzip asset weights are tracked against `.arh-quality-gate.json` baseline with zero allowance for uncompressed bloat.
+## Gate 5 — browser and UI behavior
 
----
+Run the existing UI gate, then add a real browser smoke test against a running Laravel application. Verify login, teacher scope, attendance touch/keyboard controls, long Malay labels, dynamic assessment fields, timetable empty slots, and console/mixed-content errors.
 
-## [QG-DOCS] Documentation Conformance Gate
+The current static UI script is useful but does not measure real 44px geometry; do not claim measured touch-target compliance until Playwright geometry checks exist.
 
-> Every architectural modification must maintain consistency across `INTENT.md`, `ARCHITECTURE.md`, `DESIGN.md`, `IMPLEMENTATION.md`, `DEVTOOLS.md`, `CHANGELOG.md`, and `HANDOFF.md`.
+## Gate 6 — production container
+
+```powershell
+docker build -t tadika-amal:preview .
+docker run --rm -p 8080:8080 --env-file .env tadika-amal:preview
+Invoke-WebRequest http://127.0.0.1:8080/up
+```
+
+If Docker is unavailable, run the equivalent build through Cloud Build and retain the receipt. The image must bind the injected port and serve correctly behind a proxy.
+
+## Gate 7 — preview infrastructure
+
+Use a dedicated Neon preview branch and non-production bucket/prefix. Verify migrations, object upload/download, queue processing, scheduled command, Cloud Run revision health, and rollback. No real student data may be used.
+
+## Gate 8 — handoff completeness
+
+Before ending a session, update HANDOFF.md with the objective, branch/commit, exact commands and results, changed files, blockers, and one cold-start next action.

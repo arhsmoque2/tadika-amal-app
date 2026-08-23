@@ -1,5 +1,14 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Added ADR-009 for the Laravel monolith deployment architecture: Cloud Run, Neon PostgreSQL, private object storage, and scheduled Cloud Run Jobs.
+- Finalized code-level capability contracts in `DESIGN.md` and runtime/security boundaries in `ARCHITECTURE.md`.
+- Rewrote `DEVTOOLS.md`, `QUALITY-GATES.md`, and `HANDOFF.md` to distinguish documentation claims from runtime verification.
+- Corrected implementation roadmap references from Laravel 12 to the Laravel 13 dependency declared by `composer.json`.
+
 All notable changes to the Tadika Amal Apps project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
