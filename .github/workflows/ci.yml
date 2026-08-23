@@ -30,6 +30,9 @@ jobs:
       - name: Run Cloud Sandbox Independence & Portability Gate
         run: node _qa/cloud-sandbox-independence-gate.mjs
 
+      - name: Run Cloud Infrastructure Quality Gate
+        run: node _qa/tadika-infra-quality-gate.mjs
+
       - name: Run Tadika UI/UX Quality Gate
         run: node _qa/tadika-ui-ux-quality-gate.mjs
 

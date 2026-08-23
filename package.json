@@ -9,8 +9,9 @@
         "doctor": "node _qa/tadika-quality-doctor.mjs",
         "docs:check": "node _qa/tadika-docs-doctor.mjs",
         "qa:ui": "node _qa/tadika-ui-ux-quality-gate.mjs",
+        "qa:infra": "node _qa/tadika-infra-quality-gate.mjs",
         "qa:sandbox": "node _qa/cloud-sandbox-independence-gate.mjs",
-        "qa:all": "node _qa/cloud-sandbox-independence-gate.mjs && node _qa/tadika-quality-doctor.mjs && node _qa/tadika-docs-doctor.mjs && node _qa/tadika-ui-ux-quality-gate.mjs"
+        "qa:all": "node _qa/cloud-sandbox-independence-gate.mjs && node _qa/tadika-infra-quality-gate.mjs && node _qa/tadika-quality-doctor.mjs && node _qa/tadika-docs-doctor.mjs && node _qa/tadika-ui-ux-quality-gate.mjs"
     },
     "pnpm": {
         "overrides": {

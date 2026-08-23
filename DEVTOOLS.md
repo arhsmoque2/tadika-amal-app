@@ -5,19 +5,19 @@
 > Toolchains are pinned in accordance with ARH OS Standards (`AGENTS.md` §3).
 
 - **PHP**: `8.4.x` (verified active on system: `PHP 8.4.24`)
-- **Composer**: `2.x` (`C:\Users\Abdul Rahman Hilmi\AppData\Local\Programs\composer\composer.bat`)
+- **Composer**: `2.x` (`composer.bat`)
 - **Node.js**: `^22.x` (managed via `fnm 1.39.0`)
-- **Package Manager**: `pnpm 11.22.0` / `npm`
+- **Package Manager**: `pnpm 9.15.9` / `pnpm 11.22.0`
 
 ---
 
-## [DEV-SETUP] Local Setup
+## [DEV-SETUP] Local & Sandbox Setup
 
 ```powershell
 # 1. Install PHP dependencies
 composer install
 
-# 2. Setup environment
+# 2. Setup environment (Hermetic fallback defaults to SQLite)
 copy .env.example .env
 php artisan key:generate
 
@@ -46,30 +46,37 @@ pnpm run dev
 ## [DEV-CHECK] Quality & Verification Gates
 
 ```powershell
-# 1. Domain-Specific UI/UX Quality Gate (Blade balance, Touch targets >=44px, LHDN/JKM legal text)
+# 1. Cloud Sandbox Independence Gate (Zero hardcoded host paths & lockfile freshness)
+pnpm run qa:sandbox
+
+# 2. Cloud Infrastructure Quality Gate (Cloud Run, Neon DB pooling, R2 S3 adapter, Secret Manager)
+pnpm run qa:infra
+
+# 3. Domain-Specific UI/UX Quality Gate (Blade balance, Touch targets >=44px, LHDN/JKM legal text)
 pnpm run qa:ui
 
-# 2. Master ARH JS Doctor (Oxlint, Secret Scanner, Schema Validator, Layout/A11y, Ratchet, Docs)
-pnpm doctor
+# 4. ARH Documentation Compliance Doctor
+pnpm run docs:check
 
-# 3. Combined Automated Quality Gate
+# 5. Combined Master Automated Quality Gate
 pnpm run qa:all
 
-# 4. Recursive PHP Syntax Linting (PHP 8.4)
-Get-ChildItem -Path app,database -Filter *.php -Recurse | ForEach-Object { $res = php -l $_.FullName 2>&1; if ($res -notmatch "No syntax errors detected") { Write-Host $res } }
-
-# 5. PHP Code Style & Static Linting (Laravel Pint with PSR-12 and Alpha Imports)
+# 6. PHP Code Style & Static Linting (Laravel Pint with PSR-12 and Alpha Imports)
 composer pint
 
-# 6. PHP Static Analysis (Larastan Level 5)
-composer phpstan
-
-# 7. Dead Code & Orphan Dependency Scanner (Knip)
-npx knip
-
-# 8. PWA & Lighthouse Accessibility / Performance Assertions
-npx lighthouserc
+# 7. PHP Feature & Unit Test Suite (Hermetic SQLite In-Memory)
+php artisan test
 ```
+
+---
+
+## [DEV-SANDBOX] Zero-Ask Cloud Sandbox Agent Protocol
+
+When developing inside ephemeral cloud sandboxes (Claude Code, Codespaces, Gitpod):
+1. **Zero Secret Requirement**: Do not attempt to query live GCP WIF, Neon API, or Cloudflare tokens locally.
+2. **Hermetic Testing**: The test suite runs against in-memory SQLite and fake storage disks out-of-the-box.
+3. **Static Pre-Push Verification**: Run `pnpm run qa:all` before pushing. Static audits verify Dockerfile, DB URLs, R2 configs, and CI workflow safety offline without needing cloud CLI tools.
+4. **Automated CI/CD**: Real provisioning, branch creation, image build, and deployments execute securely on GitHub Actions CI.
 
 ---
 
@@ -78,12 +85,3 @@ npx lighthouserc
 1. **Continuous Error Harvesting**: Any bug, lint failure, layout collision, or deployment trap must be recorded in [`errors-fixes.md`](errors-fixes.md) before closing a task.
 2. **Pre-Commit Verification**: Run `pnpm run qa:all` and `composer pint` before committing changes.
 3. **Multi-Tenancy Guard**: Every new migration and Eloquent model must include `school_id` foreign-key isolation.
-
----
-
-## [DEV-PERF] Performance Profiling & Benchmark Verifier
-
-```powershell
-# Run Median-of-Trials performance speedup benchmark
-node -e "import('D:/_ARH-AGENT-OS/_AGENT-CAPABILITIES/arh-js-devkit/lib/benchmark-verify.mjs').then(m => console.log('Benchmark harness loaded.'))"
-```
