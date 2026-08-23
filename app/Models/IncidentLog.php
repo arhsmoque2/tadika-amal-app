@@ -72,7 +72,7 @@ class IncidentLog extends Model
      */
     public function getIncidentNumberAttribute(): string
     {
-        $year = $this->incident_date ? $this->incident_date->format('Y') : date('Y');
+        $year = $this->incident_date->format('Y');
 
         return 'JKM-'.$year.'-'.str_pad((string) $this->id, 4, '0', STR_PAD_LEFT);
     }

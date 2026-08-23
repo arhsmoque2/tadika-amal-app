@@ -70,7 +70,8 @@ class FeeInvoice extends Model
             'yuran_bulanan' => 'Yuran Pengajian Bulanan',
             'yuran_pendaftaran' => 'Yuran Pendaftaran Tahunan',
             'yuran_transit' => 'Yuran Transit & Asuhan Petang',
-            // @phpstan-ignore match.alreadyNarrowedType (defensive fallback for unexpected/legacy category values, kept for data integrity)
+            // Defensive fallback for unexpected/legacy category values, kept for data integrity.
+            // @phpstan-ignore-next-line
             'yuran_makan_tuisyen' => 'Yuran Makan & Tuisyen Tambahan',
             default => 'Yuran Tadika',
         };

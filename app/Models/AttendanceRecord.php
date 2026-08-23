@@ -71,7 +71,8 @@ class AttendanceRecord extends Model
             self::STATUS_HADIR => ['label' => 'Hadir', 'color' => 'emerald', 'code' => 'H'],
             self::STATUS_TIDAK_HADIR => ['label' => 'Tidak Hadir', 'color' => 'rose', 'code' => 'TH'],
             self::STATUS_SAKIT => ['label' => 'Sakit', 'color' => 'amber', 'code' => 'S'],
-            // @phpstan-ignore match.alreadyNarrowedType (defensive fallback for unexpected/legacy status values, kept for data integrity)
+            // Defensive fallback for unexpected/legacy status values, kept for data integrity.
+            // @phpstan-ignore-next-line
             self::STATUS_CUTI => ['label' => 'Cuti', 'color' => 'blue', 'code' => 'C'],
             default => ['label' => '-', 'color' => 'gray', 'code' => '-'],
         };
