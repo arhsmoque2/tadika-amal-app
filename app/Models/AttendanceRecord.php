@@ -33,21 +33,33 @@ class AttendanceRecord extends Model
         'date' => 'date',
     ];
 
+    /**
+     * @return BelongsTo<School, $this>
+     */
     public function school(): BelongsTo
     {
         return $this->belongsTo(School::class);
     }
 
+    /**
+     * @return BelongsTo<Cohort, $this>
+     */
     public function cohort(): BelongsTo
     {
         return $this->belongsTo(Cohort::class);
     }
 
+    /**
+     * @return BelongsTo<Student, $this>
+     */
     public function student(): BelongsTo
     {
         return $this->belongsTo(Student::class);
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function recorder(): BelongsTo
     {
         return $this->belongsTo(User::class, 'recorded_by');
@@ -59,6 +71,7 @@ class AttendanceRecord extends Model
             self::STATUS_HADIR => ['label' => 'Hadir', 'color' => 'emerald', 'code' => 'H'],
             self::STATUS_TIDAK_HADIR => ['label' => 'Tidak Hadir', 'color' => 'rose', 'code' => 'TH'],
             self::STATUS_SAKIT => ['label' => 'Sakit', 'color' => 'amber', 'code' => 'S'],
+            // @phpstan-ignore match.alreadyNarrowedType (defensive fallback for unexpected/legacy status values, kept for data integrity)
             self::STATUS_CUTI => ['label' => 'Cuti', 'color' => 'blue', 'code' => 'C'],
             default => ['label' => '-', 'color' => 'gray', 'code' => '-'],
         };

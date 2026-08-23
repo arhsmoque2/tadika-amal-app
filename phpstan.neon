@@ -15,3 +15,15 @@ parameters:
     checkModelProperties: true
 
     tmpDir: storage/framework/cache/phpstan
+
+    # phpoffice/phppresentation is an intentionally optional dependency for
+    # .pptx generation: PresentationDeckService guards every use behind
+    # class_exists(PhpPresentation::class) and falls back to a plain-text
+    # deck when it's not installed (see errors-fixes.md ERR-031). Until a
+    # decision is made to add the real dependency, ignore the resulting
+    # "class not found" noise for that one file only rather than papering
+    # over unrelated errors with a blanket ignore.
+    ignoreErrors:
+        -
+            message: '#PhpOffice\\PhpPresentation#'
+            path: app/Services/PresentationDeckService.php

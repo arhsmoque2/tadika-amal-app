@@ -29,21 +29,33 @@ class Teacher extends Model
         'is_active' => 'boolean',
     ];
 
+    /**
+     * @return BelongsTo<School, $this>
+     */
     public function school(): BelongsTo
     {
         return $this->belongsTo(School::class);
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return HasMany<Cohort, $this>
+     */
     public function cohorts(): HasMany
     {
         return $this->hasMany(Cohort::class);
     }
 
+    /**
+     * @return HasMany<TimetableSlot, $this>
+     */
     public function timetableSlots(): HasMany
     {
         return $this->hasMany(TimetableSlot::class);

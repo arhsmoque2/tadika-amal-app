@@ -35,26 +35,41 @@ class Student extends Model
         'is_active' => 'boolean',
     ];
 
+    /**
+     * @return BelongsTo<School, $this>
+     */
     public function school(): BelongsTo
     {
         return $this->belongsTo(School::class);
     }
 
+    /**
+     * @return BelongsTo<Cohort, $this>
+     */
     public function cohort(): BelongsTo
     {
         return $this->belongsTo(Cohort::class);
     }
 
+    /**
+     * @return HasMany<AttendanceRecord, $this>
+     */
     public function attendanceRecords(): HasMany
     {
         return $this->hasMany(AttendanceRecord::class);
     }
 
+    /**
+     * @return HasMany<SkillEvaluation, $this>
+     */
     public function skillEvaluations(): HasMany
     {
         return $this->hasMany(SkillEvaluation::class);
     }
 
+    /**
+     * @return HasMany<AssessmentReport, $this>
+     */
     public function assessmentReports(): HasMany
     {
         return $this->hasMany(AssessmentReport::class);

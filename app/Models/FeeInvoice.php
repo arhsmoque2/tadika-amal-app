@@ -32,21 +32,33 @@ class FeeInvoice extends Model
         'paid_at' => 'datetime',
     ];
 
+    /**
+     * @return BelongsTo<School, $this>
+     */
     public function school(): BelongsTo
     {
         return $this->belongsTo(School::class);
     }
 
+    /**
+     * @return BelongsTo<Student, $this>
+     */
     public function student(): BelongsTo
     {
         return $this->belongsTo(Student::class);
     }
 
+    /**
+     * @return BelongsTo<Cohort, $this>
+     */
     public function cohort(): BelongsTo
     {
         return $this->belongsTo(Cohort::class);
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function processor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'processed_by');
@@ -58,6 +70,7 @@ class FeeInvoice extends Model
             'yuran_bulanan' => 'Yuran Pengajian Bulanan',
             'yuran_pendaftaran' => 'Yuran Pendaftaran Tahunan',
             'yuran_transit' => 'Yuran Transit & Asuhan Petang',
+            // @phpstan-ignore match.alreadyNarrowedType (defensive fallback for unexpected/legacy category values, kept for data integrity)
             'yuran_makan_tuisyen' => 'Yuran Makan & Tuisyen Tambahan',
             default => 'Yuran Tadika',
         };

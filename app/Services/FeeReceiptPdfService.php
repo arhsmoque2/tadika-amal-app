@@ -21,7 +21,7 @@ class FeeReceiptPdfService
             mkdir($outputDir, 0755, true);
         }
 
-        $receiptNo = $invoice->receipt_number ?: 'REC-'.date('Ym').'-'.str_pad($invoice->id, 4, '0', STR_PAD_LEFT);
+        $receiptNo = $invoice->receipt_number ?: 'REC-'.date('Ym').'-'.str_pad((string) $invoice->id, 4, '0', STR_PAD_LEFT);
         $fileName = 'Resit_Yuran_'.Str::slug($receiptNo).'_'.Str::slug($invoice->student->name ?? 'Murid').'.pdf';
         $outputPath = $outputDir.'/'.$fileName;
 

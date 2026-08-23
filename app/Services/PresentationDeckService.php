@@ -101,8 +101,8 @@ class PresentationDeckService
             $slide2 = $presentation->createSlide();
             $shape2 = $slide2->createRichTextShape()->setHeight(400)->setWidth(850)->setOffsetX(50)->setOffsetY(60);
             $shape2->createTextRun("OBJEKTIF & STANDARD PEMBELAJARAN\n\n")->getFont()->setBold(true)->setSize(22);
-            $shape2->createTextRun('Teras KSPK: '.($lessonPlan->kspk_strand ?: 'Teras Asas')."\n\n");
-            $shape2->createTextRun("Aktiviti Dirancang:\n".($lessonPlan->learning_activities ?: 'Aktiviti Pembelajaran Berpusatkan Murid'));
+            $shape2->createTextRun('Teras KSPK: '.($lessonPlan->tunjang_kspk ?: 'Teras Asas')."\n\n");
+            $shape2->createTextRun("Aktiviti Dirancang:\n".($lessonPlan->activities ?: 'Aktiviti Pembelajaran Berpusatkan Murid'));
 
             $writer = IOFactory::createWriter($presentation, 'PowerPoint2007');
             $writer->save($outputPath);

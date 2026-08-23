@@ -28,21 +28,33 @@ class TeacherLeave extends Model
         'end_date' => 'date',
     ];
 
+    /**
+     * @return BelongsTo<School, $this>
+     */
     public function school(): BelongsTo
     {
         return $this->belongsTo(School::class);
     }
 
+    /**
+     * @return BelongsTo<Teacher, $this>
+     */
     public function teacher(): BelongsTo
     {
         return $this->belongsTo(Teacher::class);
     }
 
+    /**
+     * @return BelongsTo<Teacher, $this>
+     */
     public function substituteTeacher(): BelongsTo
     {
         return $this->belongsTo(Teacher::class, 'substitute_teacher_id');
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function approver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approved_by');

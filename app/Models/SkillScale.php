@@ -19,11 +19,17 @@ class SkillScale extends Model
         'color',
     ];
 
+    /**
+     * @return BelongsTo<School, $this>
+     */
     public function school(): BelongsTo
     {
         return $this->belongsTo(School::class);
     }
 
+    /**
+     * @return HasMany<SkillEvaluation, $this>
+     */
     public function evaluations(): HasMany
     {
         return $this->hasMany(SkillEvaluation::class);

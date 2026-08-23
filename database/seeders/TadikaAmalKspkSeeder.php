@@ -245,7 +245,7 @@ class TadikaAmalKspkSeeder extends Seeder
                 ],
                 [
                     'cohort_id' => $cohort6->id,
-                    'invoice_number' => 'INV-2026-06-'.str_pad($st->id, 3, '0', STR_PAD_LEFT).'-AUG',
+                    'invoice_number' => 'INV-2026-06-'.str_pad((string) $st->id, 3, '0', STR_PAD_LEFT).'-AUG',
                     'receipt_number' => $idx === 0 ? 'REC-202608-0001' : null,
                     'fee_category' => 'yuran_bulanan',
                     'amount' => 350.00,

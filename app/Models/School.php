@@ -24,21 +24,33 @@ class School extends Model
         'settings' => 'array',
     ];
 
+    /**
+     * @return HasMany<Teacher, $this>
+     */
     public function teachers(): HasMany
     {
         return $this->hasMany(Teacher::class);
     }
 
+    /**
+     * @return HasMany<Cohort, $this>
+     */
     public function cohorts(): HasMany
     {
         return $this->hasMany(Cohort::class);
     }
 
+    /**
+     * @return HasMany<Student, $this>
+     */
     public function students(): HasMany
     {
         return $this->hasMany(Student::class);
     }
 
+    /**
+     * @return HasMany<Room, $this>
+     */
     public function rooms(): HasMany
     {
         return $this->hasMany(Room::class);

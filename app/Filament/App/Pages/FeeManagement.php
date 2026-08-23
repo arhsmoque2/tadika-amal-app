@@ -84,7 +84,7 @@ class FeeManagement extends Page
             $cohort = Cohort::find($this->selectedCohortId);
 
             foreach ($students as $index => $student) {
-                $invNo = 'INV-'.date('Y').'-'.str_pad($cohort->id, 2, '0', STR_PAD_LEFT).'-'.str_pad($student->id, 3, '0', STR_PAD_LEFT).'-'.substr($this->selectedMonth, 0, 3);
+                $invNo = 'INV-'.date('Y').'-'.str_pad((string) $cohort->id, 2, '0', STR_PAD_LEFT).'-'.str_pad((string) $student->id, 3, '0', STR_PAD_LEFT).'-'.substr($this->selectedMonth, 0, 3);
                 FeeInvoice::firstOrCreate(
                     [
                         'school_id' => $cohort->school_id,
@@ -113,7 +113,7 @@ class FeeManagement extends Page
     public function markAsPaid(int $invoiceId, string $method = 'fpx_online'): void
     {
         $invoice = FeeInvoice::findOrFail($invoiceId);
-        $receiptNo = 'REC-'.date('Ym').'-'.str_pad($invoice->id, 4, '0', STR_PAD_LEFT);
+        $receiptNo = 'REC-'.date('Ym').'-'.str_pad((string) $invoice->id, 4, '0', STR_PAD_LEFT);
 
         $invoice->update([
             'status' => 'paid',
