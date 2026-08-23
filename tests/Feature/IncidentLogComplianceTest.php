@@ -32,9 +32,9 @@ class IncidentLogComplianceTest extends TestCase
         $student = Student::create([
             'school_id' => $school->id,
             'cohort_id' => $cohort->id,
-            'full_name' => 'Harith Bin Danial',
-            'gender' => 'lelaki',
-            'status' => 'aktif',
+            'name' => 'Harith Bin Danial',
+            'gender' => 'Lelaki',
+            'is_active' => true,
         ]);
 
         $teacherUser = User::create([

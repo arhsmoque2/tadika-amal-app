@@ -32,10 +32,10 @@ class CohortAttendanceTest extends TestCase
         $student = Student::create([
             'school_id' => $school->id,
             'cohort_id' => $cohort->id,
-            'full_name' => 'Ahmad Bilal Bin Hilmi',
-            'mykid_number' => '200101-10-1234',
-            'gender' => 'lelaki',
-            'status' => 'aktif',
+            'name' => 'Ahmad Bilal Bin Hilmi',
+            'mykid' => '200101-10-1234',
+            'gender' => 'Lelaki',
+            'is_active' => true,
         ]);
 
         $user = User::create([

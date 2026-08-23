@@ -31,9 +31,9 @@ class MorningHealthScreeningTest extends TestCase
         $student = Student::create([
             'school_id' => $school->id,
             'cohort_id' => $cohort->id,
-            'full_name' => 'Nur Maryam Binti Farhan',
-            'gender' => 'perempuan',
-            'status' => 'aktif',
+            'name' => 'Nur Maryam Binti Farhan',
+            'gender' => 'Perempuan',
+            'is_active' => true,
         ]);
 
         $teacher = User::create([
@@ -78,9 +78,9 @@ class MorningHealthScreeningTest extends TestCase
         $student = Student::create([
             'school_id' => $school->id,
             'cohort_id' => $cohort->id,
-            'full_name' => 'Umar Bin Zulkifli',
-            'gender' => 'lelaki',
-            'status' => 'aktif',
+            'name' => 'Umar Bin Zulkifli',
+            'gender' => 'Lelaki',
+            'is_active' => true,
         ]);
 
         $screening = HealthScreening::create([

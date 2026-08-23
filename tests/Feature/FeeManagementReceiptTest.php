@@ -31,9 +31,9 @@ class FeeManagementReceiptTest extends TestCase
         $student = Student::create([
             'school_id' => $school->id,
             'cohort_id' => $cohort->id,
-            'full_name' => 'Fatimah Az-Zahra Binti Luqman',
-            'gender' => 'perempuan',
-            'status' => 'aktif',
+            'name' => 'Fatimah Az-Zahra Binti Luqman',
+            'gender' => 'Perempuan',
+            'is_active' => true,
         ]);
 
         $admin = User::create([
