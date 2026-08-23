@@ -1,0 +1,17 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app
+        - config
+        - database
+        - routes
+
+    # Level 5 baseline for Filament v4 & Laravel 12
+    level: 5
+
+    checkOctaneCompatibility: true
+    checkModelProperties: true
+
+    tmpDir: storage/framework/cache/phpstan

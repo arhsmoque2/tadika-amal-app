@@ -1,0 +1,8 @@
+/node_modules
+/vendor
+/public
+/storage
+*.min.js
+*.min.css
+composer.lock
+pnpm-lock.yaml

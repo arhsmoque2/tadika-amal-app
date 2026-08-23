@@ -5,8 +5,10 @@
     "scripts": {
         "build": "vite build",
         "dev": "vite",
-        "doctor": "node D:/_ARH-AGENT-OS/_AGENT-CAPABILITIES/arh-js-devkit/bin/arh-js-doctor.mjs .",
-        "docs:check": "node D:/_ARH-AGENT-OS/_AGENT-CAPABILITIES/arh-js-devkit/bin/arh-docs-doctor.mjs ."
+        "doctor": "node D:/_ARH-AGENT-OS/_AGENT-CAPABILITIES/arh-js-devkit/bin/arh-js-doctor.mjs D:/ARH-GITHUB/arhsmoque2/tadika-amal-app",
+        "docs:check": "node D:/_ARH-AGENT-OS/_AGENT-CAPABILITIES/arh-js-devkit/bin/arh-docs-doctor.mjs D:/ARH-GITHUB/arhsmoque2/tadika-amal-app",
+        "qa:ui": "node _qa/tadika-ui-ux-quality-gate.mjs",
+        "qa:all": "pnpm doctor && pnpm qa:ui"
     },
     "pnpm": {
         "overrides": {
