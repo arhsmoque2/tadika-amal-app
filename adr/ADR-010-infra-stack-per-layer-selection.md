@@ -1,10 +1,11 @@
 # ADR-010: Per-Layer Infra Stack Selection (Cost, Sustainability, Free Tier, Performance)
 
-## Status
+**Status**: Accepted
+**Date**: 2026-08-23
 
-Accepted (supersedes the storage/database/queue/email/monitoring picks implied by
-this session's earlier "Hosting Blueprint" artifact, which proposed Laravel Cloud
-+ R2 without knowledge of the org's existing GCP/Cloud Run convention).
+Supersedes the storage/database/queue/email/monitoring picks implied by this
+session's earlier "Hosting Blueprint" artifact, which proposed Laravel Cloud
++ R2 without knowledge of the org's existing GCP/Cloud Run convention.
 
 ## Context
 
