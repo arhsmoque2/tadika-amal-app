@@ -81,6 +81,10 @@ jobs:
           sync_secret() {
             local secret_name="$1"
             local secret_val="$2"
+            if [ -z "$secret_val" ]; then
+              echo "::warning::Skipping Secret Manager sync for '$secret_name' because value is empty/unset."
+              return 0
+            fi
             if ! gcloud secrets describe "$secret_name" --project=arh-gcloud-vm >/dev/null 2>&1; then
               printf "%s" "$secret_val" | gcloud secrets create "$secret_name" --data-file=- --project=arh-gcloud-vm --replication-policy=automatic --quiet
             else

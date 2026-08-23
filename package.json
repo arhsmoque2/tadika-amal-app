@@ -12,7 +12,10 @@
         "qa:infra": "node _qa/tadika-infra-quality-gate.mjs",
         "qa:sandbox": "node _qa/cloud-sandbox-independence-gate.mjs",
         "test:qa": "node --test _qa/tests/tadika-infra-quality-gate.test.mjs",
-        "qa:all": "node _qa/cloud-sandbox-independence-gate.mjs && node _qa/tadika-infra-quality-gate.mjs && node --test _qa/tests/tadika-infra-quality-gate.test.mjs && node _qa/tadika-quality-doctor.mjs && node _qa/tadika-docs-doctor.mjs && node _qa/tadika-ui-ux-quality-gate.mjs"
+        "qa:all": "node _qa/cloud-sandbox-independence-gate.mjs && node _qa/tadika-infra-quality-gate.mjs && node --test _qa/tests/tadika-infra-quality-gate.test.mjs && node _qa/tadika-quality-doctor.mjs && node _qa/tadika-docs-doctor.mjs && node _qa/tadika-ui-ux-quality-gate.mjs",
+        "prepare": "node scripts/install-hooks.mjs",
+        "pre-commit": "node _qa/tadika-quality-doctor.mjs && node _qa/tadika-docs-doctor.mjs && node _qa/cloud-sandbox-independence-gate.mjs",
+        "pre-push": "pnpm run qa:all"
     },
     "pnpm": {
         "overrides": {

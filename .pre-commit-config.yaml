@@ -1,0 +1,44 @@
+# Tadika Amal App — Pre-commit Configuration
+# Prevents broken contracts, sensitive secret leaks, and untested infra changes before commit/push
+repos:
+  - repo: local
+    hooks:
+      - id: tadika-quality-doctor
+        name: Tadika Quality Doctor (JSON & Secrets)
+        entry: node _qa/tadika-quality-doctor.mjs
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit, pre-push]
+
+      - id: tadika-docs-doctor
+        name: Tadika Docs & Separation of Concerns Doctor
+        entry: node _qa/tadika-docs-doctor.mjs
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit, pre-push]
+
+      - id: cloud-sandbox-independence-gate
+        name: Cloud Sandbox Independence & Portability Gate
+        entry: node _qa/cloud-sandbox-independence-gate.mjs
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit, pre-push]
+
+      - id: tadika-infra-quality-gate
+        name: Cloud Infrastructure Quality Gate (Cloud Run, Neon, R2)
+        entry: node _qa/tadika-infra-quality-gate.mjs
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
+
+      - id: tadika-infra-tests
+        name: Cloud Infrastructure Gate Regression Fixtures
+        entry: node --test _qa/tests/tadika-infra-quality-gate.test.mjs
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
