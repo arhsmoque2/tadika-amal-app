@@ -137,7 +137,7 @@ jobs:
             APP_ENV=production
             APP_DEBUG=false
             SESSION_DRIVER=database
-            CACHE_STORE=database
+            CACHE_STORE=file
             QUEUE_CONNECTION=database
             LOG_CHANNEL=stderr
             DB_CONNECTION=pgsql
